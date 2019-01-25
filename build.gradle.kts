@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     idea
+    `kotlin-dsl`
     kotlin("jvm") version "1.3.11"
     id("net.researchgate.release") version "2.6.0"
     id("org.sonarqube") version "2.7"
@@ -15,7 +16,7 @@ jacoco {
     toolVersion = "0.8.2"
 }
 
-allprojects {
+allprojects(closureOf<Project> {
     apply(plugin = "jacoco")
     apply(plugin = "de.marcphilipp.nexus-publish")
 
@@ -24,7 +25,8 @@ allprojects {
         maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
         maven(url = "https://plugins.gradle.org/m2/")
     }
-}
+})
+
 
 nexusStaging {
 //    stagingProfileId = "8412378836ed9c"
@@ -35,17 +37,26 @@ nexusStaging {
 
 group = "com.bakdata.gradle"
 val repoName: String by project
-subprojects {
+subprojects(closureOf<Project> {
     apply(plugin = "java")
     apply(plugin = "kotlin")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "signing")
+    apply(plugin = "org.gradle.kotlin.kotlin-dsl")
+
+    kotlinDslPluginOptions {
+        experimentalWarning.set(false)
+    }
 
     dependencies {
         "api"(gradleApi())
         "api"(gradleKotlinDsl())
         implementation(kotlin("stdlib"))
-//        implementation(kotlin("gradle-plugin"))
+
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.0")
+        testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.0")
+        testImplementation("org.assertj", "assertj-core", "3.11.1")
+        testImplementation("org.junit-pioneer", "junit-pioneer", "0.3.0")
     }
 
     tasks["jacocoTestReport"].dependsOn(tasks["test"])
@@ -118,16 +129,24 @@ subprojects {
         sign(the<PublishingExtension>().publications)
     }
 
-//    tasks[PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME].dependsOn(tasks["sign"])
-//    tasks[MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME].dependsOn(tasks["sign"])
-}
+    val build = tasks[LifecycleBasePlugin.BUILD_TASK_NAME]
+    tasks[PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME].dependsOn(build)
+    tasks[MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME].dependsOn(build)
+})
 
 
 tasks {
+    val jacocoMerge by creating(JacocoMerge::class) {
+        dependsOn(subprojects.map { it.tasks["jacocoTestReport"] })
+
+        executionData(subprojects.map { it.tasks["test"] })
+    }
+
     sonarqube {
         properties {
             property("sonar.projectName", "${repoName}")
             property("sonar.projectKey", "bakdata-${repoName}")
+            property("sonar.jacoco.reportPaths", jacocoMerge.destinationFile)
         }
     }
 }

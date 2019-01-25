@@ -24,15 +24,14 @@
 
 package com.bakdata.gradle
 
+import de.marcphilipp.gradle.nexus.NexusPublishExtension
 import io.codearte.gradle.nexus.NexusStagingExtension
-import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPom
-import org.gradle.api.publish.maven.MavenPomDeveloperSpec
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.plugins.PublishingPlugin
@@ -41,37 +40,21 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.SigningExtension
 
-data class SonatypeSettings(
-        val project: Project,
-        var disallowLocalRelease: Boolean = true,
-        var osshrJiraUsername: String = System.getenv("OSSRH_JIRA_USERNAME"),
-        var osshrJiraPassword: String = System.getenv("OSSRH_JIRA_PASSWORD"),
-        var repoName: String = project.name,
-        var repoUrl: String = "https://github.com/bakdata/${repoName}",
-        var mavenPomDeveloperSpec: Action<in MavenPomDeveloperSpec>? = null)
-
 class SonatypePlugin : Plugin<Project> {
     override fun apply(rootProject: Project) {
-        val settings = SonatypeSettings(project = rootProject)
-        rootProject.extensions.add("sonatype", settings)
+        if(rootProject.parent != null) {
+            throw GradleException("Apply this plugin only to the top-level project.")
+        }
 
-        rootProject.apply(closureOf<Project> {
-            plugins.apply("base")
-            plugins.apply("io.codearte.nexus-staging")
+        val settings = rootProject.extensions.create<SonatypeSettings>("sonatype", rootProject)
 
-            allprojects(closureOf<Project> {
-                plugins.apply("de.marcphilipp.nexus-publish")
-                repositories {
-                    mavenCentral()
-                    maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
-                }
-            })
-
+        with(rootProject) {
+            // lazy execution, so that settings configurations are actually used
             afterEvaluate {
                 configure<NexusStagingExtension> {
                     packageGroup = "com.bakdata"
-                    username = settings.osshrJiraUsername
-                    password = settings.osshrJiraPassword
+                    username = requireNotNull(settings.osshrJiraUsername) { "sonatype.osshrJiraUsername not set" }
+                    password = requireNotNull(settings.osshrJiraPassword) { "sonatype.osshrJiraPassword not set" }
                 }
 
                 val projects = if (subprojects.isEmpty()) listOf(rootProject) else subprojects
@@ -93,11 +76,22 @@ class SonatypePlugin : Plugin<Project> {
                     })
                 }
             }
-        })
+
+            plugins.apply("base")
+            plugins.apply("io.codearte.nexus-staging")
+
+            allprojects {
+                plugins.apply("de.marcphilipp.nexus-publish")
+                repositories {
+                    mavenCentral()
+                    maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
+                }
+            }
+        }
     }
 
     private fun addPublishTasks(project: Project, settings: SonatypeSettings) {
-        project.apply(closureOf<Project> {
+        with(project) {
             apply(plugin = "java")
             apply(plugin = "signing")
 
@@ -118,45 +112,48 @@ class SonatypePlugin : Plugin<Project> {
                     artifact(javadocJar).classifier = "javadoc"
 
                     pom {
-                        addRequiredInformationToPom(pom, project, settings)
+                        addRequiredInformationToPom(project, settings)
                     }
                 }
             }
 
-            tasks[PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME].dependsOn(tasks["signArchives"])
-            tasks[MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME].dependsOn(tasks["signArchives"])
-
             configure<SigningExtension> {
                 sign(the<PublishingExtension>().publications)
+                settings.signingKeyId?.also { extra["signing.keyId"] = it }
+                settings.signingSecretKeyRingFile?.also { extra["signing.secretKeyRingFile"] = it }
+                settings.signingPassword?.also { extra["signing.password"] = it }
             }
-        })
+
+            tasks[PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME].dependsOn(tasks["signMavenPublication"])
+            tasks[MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME].dependsOn(tasks["signMavenPublication"])
+        }
     }
 
-    private fun MavenPublication.addRequiredInformationToPom(pom: MavenPom, project: Project, settings: SonatypeSettings) {
+    private fun MavenPublication.addRequiredInformationToPom(project: Project, settings: SonatypeSettings) {
         pom.apply {
-            description.set("Java DSL for (online) deduplication")
+            description.set(requireNotNull(settings.description) { "sonatype.description not set" })
             name.set("${project.group}:${project.name}")
             url.set(settings.repoUrl)
             organization {
-                it.name.set("bakdata.com")
-                it.url.set("https://github.com/bakdata")
+                name.set("bakdata.com")
+                url.set("https://github.com/bakdata")
             }
             issueManagement {
-                it.system.set("GitHub")
-                it.url.set("${settings.repoUrl}/issues")
+                system.set("GitHub")
+                url.set("${settings.repoUrl}/issues")
             }
             licenses {
-                it.license {
+                license {
                     name.set("MIT License")
                     url.set("${settings.repoUrl}/blob/master/LICENSE")
                 }
             }
             scm {
-                it.connection.set("scm:git:${settings.repoName.replace("^https?".toRegex(), "git")}.git")
-                it.developerConnection.set("scm:git:${settings.repoName.replace("^https?".toRegex(), "ssh")}.git")
-                it.url.set("${settings.repoUrl}")
+                connection.set("scm:git:${settings.repoName.replace("^https?".toRegex(), "git")}.git")
+                developerConnection.set("scm:git:${settings.repoName.replace("^https?".toRegex(), "ssh")}.git")
+                url.set("${settings.repoUrl}")
             }
-            developers(settings.mavenPomDeveloperSpec)
+            developers(requireNotNull(settings.developers) { "sonatype.developers not set" })
         }
     }
 }

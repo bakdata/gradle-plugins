@@ -24,54 +24,58 @@
 
 package com.bakdata.gradle
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
-import org.gradle.testing.jacoco.tasks.JacocoMerge
+//import org.gradle.testing.jacoco.tasks.JacocoMerge
 
 import org.gradle.kotlin.dsl.*
+import org.gradle.testing.jacoco.tasks.JacocoMerge
 import org.sonarqube.gradle.SonarQubeExtension
+import java.io.File
 
 class SonarPlugin : Plugin<Project> {
     override fun apply(rootProject: Project) {
-        rootProject.apply(closureOf<Project> {
-            plugins.apply("base")
-            plugins.apply("org.sonarqube")
-            plugins.apply("jacoco")
+        if(rootProject.parent != null) {
+            throw GradleException("Apply this plugin only to the top-level project.")
+        }
 
-            configure<JacocoPluginExtension> {
-                toolVersion = "0.8.2"
-            }
+        with(rootProject) {
+            plugins.apply("org.sonarqube")
 
             if(subprojects.isEmpty()) {
-                tasks["jacocoTestReport"].dependsOn(tasks["test"])
-                tasks["sonarqube"].dependsOn(tasks["jacocoTestReport"])
+                plugins.apply("java")
+                plugins.apply("jacoco")
+                tasks.named("jacocoTestReport") { dependsOn(tasks.named("test")) }
+                tasks.named("sonarqube") { dependsOn(tasks.named("jacocoTestReport")) }
             }
             else {
                 // setup code coverage in a way that we measure covered code lines across all submodules
                 // thus an API only module gets it's coverage by tests in an implementation module
-                subprojects(closureOf<Project> {
-                    // run tests first
-                    // then jacocoTestReport
-                    tasks["jacocoTestReport"].dependsOn(tasks["test"])
+                allprojects {
+                    plugins.apply("java")
+                    plugins.apply("jacoco")
+                }
 
-                    // then merge all reports
-                    val jacocoMerge by tasks.creating(JacocoMerge::class) {
-                        dependsOn(subprojects.map { it.tasks["jacocoTestReport"] })
-                        executionData(subprojects.map { it.tasks["test"] })
+                // then merge all reports
+                val jacocoMerge by tasks.registering(JacocoMerge::class) {
+                    subprojects.forEach { subproject ->
+                        dependsOn(subproject.tasks["jacocoTestReport"])
+                        executionData(subproject.tasks["test"])
                     }
-
-                    // and finally use that as an input for sonar
-                    tasks["sonarqube"].dependsOn(jacocoMerge)
-                    configure<SonarQubeExtension> {
-                        properties {
-                            it.property("sonar.projectName", rootProject.name)
-                            it.property("sonar.projectKey", "bakdata-${rootProject.name}")
-                            it.property("sonar.jacoco.reportPaths", jacocoMerge.destinationFile)
-                        }
+                }
+                configure<SonarQubeExtension> {
+                    properties {
+                        property("sonar.projectName", rootProject.name)
+                        property("sonar.projectKey", "bakdata-${rootProject.name}")
+                        property("sonar.jacoco.reportPaths", jacocoMerge.get().destinationFile)
                     }
-                })
+                }
+                // and finally use that as an input for sonar
+                tasks.named("sonarqube") { dependsOn(jacocoMerge) }
             }
-        })
+        }
     }
 }
