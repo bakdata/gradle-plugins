@@ -64,8 +64,9 @@ subprojects(closureOf<Project> {
     tasks.withType<Test> {
         testLogging {
             showStandardStreams = true
+            events("passed", "skipped", "failed")
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
-
         useJUnitPlatform()
         systemProperty("java.util.logging.config.file", "src/test/resources/logging.properties")
     }
