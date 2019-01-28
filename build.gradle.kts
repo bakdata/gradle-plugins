@@ -9,7 +9,7 @@ plugins {
     id("org.jetbrains.dokka") version "0.9.17"
     id("signing")
     id("de.marcphilipp.nexus-publish") version "0.1.1"
-    id("com.gradle.plugin-publish") version "0.10.0"
+//    id("com.gradle.plugin-publish") version "0.10.0"
 }
 
 jacoco {
@@ -156,24 +156,24 @@ tasks["sonarqube"].dependsOn(tasks["jacocoTestReport"])
 
 // config for gradle plugin portal
 // doesn't support snapshot, so we add config only if release version
-if(!version.toString().endsWith("-SNAPSHOT")) {
-    configure<com.gradle.publish.PluginBundleExtension> {
-        website = "https://github.com/bakdata/gradle-plugins"
-        vcsUrl = "https://github.com/bakdata/gradle-plugins"
-
-        description = "Greetings from here!"
-
-        (plugins) {
-            subprojects.forEach { project ->
-                "${project.name.capitalize()}Plugin" {
-                    id = "com.bakdata.${project.name}"
-                    displayName = "Bakdata ${project.name} plugin"
-                    description = "Provides basic integration with ${project.name} for (multi-module) projects"
-                }
-            }
-        }
-    }
-}
+//if(!version.toString().endsWith("-SNAPSHOT")) {
+//    configure<com.gradle.publish.PluginBundleExtension> {
+//        website = "https://github.com/bakdata/gradle-plugins"
+//        vcsUrl = "https://github.com/bakdata/gradle-plugins"
+//
+//        description = "Greetings from here!"
+//
+//        (plugins) {
+//            subprojects.forEach { project ->
+//                "${project.name.capitalize()}Plugin" {
+//                    id = "com.bakdata.${project.name}"
+//                    displayName = "Bakdata ${project.name} plugin"
+//                    description = "Provides basic integration with ${project.name} for (multi-module) projects"
+//                }
+//            }
+//        }
+//    }
+//}
 //gradle.taskGraph.whenReady {
 //    if (hasTask(tasks["publishToNexus"]) && System.getenv("CI") == null) {
 //        throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
