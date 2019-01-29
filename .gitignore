@@ -3,4 +3,3 @@
 !.travis.yml
 build/
 out/
-secrets.tar

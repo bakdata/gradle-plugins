@@ -168,6 +168,8 @@ tasks {
                 property("sonar.projectName", "${repoName}")
                 property("sonar.projectKey", "bakdata-${repoName}")
                 property("sonar.java.coveragePlugin", "jacoco")
+                property("sonar.host.url", "https://sonarcloud.io")
+                property("sonar.organization", "bakdata")
                 property("sonar.jacoco.reportPaths", jacocoMerge.destinationFile)
             }
         }
