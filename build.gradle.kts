@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+    dependencies {
+        classpath("de.marcphilipp.gradle:nexus-publish-plugin:0.1.1")
+    }
+}
+
 plugins {
     `java-library`
     `kotlin-dsl`
@@ -8,34 +19,34 @@ plugins {
     id("jacoco")
     id("org.jetbrains.dokka") version "0.9.17"
     id("signing")
-    id("de.marcphilipp.nexus-publish") version "0.1.1"
-//    id("com.gradle.plugin-publish") version "0.10.0"
-}
-
-jacoco {
-    toolVersion = "0.8.2"
+//    id("de.marcphilipp.nexus-publish") version "0.1.1"
+    id("com.gradle.plugin-publish") version "0.10.0"
 }
 
 allprojects(closureOf<Project> {
     apply(plugin = "jacoco")
-    apply(plugin = "de.marcphilipp.nexus-publish")
+
+    configure<JacocoPluginExtension> {
+        toolVersion = "0.8.2"
+    }
 
     repositories {
         mavenCentral()
         maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
         maven(url = "https://plugins.gradle.org/m2/")
     }
+
+    group = "com.bakdata.gradle"
 })
 
 
 configure<io.codearte.gradle.nexus.NexusStagingExtension> {
 //    stagingProfileId = "8412378836ed9c"
     packageGroup = "com.bakdata"
-    username = System.getenv("OSSRH_JIRA_USERNAME")
-    password = System.getenv("OSSRH_JIRA_PASSWORD")
+    username = System.getenv("OSSRH_JIRA_USERNAME") ?: project.findProperty("ossrh.username")?.toString()
+    password = System.getenv("OSSRH_JIRA_PASSWORD") ?: project.findProperty("ossrh.password")?.toString()
 }
 
-group = "com.bakdata.gradle"
 val repoName: String by project
 subprojects(closureOf<Project> {
     apply(plugin = "java")
@@ -43,6 +54,8 @@ subprojects(closureOf<Project> {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "signing")
     apply(plugin = "org.gradle.kotlin.kotlin-dsl")
+
+    apply(plugin = "de.marcphilipp.nexus-publish")
 
     configure<org.gradle.kotlin.dsl.plugins.dsl.KotlinDslPluginOptions> {
         experimentalWarning.set(false)
@@ -78,7 +91,7 @@ subprojects(closureOf<Project> {
 
     val sourcesJar by tasks.creating(Jar::class) {
         classifier = "sources"
-        from(sourceSets["main"])
+        from(sourceSets["main"].allSource)
     }
 
     configure<PublishingExtension> {
@@ -143,37 +156,45 @@ tasks {
         executionData(subprojects.map { it.tasks["test"] })
     }
 
-    sonarqube {
-        properties {
-            property("sonar.projectName", "${repoName}")
-            property("sonar.projectKey", "bakdata-${repoName}")
-            property("sonar.jacoco.reportPaths", jacocoMerge.destinationFile)
+    register("publishToNexus") {
+        dependsOn(subprojects.map { it.tasks["publishToNexus"] })
+    }
+
+    named("sonarqube") { dependsOn(jacocoMerge) }
+
+    allprojects {
+        configure<org.sonarqube.gradle.SonarQubeExtension> {
+            properties {
+                property("sonar.projectName", "${repoName}")
+                property("sonar.projectKey", "bakdata-${repoName}")
+                property("sonar.java.coveragePlugin", "jacoco")
+                property("sonar.jacoco.reportPaths", jacocoMerge.destinationFile)
+            }
         }
     }
 }
 
-tasks["sonarqube"].dependsOn(tasks["jacocoTestReport"])
 
 // config for gradle plugin portal
 // doesn't support snapshot, so we add config only if release version
-//if(!version.toString().endsWith("-SNAPSHOT")) {
-//    configure<com.gradle.publish.PluginBundleExtension> {
-//        website = "https://github.com/bakdata/gradle-plugins"
-//        vcsUrl = "https://github.com/bakdata/gradle-plugins"
-//
-//        description = "Greetings from here!"
-//
-//        (plugins) {
-//            subprojects.forEach { project ->
-//                "${project.name.capitalize()}Plugin" {
-//                    id = "com.bakdata.${project.name}"
-//                    displayName = "Bakdata ${project.name} plugin"
-//                    description = "Provides basic integration with ${project.name} for (multi-module) projects"
-//                }
-//            }
-//        }
-//    }
-//}
+if(!version.toString().endsWith("-SNAPSHOT")) {
+    configure<com.gradle.publish.PluginBundleExtension> {
+        website = "https://github.com/bakdata/gradle-plugins"
+        vcsUrl = "https://github.com/bakdata/gradle-plugins"
+
+        description = "Greetings from here!"
+
+        (plugins) {
+            subprojects.forEach { project ->
+                "${project.name.capitalize()}Plugin" {
+                    id = "com.bakdata.${project.name}"
+                    displayName = "Bakdata ${project.name} plugin"
+                    description = "Provides basic integration with ${project.name} for (multi-module) projects"
+                }
+            }
+        }
+    }
+}
 //gradle.taskGraph.whenReady {
 //    if (hasTask(tasks["publishToNexus"]) && System.getenv("CI") == null) {
 //        throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")

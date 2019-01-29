@@ -171,19 +171,19 @@ internal class SonatypePluginIT {
                 configure<de.marcphilipp.gradle.nexus.NexusPublishExtension> {
                     serverUrl.set(java.net.URI("${wiremock.baseUrl()}"))
                 }
-            }
-            configure<com.bakdata.gradle.SonatypeSettings> {
-                disallowLocalRelease = false
-                osshrJiraUsername = "dummy user"
-                osshrJiraPassword = "dummy pw"
-                description = "dummy description"
-                signingKeyId = "72217EAF"
-                signingPassword = "test_password"
-                signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
-                developers {
-                    developer {
-                        name.set("dummy name")
-                        id.set("dummy id")
+                configure<com.bakdata.gradle.SonatypeSettings> {
+                    disallowLocalRelease = false
+                    osshrJiraUsername = "dummy user"
+                    osshrJiraPassword = "dummy pw"
+                    description = "dummy description"
+                    signingKeyId = "72217EAF"
+                    signingPassword = "test_password"
+                    signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
+                    developers {
+                        developer {
+                            name.set("dummy name")
+                            id.set("dummy id")
+                        }
                     }
                 }
             }

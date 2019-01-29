@@ -30,6 +30,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.execution.TaskExecutionGraph
+import org.gradle.api.internal.provider.Providers
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
@@ -39,6 +40,8 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.SigningExtension
+import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty1
 
 class SonatypePlugin : Plugin<Project> {
     override fun apply(rootProject: Project) {
@@ -46,23 +49,26 @@ class SonatypePlugin : Plugin<Project> {
             throw GradleException("Apply this plugin only to the top-level project.")
         }
 
-        val settings = rootProject.extensions.create<SonatypeSettings>("sonatype", rootProject)
-
         with(rootProject) {
+            val rootSettings = extensions.create<SonatypeSettings>("sonatype", rootProject)
+            subprojects {
+                extensions.create<SonatypeSettings>("sonatype", rootProject)
+            }
+
             // lazy execution, so that settings configurations are actually used
             afterEvaluate {
                 configure<NexusStagingExtension> {
                     packageGroup = "com.bakdata"
-                    username = requireNotNull(settings.osshrJiraUsername) { "sonatype.osshrJiraUsername not set" }
-                    password = requireNotNull(settings.osshrJiraPassword) { "sonatype.osshrJiraPassword not set" }
+                    username = requireNotNull(rootSettings.osshrJiraUsername) { "sonatype.osshrJiraUsername not set" }
+                    password = requireNotNull(rootSettings.osshrJiraPassword) { "sonatype.osshrJiraPassword not set" }
                 }
 
                 val projects = if (subprojects.isEmpty()) listOf(rootProject) else subprojects
                 projects.forEach { project ->
-                    addPublishTasks(project, settings)
+                    addPublishTasks(project)
                 }
 
-                if (settings.disallowLocalRelease) {
+                if (rootSettings.disallowLocalRelease) {
                     gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
                         if (hasTask(tasks["publishToNexus"]) && System.getenv("CI") == null) {
                             throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
@@ -90,7 +96,13 @@ class SonatypePlugin : Plugin<Project> {
         }
     }
 
-    private fun addPublishTasks(project: Project, settings: SonatypeSettings) {
+    private tailrec fun <T> Project.getOverriddenSetting(property: KProperty1<SonatypeSettings, T?>): T? =
+            property.get(extensions.getByType(SonatypeSettings::class)) ?: project.parent?.getOverriddenSetting(property)
+
+    private fun <T> Project.getRequiredSetting(property: KProperty1<SonatypeSettings, T?>): T =
+            requireNotNull(project.getOverriddenSetting(property)) { "sonatype.${property.name} not set "}
+
+    private fun addPublishTasks(project: Project) {
         with(project) {
             apply(plugin = "java")
             apply(plugin = "signing")
@@ -112,16 +124,16 @@ class SonatypePlugin : Plugin<Project> {
                     artifact(javadocJar).classifier = "javadoc"
 
                     pom {
-                        addRequiredInformationToPom(project, settings)
+                        addRequiredInformationToPom(project)
                     }
                 }
             }
 
             configure<SigningExtension> {
                 sign(the<PublishingExtension>().publications)
-                settings.signingKeyId?.also { extra["signing.keyId"] = it }
-                settings.signingSecretKeyRingFile?.also { extra["signing.secretKeyRingFile"] = it }
-                settings.signingPassword?.also { extra["signing.password"] = it }
+                extra["signing.keyId"] = project.getRequiredSetting(SonatypeSettings::signingKeyId)
+                extra["signing.password"] = project.getRequiredSetting(SonatypeSettings::signingPassword)
+                extra["signing.secretKeyRingFile"] = project.getRequiredSetting(SonatypeSettings::signingSecretKeyRingFile)
             }
 
             tasks[PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME].dependsOn(tasks["signMavenPublication"])
@@ -129,31 +141,32 @@ class SonatypePlugin : Plugin<Project> {
         }
     }
 
-    private fun MavenPublication.addRequiredInformationToPom(project: Project, settings: SonatypeSettings) {
+    private fun MavenPublication.addRequiredInformationToPom(project: Project) {
         pom.apply {
-            description.set(requireNotNull(settings.description) { "sonatype.description not set" })
+            description.set(Providers.of(project.getRequiredSetting(SonatypeSettings::description)))
             name.set("${project.group}:${project.name}")
-            url.set(settings.repoUrl)
+            val repoUrl = project.getRequiredSetting(SonatypeSettings::repoUrl)
+            url.set(repoUrl)
             organization {
                 name.set("bakdata.com")
                 url.set("https://github.com/bakdata")
             }
             issueManagement {
                 system.set("GitHub")
-                url.set("${settings.repoUrl}/issues")
+                url.set("$repoUrl/issues")
             }
             licenses {
                 license {
                     name.set("MIT License")
-                    url.set("${settings.repoUrl}/blob/master/LICENSE")
+                    url.set("$repoUrl/blob/master/LICENSE")
                 }
             }
             scm {
-                connection.set("scm:git:${settings.repoName.replace("^https?".toRegex(), "git")}.git")
-                developerConnection.set("scm:git:${settings.repoName.replace("^https?".toRegex(), "ssh")}.git")
-                url.set("${settings.repoUrl}")
+                connection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "git")}.git")
+                developerConnection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "ssh")}.git")
+                url.set(repoUrl)
             }
-            developers(requireNotNull(settings.developers) { "sonatype.developers not set" })
+            developers(project.getRequiredSetting(SonatypeSettings::developers))
         }
     }
 }

@@ -70,6 +70,7 @@ class SonarPlugin : Plugin<Project> {
                     properties {
                         property("sonar.projectName", rootProject.name)
                         property("sonar.projectKey", "bakdata-${rootProject.name}")
+                        property("sonar.java.coveragePlugin", "jacoco")
                         property("sonar.jacoco.reportPaths", jacocoMerge.get().destinationFile)
                     }
                 }

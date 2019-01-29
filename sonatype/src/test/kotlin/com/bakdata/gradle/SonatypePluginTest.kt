@@ -134,6 +134,9 @@ internal class SonatypePluginTest {
         fun requiredProperties(): List<KMutableProperty1<SonatypeSettings, out Any?>> =
                 listOf(SonatypeSettings::osshrJiraUsername,
                         SonatypeSettings::osshrJiraPassword,
+                        SonatypeSettings::signingKeyId,
+                        SonatypeSettings::signingPassword,
+                        SonatypeSettings::signingSecretKeyRingFile,
                         SonatypeSettings::description,
                         SonatypeSettings::developers)
     }
@@ -150,7 +153,8 @@ internal class SonatypePluginTest {
                 property.set(this, null)
             }
             project.evaluate()
-        }.satisfies { Assertions.assertThat(it.cause?.message).contains("sonatype.${property.name}") }
+        }.isNotNull()
+                .satisfies { Assertions.assertThat(it.cause?.message).contains("sonatype.${property.name}") }
     }
 }
 
