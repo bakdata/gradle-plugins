@@ -10,7 +10,7 @@ buildscript {
 }
 
 plugins {
-    `java-library`
+    java
     `kotlin-dsl`
     kotlin("jvm") version "1.3.11"
     id("net.researchgate.release") version "2.6.0"
@@ -27,7 +27,7 @@ allprojects(closureOf<Project> {
     apply(plugin = "jacoco")
 
     configure<JacocoPluginExtension> {
-        toolVersion = "0.8.2"
+        toolVersion = "0.8.3"
     }
 
     repositories {
@@ -47,7 +47,6 @@ configure<io.codearte.gradle.nexus.NexusStagingExtension> {
     password = System.getenv("OSSRH_JIRA_PASSWORD") ?: project.findProperty("ossrh.password")?.toString()
 }
 
-val repoName: String by project
 subprojects(closureOf<Project> {
     apply(plugin = "java")
     apply(plugin = "kotlin")
@@ -106,27 +105,27 @@ subprojects(closureOf<Project> {
                 }
 
                 pom {
-                    description.set("sonatype-release is a plugin for easy Maven Central publishing of bakdata OSS projects using Gradle.")
-                    name.set("${project.group}:${project.name}" as String)
-                    url.set("http://github.com/bakdata/${repoName}")
+                    description.set(project.description)
+                    name.set("${project.group}:${project.name}")
+                    url.set("http://github.com/bakdata/${project.name}")
                     organization {
                         name.set("bakdata.com")
                         url.set("https://github.com/bakdata")
                     }
                     issueManagement {
                         system.set("GitHub")
-                        url.set("http://github.com/bakdata/${repoName}/issues")
+                        url.set("http://github.com/bakdata/${project.name}/issues")
                     }
                     licenses {
                         license {
                             name.set("MIT License")
-                            url.set("http://github.com/bakdata/${repoName}/blob/master/LICENSE")
+                            url.set("http://github.com/bakdata/${project.name}/blob/master/LICENSE")
                         }
                     }
                     scm {
-                        connection.set("scm:git:git://github.com/bakdata/${repoName}.git")
-                        developerConnection.set("scm:git:ssh://github.com:bakdata/${repoName}.git")
-                        url.set("https://github.com/bakdata/${repoName}/")
+                        connection.set("scm:git:git://github.com/bakdata/${project.name}.git")
+                        developerConnection.set("scm:git:ssh://github.com:bakdata/${project.name}.git")
+                        url.set("https://github.com/bakdata/${project.name}/")
                     }
                     developers {
                         developer {
@@ -148,11 +147,9 @@ subprojects(closureOf<Project> {
     tasks[MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME].dependsOn(build)
 })
 
-
 tasks {
     val jacocoMerge by creating(JacocoMerge::class) {
         dependsOn(subprojects.map { it.tasks["jacocoTestReport"] })
-
         executionData(subprojects.map { it.tasks["test"] })
     }
 
@@ -160,22 +157,32 @@ tasks {
         dependsOn(subprojects.map { it.tasks["publishToNexus"] })
     }
 
-    named("sonarqube") { dependsOn(jacocoMerge) }
+    val jacocoMergeReport by creating(JacocoReport::class) {
+        dependsOn(jacocoMerge)
+        executionData(files(jacocoMerge.destinationFile))
+        reports.xml.isEnabled = true
+        sourceDirectories.from(subprojects.map { it.sourceSets["main"].allSource })
+        classDirectories.from(subprojects.map { it.sourceSets["main"].output })
+    }
 
     allprojects {
         configure<org.sonarqube.gradle.SonarQubeExtension> {
             properties {
-                property("sonar.projectName", "${repoName}")
-                property("sonar.projectKey", "bakdata-${repoName}")
-                property("sonar.java.coveragePlugin", "jacoco")
-                property("sonar.host.url", "https://sonarcloud.io")
-                property("sonar.organization", "bakdata")
-                property("sonar.jacoco.reportPaths", jacocoMerge.destinationFile)
+//                property("sonar.jacoco.reportPaths", jacocoMergedReport.outputs)
+                property("sonar.coverage.jacoco.xmlReportPaths", jacocoMergeReport.reports.xml.destination)
             }
         }
     }
+
+    named("sonarqube") { dependsOn(jacocoMergeReport) }
+
 }
 
+//configure<org.sonarqube.gradle.SonarQubeExtension> {
+//    properties {
+//        property("sonar.jacoco.reportPaths", subprojects.map { it.tasks["jacocoTestReport"] }.joinToString(','))
+//    }
+//}
 
 // config for gradle plugin portal
 // doesn't support snapshot, so we add config only if release version
@@ -197,6 +204,7 @@ if(!version.toString().endsWith("-SNAPSHOT")) {
         }
     }
 }
+
 //gradle.taskGraph.whenReady {
 //    if (hasTask(tasks["publishToNexus"]) && System.getenv("CI") == null) {
 //        throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")

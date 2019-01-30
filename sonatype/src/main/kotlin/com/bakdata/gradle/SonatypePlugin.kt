@@ -24,7 +24,6 @@
 
 package com.bakdata.gradle
 
-import de.marcphilipp.gradle.nexus.NexusPublishExtension
 import io.codearte.gradle.nexus.NexusStagingExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -32,7 +31,6 @@ import org.gradle.api.Project
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.internal.provider.Providers
 import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.plugins.PublishingPlugin
@@ -40,7 +38,6 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.SigningExtension
-import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 
 class SonatypePlugin : Plugin<Project> {

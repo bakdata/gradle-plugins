@@ -3,9 +3,6 @@ package com.bakdata.gradle
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPomDeveloperSpec
-import java.io.File
-
-import org.gradle.kotlin.dsl.*
 
 open class SonatypeSettings(project: Project) {
      var disallowLocalRelease: Boolean = true

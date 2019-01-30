@@ -24,22 +24,32 @@
 
 package com.bakdata.gradle
 
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatCode
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
+import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.kotlin.dsl.*
+import org.gradle.api.internal.project.DefaultProject
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
 internal class SonarPluginTest {
     fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
 
+    fun Project.evaluate() {
+        (this as DefaultProject).evaluate()
+    }
+
     @Test
     fun testSingleModuleProject() {
         val project = ProjectBuilder.builder().build()
 
-        assertThatCode { project.pluginManager.apply("com.bakdata.sonar") }.doesNotThrowAnyException()
+        Assertions.assertThatCode {
+            project.pluginManager.apply("com.bakdata.sonar")
+            project.evaluate()
+        }.doesNotThrowAnyException()
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(project.tasks)
@@ -55,7 +65,10 @@ internal class SonarPluginTest {
         val child2 = ProjectBuilder.builder().withName("child2").withParent(parent).build()
         val children = listOf(child1, child2)
 
-        assertThatCode { parent.pluginManager.apply("com.bakdata.sonar") }.doesNotThrowAnyException()
+        Assertions.assertThatCode {
+            parent.pluginManager.apply("com.bakdata.sonar")
+            parent.evaluate()
+        }.doesNotThrowAnyException()
 
         SoftAssertions.assertSoftly { softly ->
             children.forEach { child ->

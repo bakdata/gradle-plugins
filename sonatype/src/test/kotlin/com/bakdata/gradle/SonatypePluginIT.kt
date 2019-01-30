@@ -26,6 +26,9 @@ package com.bakdata.gradle
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.http.RequestMethod
+import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
 import org.gradle.testkit.runner.BuildTask
@@ -40,9 +43,6 @@ import ru.lanwen.wiremock.ext.WiremockResolver.Wiremock
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
-import com.github.tomakehurst.wiremock.http.RequestMethod
-import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
-import org.assertj.core.api.Assertions.assertThat
 
 
 @ExtendWith(TempDirectory::class, WiremockResolver::class)

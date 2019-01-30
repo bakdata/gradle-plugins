@@ -21,7 +21,6 @@ matrix:
   include:
   - stage: build
     script:
-    - echo "$SONARQUBE_SCANNER_PARAMS"
     - ./gradlew sonarqube
 
   - stage: deploy

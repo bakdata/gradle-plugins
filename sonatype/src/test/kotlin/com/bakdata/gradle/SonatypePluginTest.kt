@@ -23,25 +23,18 @@
  */
 package com.bakdata.gradle
 
-import de.marcphilipp.gradle.nexus.NexusPublishExtension
-import io.codearte.gradle.nexus.NexusStagingExtension
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Condition
-import org.assertj.core.api.SoftAssertions
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.configure
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import java.net.URI
-import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.memberProperties
 
 
 internal class SonatypePluginTest {

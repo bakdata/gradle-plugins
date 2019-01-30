@@ -116,7 +116,7 @@ internal class SonarPluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}")
+                .withArguments("sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}", "--stacktrace")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -125,10 +125,10 @@ internal class SonarPluginIT {
                 softly.assertThat(result.tasks)
                         .haveExactly(1, taskWithPathAndOutcome(":$child:compileTestJava", TaskOutcome.SUCCESS))
                         .haveExactly(1, taskWithPathAndOutcome(":$child:test", TaskOutcome.SUCCESS))
-                        .haveExactly(1, taskWithPathAndOutcome(":$child:jacocoTestReport", TaskOutcome.SUCCESS))
             }
             softly.assertThat(result.tasks)
                     .haveExactly(1, taskWithPathAndOutcome(":jacocoMerge", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":jacocoMergeReport", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":sonarqube", TaskOutcome.SUCCESS))
         }
     }
