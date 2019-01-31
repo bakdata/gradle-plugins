@@ -28,6 +28,7 @@ import io.codearte.gradle.nexus.NexusStagingExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.UnknownTaskException
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -67,14 +68,30 @@ class SonatypePlugin : Plugin<Project> {
                 addPublishTasks(project)
             }
 
-            if (!subprojects.isEmpty()) {
-                tasks.register("publishToNexus") {
-                    dependsOn(subprojects.map { it.tasks.named("publishToNexus") })
-                }
-            }
+            addParentPublishToNexusTasks()
 
             if (!project.getRequiredSetting(SonatypeSettings::disallowLocalRelease)) {
                 disallowPublishTasks()
+            }
+        }
+    }
+
+    /**
+     * Recursively add publishToNexus (if not exists) which depends on the children.
+     */
+    private fun Project.addParentPublishToNexusTasks() {
+        allprojects.forEach { project ->
+            val parent = project.parent
+            if (parent != null) {
+                val provider =
+                        try {
+                            parent.tasks.named("publishToNexus")
+                        } catch (e: UnknownTaskException) {
+                            parent.tasks.register("publishToNexus")
+                        }
+                provider.configure {
+                    dependsOn(project.tasks.named("publishToNexus"))
+                }
             }
         }
     }

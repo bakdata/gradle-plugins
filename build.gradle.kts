@@ -8,6 +8,7 @@ buildscript {
     dependencies {
         classpath("com.bakdata.gradle:sonar:0.9.9-SNAPSHOT")
         classpath("com.bakdata.gradle:sonatype:0.9.9-SNAPSHOT")
+        classpath("com.gradle.publish:plugin-publish-plugin:0.10.0")
     }
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor(0, "seconds")
@@ -15,11 +16,12 @@ buildscript {
 }
 
 plugins {
+    // kotlin stuff
     `kotlin-dsl`
     kotlin("jvm") version "1.3.11"
-    id("net.researchgate.release") version "2.6.0"
     id("org.jetbrains.dokka") version "0.9.17"
-    id("com.gradle.plugin-publish") version "0.10.0"
+    // release
+    id("net.researchgate.release") version "2.6.0"
 }
 
 apply(plugin = "com.bakdata.sonar")
@@ -38,7 +40,6 @@ allprojects {
 }
 
 configure<com.bakdata.gradle.SonatypeSettings> {
-    disallowLocalRelease = false
     description = ""
     developers {
         developer {
@@ -72,18 +73,29 @@ subprojects {
 // config for gradle plugin portal
 // doesn't support snapshot, so we add config only if release version
 if(!version.toString().endsWith("-SNAPSHOT")) {
-    configure<com.gradle.publish.PluginBundleExtension> {
-        website = "https://github.com/bakdata/gradle-plugins"
-        vcsUrl = "https://github.com/bakdata/gradle-plugins"
-
-        description = "Greetings from here!"
-
-        (plugins) {
-            subprojects.forEach { project ->
-                "${project.name.capitalize()}Plugin" {
-                    id = "com.bakdata.${project.name}"
-                    displayName = "Bakdata ${project.name} plugin"
-                    description = "Provides basic integration with ${project.name} for (multi-module) projects"
+    subprojects.forEach { project ->
+        with(project) {
+            apply(plugin = "java-gradle-plugin")
+            apply(plugin = "com.gradle.plugin-publish")
+            project.afterEvaluate {
+                configure<GradlePluginDevelopmentExtension> {
+                    plugins {
+                        create("${project.name.capitalize()}Plugin") {
+                            id = "com.bakdata.${project.name}"
+                            implementationClass = "com.bakdata.gradle.${project.name.capitalize()}Plugin"
+                            description = project.description
+                        }
+                    }
+                }
+                configure<com.gradle.publish.PluginBundleExtension> {
+                    website = "https://github.com/bakdata/gradle-plugins"
+                    vcsUrl = "https://github.com/bakdata/gradle-plugins"
+                    (plugins) {
+                        "${name.capitalize()}Plugin" {
+                            displayName = "Bakdata $name plugin"
+                            tags = listOf("bakdata", name)
+                        }
+                    }
                 }
             }
         }
