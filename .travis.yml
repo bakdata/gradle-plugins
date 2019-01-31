@@ -19,6 +19,7 @@ before_install:
   base64 --decode <<< $GITHUB_DEPLOY_SSH_KEY > .secrets/deploy-key
   base64 --decode <<< $SIGNING_SECRET_KEY_RING > .secrets/pgp-keyring
   export SIGNING_SECRET_KEY_RING_FILE=$(pwd)/.secrets/pgp-keyring
+  md5sum .secrets/deploy-key
 matrix:
   include:
   - stage: build
