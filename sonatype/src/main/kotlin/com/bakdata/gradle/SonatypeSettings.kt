@@ -13,7 +13,7 @@ open class SonatypeSettings(project: Project) {
      var signingPassword: String? = System.getenv("SIGNING_PASSWORD") ?: project.findProperty("signing.password")?.toString()
      var repoName: String = project.name
      var repoUrl: String = "https://github.com/bakdata/${repoName}"
-     var description: String? = null
+     var description: String? = project.description
      var developers: Action<in MavenPomDeveloperSpec>? = null
 
      fun developers(developerSpec: Action<in MavenPomDeveloperSpec>) {

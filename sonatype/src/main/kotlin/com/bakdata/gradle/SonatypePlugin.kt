@@ -38,6 +38,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.SigningExtension
+import java.io.File
 import kotlin.reflect.KProperty1
 
 class SonatypePlugin : Plugin<Project> {
@@ -47,50 +48,79 @@ class SonatypePlugin : Plugin<Project> {
         }
 
         with(rootProject) {
-            val rootSettings = extensions.create<SonatypeSettings>("sonatype", rootProject)
-            subprojects {
+            allprojects {
                 extensions.create<SonatypeSettings>("sonatype", rootProject)
             }
 
             // lazy execution, so that settings configurations are actually used
+            // note that we need to have afterEvaluate before applying the plugins (nexus-staging, nexus-publish),
+            // so we can adjust the respective settings of the used plugins
+            // (they use afterEvaluate to apply their settings in turn which is registered after ours)
             afterEvaluate {
-                configure<NexusStagingExtension> {
-                    packageGroup = "com.bakdata"
-                    username = requireNotNull(rootSettings.osshrJiraUsername) { "sonatype.osshrJiraUsername not set" }
-                    password = requireNotNull(rootSettings.osshrJiraPassword) { "sonatype.osshrJiraPassword not set" }
-                }
-
-                val projects = if (subprojects.isEmpty()) listOf(rootProject) else subprojects
-                projects.forEach { project ->
-                    addPublishTasks(project)
-                }
-
-                if (rootSettings.disallowLocalRelease) {
-                    gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
-                        if (hasTask(tasks["publishToNexus"]) && System.getenv("CI") == null) {
-                            throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
-                        }
-                        if (hasTask(tasks["release"]) && System.getenv("CI") == null) {
-                            throw GradleException("Release is only supported through CI (e.g., Travis)")
-                        }
-                        if (hasTask(tasks["closeAndReleaseRepository"]) && System.getenv("CI") == null) {
-                            throw GradleException("Closing a release is only supported through CI (e.g., Travis)")
-                        }
-                    })
-                }
+                adjustConfiguration()
             }
 
             plugins.apply("base")
             plugins.apply("io.codearte.nexus-staging")
 
-            allprojects {
-                plugins.apply("de.marcphilipp.nexus-publish")
-                repositories {
-                    mavenCentral()
-                    maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
+            getPublishableProjects().forEach { project ->
+                addPublishTasks(project)
+            }
+
+            if (!subprojects.isEmpty()) {
+                tasks.register("publishToNexus") {
+                    dependsOn(subprojects.map { it.tasks.named("publishToNexus") })
+                }
+            }
+
+            if (!project.getRequiredSetting(SonatypeSettings::disallowLocalRelease)) {
+                disallowPublishTasks()
+            }
+        }
+    }
+
+    private fun Project.adjustConfiguration() {
+        configure<NexusStagingExtension> {
+            packageGroup = "com.bakdata"
+            username = project.getRequiredSetting(SonatypeSettings::osshrJiraUsername)
+            password = project.getRequiredSetting(SonatypeSettings::osshrJiraPassword)
+        }
+
+        getPublishableProjects().forEach { project ->
+            with(project) {
+                configure<PublishingExtension> {
+                    publications.named("maven", MavenPublication::class) {
+                        pom {
+                            addRequiredInformationToPom(project)
+                        }
+                    }
+                }
+
+                configure<SigningExtension> {
+                    sign(the<PublishingExtension>().publications)
+                    extra["signing.keyId"] = project.getRequiredSetting(SonatypeSettings::signingKeyId)
+                    extra["signing.password"] = project.getRequiredSetting(SonatypeSettings::signingPassword)
+                    extra["signing.secretKeyRingFile"] = project.getRequiredSetting(SonatypeSettings::signingSecretKeyRingFile)
                 }
             }
         }
+    }
+
+    private fun Project.getPublishableProjects() =
+        allprojects.filter { it.subprojects.isEmpty() || File(it.projectDir, "src/main").exists() }
+
+    private fun Project.disallowPublishTasks() {
+        gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
+            if (hasTask(":publishToNexus") && System.getenv("CI") == null) {
+                throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
+            }
+            if (hasTask(":release") && System.getenv("CI") == null) {
+                throw GradleException("Release is only supported through CI (e.g., Travis)")
+            }
+            if (hasTask(":closeAndReleaseRepository") && System.getenv("CI") == null) {
+                throw GradleException("Closing a release is only supported through CI (e.g., Travis)")
+            }
+        })
     }
 
     private tailrec fun <T> Project.getOverriddenSetting(property: KProperty1<SonatypeSettings, T?>): T? =
@@ -103,10 +133,15 @@ class SonatypePlugin : Plugin<Project> {
         with(project) {
             apply(plugin = "java")
             apply(plugin = "signing")
+            apply(plugin = "de.marcphilipp.nexus-publish")
+
+            repositories {
+                maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
+            }
 
             val javadocJar by tasks.creating(Jar::class) {
                 archiveClassifier.set("javadoc")
-                from(tasks.findByPath("javadoc") ?: tasks.findByPath("dokka"))
+                from(tasks.findByName("javadoc") ?: tasks.findByName("dokka"))
             }
 
             val sourcesJar by tasks.creating(Jar::class) {
@@ -119,22 +154,11 @@ class SonatypePlugin : Plugin<Project> {
                     from(components["java"])
                     artifact(sourcesJar).classifier = "sources"
                     artifact(javadocJar).classifier = "javadoc"
-
-                    pom {
-                        addRequiredInformationToPom(project)
-                    }
                 }
             }
 
-            configure<SigningExtension> {
-                sign(the<PublishingExtension>().publications)
-                extra["signing.keyId"] = project.getRequiredSetting(SonatypeSettings::signingKeyId)
-                extra["signing.password"] = project.getRequiredSetting(SonatypeSettings::signingPassword)
-                extra["signing.secretKeyRingFile"] = project.getRequiredSetting(SonatypeSettings::signingSecretKeyRingFile)
-            }
-
-            tasks[PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME].dependsOn(tasks["signMavenPublication"])
-            tasks[MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME].dependsOn(tasks["signMavenPublication"])
+            tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.named("signMavenPublication")) }
+            tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME) { dependsOn(tasks.named("signMavenPublication")) }
         }
     }
 
