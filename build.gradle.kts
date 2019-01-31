@@ -10,7 +10,6 @@ buildscript {
 }
 
 plugins {
-    java
     `kotlin-dsl`
     kotlin("jvm") version "1.3.11"
     id("net.researchgate.release") version "2.6.0"
@@ -148,33 +147,23 @@ subprojects(closureOf<Project> {
 })
 
 tasks {
-    val jacocoMerge by creating(JacocoMerge::class) {
-        dependsOn(subprojects.map { it.tasks["jacocoTestReport"] })
-        executionData(subprojects.map { it.tasks["test"] })
-    }
-
     register("publishToNexus") {
         dependsOn(subprojects.map { it.tasks["publishToNexus"] })
     }
 
-    val jacocoMergeReport by creating(JacocoReport::class) {
-        dependsOn(jacocoMerge)
-        executionData(files(jacocoMerge.destinationFile))
-        reports.xml.isEnabled = true
-        sourceDirectories.from(subprojects.map { it.sourceSets["main"].allSource })
-        classDirectories.from(subprojects.map { it.sourceSets["main"].output })
-    }
-
     allprojects {
-        configure<org.sonarqube.gradle.SonarQubeExtension> {
-            properties {
-//                property("sonar.jacoco.reportPaths", jacocoMergedReport.outputs)
-                property("sonar.coverage.jacoco.xmlReportPaths", jacocoMergeReport.reports.xml.destination)
-            }
+        tasks.withType<JacocoReport> {
+            reports.xml.isEnabled = true
         }
     }
 
-    named("sonarqube") { dependsOn(jacocoMergeReport) }
+    configure<org.sonarqube.gradle.SonarQubeExtension> {
+        properties {
+            property("sonar.coverage.jacoco.xmlReportPaths", allprojects.flatMap { it.tasks.withType<JacocoReport>().map { it.reports.xml.destination } })
+        }
+    }
+
+    named("sonarqube") { dependsOn(allprojects.flatMap { it.tasks.withType<JacocoReport>() }) }
 
 }
 

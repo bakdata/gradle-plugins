@@ -80,7 +80,7 @@ internal class SonarPluginTest {
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(parent.tasks)
-                    .haveExactly(1, taskWithName("jacocoMerge"))
+                    .haveExactly(0, taskWithName("jacocoTestReport"))
                     .haveExactly(1, taskWithName("sonarqube"))
         }
     }

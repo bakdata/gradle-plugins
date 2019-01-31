@@ -162,27 +162,29 @@ internal class SonatypePluginIT {
             plugins {
                 id("com.bakdata.sonatype")
             }
-            configure<com.bakdata.gradle.SonatypeSettings> {
-                disallowLocalRelease = false
-                osshrJiraUsername = "dummy user"
-                osshrJiraPassword = "dummy pw"
-                description = "dummy description"
-                signingKeyId = "72217EAF"
-                signingPassword = "test_password"
-                signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
-                developers {
-                    developer {
-                        name.set("dummy name")
-                        id.set("dummy id")
-                    }
-                }
-            }
-            configure<io.codearte.gradle.nexus.NexusStagingExtension> {
-                serverUrl = "${wiremock.baseUrl()}"
-            }
             allprojects {
                 version = "$TEST_VERSION"
                 group = "$TEST_GROUP"
+
+                configure<com.bakdata.gradle.SonatypeSettings> {
+                    disallowLocalRelease = false
+                    osshrJiraUsername = "dummy user"
+                    osshrJiraPassword = "dummy pw"
+                    description = "dummy description"
+                    signingKeyId = "72217EAF"
+                    signingPassword = "test_password"
+                    signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
+                    developers {
+                        developer {
+                            name.set("dummy name")
+                            id.set("dummy id")
+                        }
+                    }
+                }
+            }
+            // for IT
+            configure<io.codearte.gradle.nexus.NexusStagingExtension> {
+                serverUrl = "${wiremock.baseUrl()}"
             }
             subprojects {
                 configure<de.marcphilipp.gradle.nexus.NexusPublishExtension> {

@@ -29,68 +29,50 @@ package com.bakdata.gradle
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.kotlin.dsl.*
-import org.gradle.testing.jacoco.tasks.JacocoMerge
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.withType
+import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
-import org.sonarqube.gradle.SonarQubeExtension
+import java.io.File
 
 class SonarPlugin : Plugin<Project> {
+
+    private fun Project.getCodeProjects() =
+            allprojects.filter { it.subprojects.isEmpty() || File(it.projectDir, "src/main").exists() }
+
     override fun apply(rootProject: Project) {
         if(rootProject.parent != null) {
             throw GradleException("Apply this plugin only to the top-level project.")
         }
 
         with(rootProject) {
-            plugins.apply("org.sonarqube")
+            apply(plugin = "org.sonarqube")
 
-            if(subprojects.isEmpty()) {
-                plugins.apply("java")
-                plugins.apply("jacoco")
-                tasks.named("jacocoTestReport", JacocoReport::class) {
-                    reports.xml.isEnabled = true
-                    dependsOn(tasks.named("test"))
-                }
-                tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>()) }
+            getCodeProjects().forEach { project ->
+                project.apply(plugin = "java")
+                project.apply(plugin = "jacoco")
 
-                configure<SonarQubeExtension> {
-                    properties {
-                        property("sonar.coverage.jacoco.xmlReportPaths", tasks.withType<JacocoReport>().map { it.reports.xml.destination })
-                    }
+                project.configure<JacocoPluginExtension> {
+                    // smaller versions won't work with kotlin properly
+                    toolVersion = "0.8.3"
                 }
             }
-            else {
-                // setup code coverage in a way that we measure covered code lines across all submodules
-                // thus an API only module gets it's coverage by tests in an implementation module
-                allprojects {
-                    plugins.apply("java")
-                    plugins.apply("jacoco")
-                }
 
-                // then merge all reports
-                val jacocoMerge by tasks.registering(JacocoMerge::class) {
-                    subprojects.forEach { subproject ->
-                        dependsOn(subproject.tasks["test"])
-                        executionData(subproject.tasks["test"])
-                    }
-                }
-
-                val jacocoMergeReport by tasks.registering(JacocoReport::class) {
-                    dependsOn(jacocoMerge)
-                    executionData(files(jacocoMerge.get().destinationFile))
+            allprojects {
+                tasks.withType<JacocoReport> {
                     reports.xml.isEnabled = true
-                    sourceDirectories.from(subprojects.map { it.the<SourceSetContainer>()["main"].allSource })
-                    classDirectories.from(subprojects.map { it.the<SourceSetContainer>()["main"].output })
                 }
-
-                configure<SonarQubeExtension> {
-                    properties {
-                        property("sonar.coverage.jacoco.xmlReportPaths", jacocoMergeReport.get().reports.xml.destination)
-                    }
-                }
-                // and finally use that as an input for sonar
-                tasks.named("sonarqube") { dependsOn(jacocoMergeReport) }
             }
+
+            // using a newer feature of sonarqube to use the xml reports which also makes it language-agnostic
+            configure<org.sonarqube.gradle.SonarQubeExtension> {
+                properties {
+                    property("sonar.coverage.jacoco.xmlReportPaths", allprojects.flatMap { it.tasks.withType<JacocoReport>() }.map { it.reports.xml.destination })
+                }
+            }
+
+            tasks.named("sonarqube") { dependsOn(allprojects.flatMap { it.tasks.withType<JacocoReport>() }) }
         }
     }
 }
