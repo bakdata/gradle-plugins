@@ -29,6 +29,7 @@ package com.bakdata.gradle
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
@@ -52,6 +53,17 @@ class SonarPlugin : Plugin<Project> {
             getCodeProjects().forEach { project ->
                 project.apply(plugin = "java")
                 project.apply(plugin = "jacoco")
+
+                project.tasks.withType<Test> {
+                    testLogging {
+                        showStandardStreams = true
+
+                        events("passed", "skipped", "failed")
+                        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+                    }
+                    useJUnitPlatform()
+                    systemProperty("java.util.logging.config.file", "src/test/resources/logging.properties")
+                }
 
                 project.configure<JacocoPluginExtension> {
                     // smaller versions won't work with kotlin properly

@@ -29,7 +29,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.execution.TaskExecutionGraph
-import org.gradle.api.internal.provider.Providers
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
@@ -37,6 +36,7 @@ import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
+import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import java.io.File
 import kotlin.reflect.KProperty1
@@ -82,14 +82,14 @@ class SonatypePlugin : Plugin<Project> {
     private fun Project.adjustConfiguration() {
         configure<NexusStagingExtension> {
             packageGroup = "com.bakdata"
-            username = project.getRequiredSetting(SonatypeSettings::osshrJiraUsername)
-            password = project.getRequiredSetting(SonatypeSettings::osshrJiraPassword)
+            username = project.getRequiredSetting(SonatypeSettings::osshrUsername)
+            password = project.getRequiredSetting(SonatypeSettings::osshrPassword)
         }
 
         getPublishableProjects().forEach { project ->
             with(project) {
                 configure<PublishingExtension> {
-                    publications.named("maven", MavenPublication::class) {
+                    publications.withType<MavenPublication> {
                         pom {
                             addRequiredInformationToPom(project)
                         }
@@ -97,7 +97,6 @@ class SonatypePlugin : Plugin<Project> {
                 }
 
                 configure<SigningExtension> {
-                    sign(the<PublishingExtension>().publications)
                     extra["signing.keyId"] = project.getRequiredSetting(SonatypeSettings::signingKeyId)
                     extra["signing.password"] = project.getRequiredSetting(SonatypeSettings::signingPassword)
                     extra["signing.secretKeyRingFile"] = project.getRequiredSetting(SonatypeSettings::signingSecretKeyRingFile)
@@ -150,21 +149,24 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             configure<PublishingExtension> {
-                publications.create<MavenPublication>("maven") {
+                publications.create<MavenPublication>("pluginMaven") {
                     from(components["java"])
                     artifact(sourcesJar).classifier = "sources"
                     artifact(javadocJar).classifier = "javadoc"
                 }
             }
 
-            tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.named("signMavenPublication")) }
-            tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME) { dependsOn(tasks.named("signMavenPublication")) }
+            configure<SigningExtension> {
+                sign(the<PublishingExtension>().publications)
+            }
+            tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
+            tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
         }
     }
 
     private fun MavenPublication.addRequiredInformationToPom(project: Project) {
         pom.apply {
-            description.set(Providers.of(project.getRequiredSetting(SonatypeSettings::description)))
+            description.set(project.getOverriddenSetting(SonatypeSettings::description))
             name.set("${project.group}:${project.name}")
             val repoUrl = project.getRequiredSetting(SonatypeSettings::repoUrl)
             url.set(repoUrl)

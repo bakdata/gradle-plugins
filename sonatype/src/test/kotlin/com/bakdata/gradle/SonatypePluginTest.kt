@@ -40,8 +40,8 @@ import kotlin.reflect.KMutableProperty1
 internal class SonatypePluginTest {
     fun Project.configureTestSettings() {
         configure<SonatypeSettings> {
-            osshrJiraUsername = "dummy user"
-            osshrJiraPassword = "dummy pw"
+            osshrUsername = "dummy user"
+            osshrPassword = "dummy pw"
             description = "dummy description"
             signingKeyId = "dummy signing key"
             signingPassword = "dummy signing password"
@@ -73,7 +73,7 @@ internal class SonatypePluginTest {
 
         assertSoftly { softly ->
             softly.assertThat(project.tasks)
-                    .haveExactly(1, taskWithName("signMavenPublication"))
+                    .haveExactly(1, taskWithName("signPluginMavenPublication"))
                     .haveExactly(1, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
                     .haveExactly(1, taskWithName("closeAndReleaseRepository"))
@@ -96,7 +96,7 @@ internal class SonatypePluginTest {
         assertSoftly { softly ->
             children.forEach { child ->
                 softly.assertThat(child.tasks)
-                        .haveExactly(1, taskWithName("signMavenPublication"))
+                        .haveExactly(1, taskWithName("signPluginMavenPublication"))
                         .haveExactly(1, taskWithName("publish"))
                         .haveExactly(1, taskWithName("publishToNexus"))
                         .haveExactly(0, taskWithName("closeAndReleaseRepository"))
@@ -105,7 +105,7 @@ internal class SonatypePluginTest {
 
         assertSoftly { softly ->
             softly.assertThat(parent.tasks)
-                    .haveExactly(0, taskWithName("signMavenPublication"))
+                    .haveExactly(0, taskWithName("signPluginMavenPublication"))
                     .haveExactly(0, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
                     .haveExactly(1, taskWithName("closeAndReleaseRepository"))
@@ -125,12 +125,12 @@ internal class SonatypePluginTest {
         @Suppress("unused")
         @JvmStatic
         fun requiredProperties(): List<KMutableProperty1<SonatypeSettings, out Any?>> =
-                listOf(SonatypeSettings::osshrJiraUsername,
-                        SonatypeSettings::osshrJiraPassword,
+                listOf(SonatypeSettings::osshrUsername,
+                        SonatypeSettings::osshrPassword,
                         SonatypeSettings::signingKeyId,
                         SonatypeSettings::signingPassword,
                         SonatypeSettings::signingSecretKeyRingFile,
-                        SonatypeSettings::description,
+//                        SonatypeSettings::description,
                         SonatypeSettings::developers)
     }
 

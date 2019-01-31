@@ -81,8 +81,8 @@ internal class SonatypePluginIT {
             }
             configure<com.bakdata.gradle.SonatypeSettings> {
                 disallowLocalRelease = false
-                osshrJiraUsername = "dummy user"
-                osshrJiraPassword = "dummy pw"
+                osshrUsername = "dummy user"
+                osshrPassword = "dummy pw"
                 description = "dummy description"
                 signingKeyId = "72217EAF"
                 signingPassword = "test_password"
@@ -110,11 +110,8 @@ internal class SonatypePluginIT {
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(result.tasks)
-                    .haveExactly(1, taskWithPathAndOutcome(":jar", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":javadocJar", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":sourcesJar", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":signMavenPublication", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":publishMavenPublicationToNexusRepository", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":signPluginMavenPublication", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":publishPluginMavenPublicationToNexusRepository", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
         }
 
@@ -168,8 +165,8 @@ internal class SonatypePluginIT {
 
                 configure<com.bakdata.gradle.SonatypeSettings> {
                     disallowLocalRelease = false
-                    osshrJiraUsername = "dummy user"
-                    osshrJiraPassword = "dummy pw"
+                    osshrUsername = "dummy user"
+                    osshrPassword = "dummy pw"
                     description = "dummy description"
                     signingKeyId = "72217EAF"
                     signingPassword = "test_password"
@@ -213,18 +210,12 @@ internal class SonatypePluginIT {
         SoftAssertions.assertSoftly { softly ->
             children.forEach { child ->
                 softly.assertThat(result.tasks)
-                        .haveExactly(1, taskWithPathAndOutcome(":$child:jar", TaskOutcome.SUCCESS))
-                        .haveExactly(1, taskWithPathAndOutcome(":$child:javadocJar", TaskOutcome.SUCCESS))
-                        .haveExactly(1, taskWithPathAndOutcome(":$child:sourcesJar", TaskOutcome.SUCCESS))
-                        .haveExactly(1, taskWithPathAndOutcome(":$child:signMavenPublication", TaskOutcome.SUCCESS))
-                        .haveExactly(1, taskWithPathAndOutcome(":$child:publishMavenPublicationToNexusRepository", TaskOutcome.SUCCESS))
+                        .haveExactly(1, taskWithPathAndOutcome(":$child:signPluginMavenPublication", TaskOutcome.SUCCESS))
+                        .haveExactly(1, taskWithPathAndOutcome(":$child:publishPluginMavenPublicationToNexusRepository", TaskOutcome.SUCCESS))
             }
             softly.assertThat(result.tasks)
-                    .haveExactly(0, taskWithPathAndOutcome(":jar", TaskOutcome.SUCCESS))
-                    .haveExactly(0, taskWithPathAndOutcome(":javadocJar", TaskOutcome.SUCCESS))
-                    .haveExactly(0, taskWithPathAndOutcome(":sourcesJar", TaskOutcome.SUCCESS))
-                    .haveExactly(0, taskWithPathAndOutcome(":signMavenPublication", TaskOutcome.SUCCESS))
-                    .haveExactly(0, taskWithPathAndOutcome(":publishMavenPublicationToNexusRepository", TaskOutcome.SUCCESS))
+                    .haveExactly(0, taskWithPathAndOutcome(":signPluginMavenPublication", TaskOutcome.SUCCESS))
+                    .haveExactly(0, taskWithPathAndOutcome(":publishPluginMavenPublicationToNexusRepository", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
         }
 
