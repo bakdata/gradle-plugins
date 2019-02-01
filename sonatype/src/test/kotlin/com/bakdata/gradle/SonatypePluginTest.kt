@@ -38,23 +38,6 @@ import kotlin.reflect.KMutableProperty1
 
 
 internal class SonatypePluginTest {
-    fun Project.configureTestSettings() {
-        configure<SonatypeSettings> {
-            osshrUsername = "dummy user"
-            osshrPassword = "dummy pw"
-            description = "dummy description"
-            signingKeyId = "dummy signing key"
-            signingPassword = "dummy signing password"
-            signingSecretKeyRingFile = "dummy signing key file"
-            developers {
-                developer {
-                    name.set("dummy name")
-                    id.set("dummy id")
-                }
-            }
-        }
-    }
-
     fun Project.evaluate() {
         (this as DefaultProject).evaluate()
     }
@@ -67,7 +50,6 @@ internal class SonatypePluginTest {
 
         Assertions.assertThatCode {
             project.pluginManager.apply("com.bakdata.sonatype")
-            project.configureTestSettings()
             project.evaluate()
         }.doesNotThrowAnyException()
 
@@ -89,8 +71,8 @@ internal class SonatypePluginTest {
 
         Assertions.assertThatCode {
             parent.pluginManager.apply("com.bakdata.sonatype")
-            parent.configureTestSettings()
             parent.evaluate()
+            children.forEach { it.evaluate() }
         }.doesNotThrowAnyException()
 
         assertSoftly { softly ->
@@ -121,33 +103,5 @@ internal class SonatypePluginTest {
                 .satisfies { Assertions.assertThat(it.cause?.message).contains("top-level project") }
     }
 
-    companion object {
-        @Suppress("unused")
-        @JvmStatic
-        fun requiredProperties(): List<KMutableProperty1<SonatypeSettings, out Any?>> =
-                listOf(SonatypeSettings::osshrUsername,
-                        SonatypeSettings::osshrPassword,
-                        SonatypeSettings::signingKeyId,
-                        SonatypeSettings::signingPassword,
-                        SonatypeSettings::signingSecretKeyRingFile,
-//                        SonatypeSettings::description,
-                        SonatypeSettings::developers)
-    }
-
-    @ParameterizedTest
-    @MethodSource("requiredProperties")
-    fun failsWhenMissingRequiredInformation(property: KMutableProperty1<SonatypeSettings, Any?>) {
-        val project = ProjectBuilder.builder().build()
-
-        Assertions.assertThatCode {
-            project.pluginManager.apply("com.bakdata.sonatype")
-            project.configureTestSettings()
-            project.configure<SonatypeSettings> {
-                property.set(this, null)
-            }
-            project.evaluate()
-        }.isNotNull()
-                .satisfies { Assertions.assertThat(it.cause?.message).contains("sonatype.${property.name}") }
-    }
 }
 

@@ -24,15 +24,17 @@
 
 package com.bakdata.gradle
 
+import de.marcphilipp.gradle.nexus.InitializeNexusStagingRepository
 import io.codearte.gradle.nexus.NexusStagingExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.UnknownTaskException
-import org.gradle.api.execution.TaskExecutionGraph
+import org.gradle.api.internal.artifacts.ivyservice.projectmodule.ProjectComponentPublication
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
+import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
@@ -40,6 +42,7 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import java.io.File
+import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 
 class SonatypePlugin : Plugin<Project> {
@@ -70,7 +73,7 @@ class SonatypePlugin : Plugin<Project> {
 
             addParentPublishToNexusTasks()
 
-            if (!project.getRequiredSetting(SonatypeSettings::disallowLocalRelease)) {
+            if (!project.getOverriddenSetting(SonatypeSettings::disallowLocalRelease)!!) {
                 disallowPublishTasks()
             }
         }
@@ -97,36 +100,63 @@ class SonatypePlugin : Plugin<Project> {
     }
 
     private fun Project.adjustConfiguration() {
-        configure<NexusStagingExtension> {
+        // first try to set all settings, even if not given (yet)
+        project.configure<NexusStagingExtension> {
             packageGroup = "com.bakdata"
-            username = project.getRequiredSetting(SonatypeSettings::osshrUsername)
-            password = project.getRequiredSetting(SonatypeSettings::osshrPassword)
+            username = getOverriddenSetting(SonatypeSettings::osshrUsername)
+            password = getOverriddenSetting(SonatypeSettings::osshrPassword)
         }
 
-        getPublishableProjects().forEach { project ->
-            with(project) {
-                configure<PublishingExtension> {
+        allprojects {
+            signExtras.forEach { (key, property) ->
+                extra[key] = getOverriddenSetting(property)
+            }
+        }
+
+        // verify that stuff is really set
+        gradle.taskGraph.whenReady {
+            val missingProps = mutableSetOf<KProperty1<SonatypeSettings, Any?>>()
+            this.allTasks.filter { it is Sign }.forEach {
+                missingProps += signExtras
+                        .filter { (key, _) -> !it.project.extra.has(key) }
+                        .map { it.value }
+            }
+
+            if(this.allTasks.any { it is AbstractPublishToMaven }) {
+                project.configure<NexusStagingExtension> {
+                    if(username == null) {
+                        missingProps.add(SonatypeSettings::osshrUsername)
+                    }
+                    if(password == null) {
+                        missingProps.add(SonatypeSettings::osshrPassword)
+                    }
+                }
+            }
+
+            this.allTasks.filter { it is InitializeNexusStagingRepository }.forEach {
+                it.project.configure<PublishingExtension> {
                     publications.withType<MavenPublication> {
                         pom {
-                            addRequiredInformationToPom(project)
+                            addRequiredInformationToPom(it.project)
                         }
                     }
                 }
+            }
 
-                configure<SigningExtension> {
-                    extra["signing.keyId"] = project.getRequiredSetting(SonatypeSettings::signingKeyId)
-                    extra["signing.password"] = project.getRequiredSetting(SonatypeSettings::signingPassword)
-                    extra["signing.secretKeyRingFile"] = project.getRequiredSetting(SonatypeSettings::signingSecretKeyRingFile)
-                }
+            if(missingProps.isNotEmpty()) {
+                throw GradleException("Missing the following configurations ${missingProps.map { "sonatype.${it.name}" }}")
             }
         }
     }
+
+    private tailrec fun <T> Project.getOverriddenSetting(property: KProperty1<SonatypeSettings, T?>): T? =
+            property.get(extensions.getByType(SonatypeSettings::class)) ?: project.parent?.getOverriddenSetting(property)
 
     private fun Project.getPublishableProjects() =
         allprojects.filter { it.subprojects.isEmpty() || File(it.projectDir, "src/main").exists() }
 
     private fun Project.disallowPublishTasks() {
-        gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
+        gradle.taskGraph.whenReady {
             if (hasTask(":publishToNexus") && System.getenv("CI") == null) {
                 throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
             }
@@ -136,14 +166,9 @@ class SonatypePlugin : Plugin<Project> {
             if (hasTask(":closeAndReleaseRepository") && System.getenv("CI") == null) {
                 throw GradleException("Closing a release is only supported through CI (e.g., Travis)")
             }
-        })
+        }
     }
 
-    private tailrec fun <T> Project.getOverriddenSetting(property: KProperty1<SonatypeSettings, T?>): T? =
-            property.get(extensions.getByType(SonatypeSettings::class)) ?: project.parent?.getOverriddenSetting(property)
-
-    private fun <T> Project.getRequiredSetting(property: KProperty1<SonatypeSettings, T?>): T =
-            requireNotNull(project.getOverriddenSetting(property)) { "sonatype.${property.name} not set "}
 
     private fun addPublishTasks(project: Project) {
         with(project) {
@@ -165,27 +190,45 @@ class SonatypePlugin : Plugin<Project> {
                 from(project.the<SourceSetContainer>()["main"].allSource)
             }
 
-            configure<PublishingExtension> {
-                publications.create<MavenPublication>("pluginMaven") {
-                    from(components["java"])
-                    artifact(sourcesJar).classifier = "sources"
-                    artifact(javadocJar).classifier = "javadoc"
+            // java plugin already creates a MavenPublication, we try to extend it instead of creating a new one to avoid duplicate uploads.
+            afterEvaluate {
+                configure<PublishingExtension> {
+                    with(publications.maybeCreate<MavenPublication>("pluginMaven")) {
+                        if (this is ProjectComponentPublication && this.component == null) {
+                            from(components["java"])
+                        }
+                        artifact(sourcesJar).classifier = "sources"
+                        artifact(javadocJar).classifier = "javadoc"
+                    }
                 }
-            }
 
-            configure<SigningExtension> {
-                sign(the<PublishingExtension>().publications)
+                configure<SigningExtension> {
+                    sign(the<PublishingExtension>().publications)
+                }
+                tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
+                tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
             }
-            tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
-            tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
         }
     }
 
-    private fun MavenPublication.addRequiredInformationToPom(project: Project) {
+    private fun MavenPublication.addRequiredInformationToPom(project: Project): List<KMutableProperty1<SonatypeSettings, out Any?>> {
+        val repoUrl = project.getOverriddenSetting(SonatypeSettings::repoUrl)
+        val projectDescription = project.getOverriddenSetting(SonatypeSettings::description)
+        val developers = project.getOverriddenSetting(SonatypeSettings::developers)
+
+        val emptySettings = mapOf<Any?, KMutableProperty1<SonatypeSettings, *>>(
+                repoUrl to SonatypeSettings::repoUrl,
+                projectDescription to SonatypeSettings::description,
+                developers to (SonatypeSettings::developers))
+                .filter { (key, _) -> key ==null }
+                .map { it.value }
+        if(emptySettings.isNotEmpty()) {
+            return emptySettings
+        }
+
         pom.apply {
-            description.set(project.getOverriddenSetting(SonatypeSettings::description))
+            description.set(projectDescription)
             name.set("${project.group}:${project.name}")
-            val repoUrl = project.getRequiredSetting(SonatypeSettings::repoUrl)
             url.set(repoUrl)
             organization {
                 name.set("bakdata.com")
@@ -202,11 +245,19 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
             scm {
-                connection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "git")}.git")
+                connection.set("scm:git:${repoUrl!!.replace("^https?".toRegex(), "git")}.git")
                 developerConnection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "ssh")}.git")
                 url.set(repoUrl)
             }
-            developers(project.getRequiredSetting(SonatypeSettings::developers))
+            developers(developers)
         }
+
+        return listOf()
+    }
+
+    companion object {
+        private val signExtras = mapOf("signing.keyId" to SonatypeSettings::signingKeyId,
+                "signing.password" to SonatypeSettings::signingPassword,
+                "signing.secretKeyRingFile" to SonatypeSettings::signingSecretKeyRingFile)
     }
 }
