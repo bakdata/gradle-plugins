@@ -30,7 +30,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.UnknownTaskException
-import org.gradle.api.internal.artifacts.ivyservice.projectmodule.ProjectComponentPublication
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
@@ -113,7 +112,8 @@ class SonatypePlugin : Plugin<Project> {
             }
         }
 
-        // verify that stuff is really set
+        // verify that settings are really present when needed
+        // note that we test the affected settings to allow users of the plugin to provide the values natively (e.g., directly on the used plugins)
         gradle.taskGraph.whenReady {
             val missingProps = mutableSetOf<KProperty1<SonatypeSettings, Any?>>()
             this.allTasks.filter { it is Sign }.forEach {
@@ -191,23 +191,19 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             // java plugin already creates a MavenPublication, we try to extend it instead of creating a new one to avoid duplicate uploads.
-            afterEvaluate {
-                configure<PublishingExtension> {
-                    with(publications.maybeCreate<MavenPublication>("pluginMaven")) {
-                        if (this is ProjectComponentPublication && this.component == null) {
-                            from(components["java"])
-                        }
-                        artifact(sourcesJar).classifier = "sources"
-                        artifact(javadocJar).classifier = "javadoc"
-                    }
+            configure<PublishingExtension> {
+               publications.create<MavenPublication>("sonatype") {
+                    from(components["java"])
+                    artifact(sourcesJar).classifier = "sources"
+                    artifact(javadocJar).classifier = "javadoc"
                 }
-
-                configure<SigningExtension> {
-                    sign(the<PublishingExtension>().publications)
-                }
-                tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
-                tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
             }
+
+            configure<SigningExtension> {
+                sign(the<PublishingExtension>().publications)
+            }
+            tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
+            tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
         }
     }
 

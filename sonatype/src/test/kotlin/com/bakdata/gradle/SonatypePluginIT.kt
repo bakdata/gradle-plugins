@@ -110,8 +110,8 @@ internal class SonatypePluginIT {
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(result.tasks)
-                    .haveExactly(1, taskWithPathAndOutcome(":signPluginMavenPublication", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":publishPluginMavenPublicationToNexusRepository", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
         }
 
@@ -210,12 +210,12 @@ internal class SonatypePluginIT {
         SoftAssertions.assertSoftly { softly ->
             children.forEach { child ->
                 softly.assertThat(result.tasks)
-                        .haveExactly(1, taskWithPathAndOutcome(":$child:signPluginMavenPublication", TaskOutcome.SUCCESS))
-                        .haveExactly(1, taskWithPathAndOutcome(":$child:publishPluginMavenPublicationToNexusRepository", TaskOutcome.SUCCESS))
+                        .haveExactly(1, taskWithPathAndOutcome(":$child:signSonatypePublication", TaskOutcome.SUCCESS))
+                        .haveExactly(1, taskWithPathAndOutcome(":$child:publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
             }
             softly.assertThat(result.tasks)
-                    .haveExactly(0, taskWithPathAndOutcome(":signPluginMavenPublication", TaskOutcome.SUCCESS))
-                    .haveExactly(0, taskWithPathAndOutcome(":publishPluginMavenPublicationToNexusRepository", TaskOutcome.SUCCESS))
+                    .haveExactly(0, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
+                    .haveExactly(0, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
         }
 

@@ -29,12 +29,9 @@ import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
-import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.apply
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
-import kotlin.reflect.KMutableProperty1
 
 
 internal class SonatypePluginTest {
@@ -49,13 +46,13 @@ internal class SonatypePluginTest {
         val project = ProjectBuilder.builder().build()
 
         Assertions.assertThatCode {
-            project.pluginManager.apply("com.bakdata.sonatype")
+            project.apply(plugin = "com.bakdata.sonatype")
             project.evaluate()
         }.doesNotThrowAnyException()
 
         assertSoftly { softly ->
             softly.assertThat(project.tasks)
-                    .haveExactly(1, taskWithName("signPluginMavenPublication"))
+                    .haveExactly(1, taskWithName("signSonatypePublication"))
                     .haveExactly(1, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
                     .haveExactly(1, taskWithName("closeAndReleaseRepository"))
@@ -70,7 +67,7 @@ internal class SonatypePluginTest {
         val children = listOf(child1, child2)
 
         Assertions.assertThatCode {
-            parent.pluginManager.apply("com.bakdata.sonatype")
+            parent.apply(plugin = "com.bakdata.sonatype")
             parent.evaluate()
             children.forEach { it.evaluate() }
         }.doesNotThrowAnyException()
@@ -78,7 +75,7 @@ internal class SonatypePluginTest {
         assertSoftly { softly ->
             children.forEach { child ->
                 softly.assertThat(child.tasks)
-                        .haveExactly(1, taskWithName("signPluginMavenPublication"))
+                        .haveExactly(1, taskWithName("signSonatypePublication"))
                         .haveExactly(1, taskWithName("publish"))
                         .haveExactly(1, taskWithName("publishToNexus"))
                         .haveExactly(0, taskWithName("closeAndReleaseRepository"))
@@ -87,7 +84,7 @@ internal class SonatypePluginTest {
 
         assertSoftly { softly ->
             softly.assertThat(parent.tasks)
-                    .haveExactly(0, taskWithName("signPluginMavenPublication"))
+                    .haveExactly(0, taskWithName("signSonatypePublication"))
                     .haveExactly(0, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
                     .haveExactly(1, taskWithName("closeAndReleaseRepository"))
@@ -99,7 +96,7 @@ internal class SonatypePluginTest {
         val parent = ProjectBuilder.builder().withName("parent").build()
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
-        Assertions.assertThatCode { child1.pluginManager.apply("com.bakdata.sonatype") }
+        Assertions.assertThatCode { child1.apply(plugin = "com.bakdata.sonatype") }
                 .satisfies { Assertions.assertThat(it.cause?.message).contains("top-level project") }
     }
 
