@@ -34,6 +34,7 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
+import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
@@ -52,7 +53,7 @@ class SonatypePlugin : Plugin<Project> {
 
         with(rootProject) {
             allprojects {
-                extensions.create<SonatypeSettings>("sonatype", rootProject)
+                extensions.create<SonatypeSettings>("sonatype", this)
             }
 
             // lazy execution, so that settings configurations are actually used
@@ -133,18 +134,19 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            this.allTasks.filter { it is InitializeNexusStagingRepository }.forEach {
+            this.allTasks.filter { it is GenerateMavenPom }.forEach {
+                println("Adding pom information for ${it.project}")
                 it.project.configure<PublishingExtension> {
                     publications.withType<MavenPublication> {
                         pom {
-                            addRequiredInformationToPom(it.project)
+                            missingProps.addAll(addRequiredInformationToPom(it.project))
                         }
                     }
                 }
             }
 
             if(missingProps.isNotEmpty()) {
-                throw GradleException("Missing the following configurations ${missingProps.map { "sonatype.${it.name}" }}")
+                throw GradleException("Missing the following configurations ${missingProps.map { "sonatype.${it.name}" }} for ${project.name}")
             }
         }
     }
