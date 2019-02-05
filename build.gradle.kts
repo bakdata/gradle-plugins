@@ -94,10 +94,4 @@ if(!version.toString().endsWith("-SNAPSHOT")) {
             }
         }
     }
-} else {
-    allprojects {
-        configure<GradlePluginDevelopmentExtension> {
-            isAutomatedPublishing = false
-        }
-    }
 }
