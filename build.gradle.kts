@@ -6,12 +6,8 @@ buildscript {
         maven(url = "https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("com.bakdata.gradle:sonatype:1.0.1-SNAPSHOT")
         classpath("org.gradle.kotlin:plugins:1.2.0")
         classpath("com.gradle.publish:plugin-publish-plugin:0.10.1")
-    }
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor(0, "seconds")
     }
 }
 
@@ -23,7 +19,7 @@ plugins {
     id("net.researchgate.release") version "2.6.0"
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.sonar") version "1.0.0"
-//    id("com.bakdata.sonatype") version "1.0.0"
+    id("com.bakdata.sonatype") version "1.0.1"
 }
 apply(plugin = "com.bakdata.sonatype")
 
