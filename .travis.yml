@@ -46,7 +46,7 @@ matrix:
     name: upload tagged release
     if: tag =~ ^\d+\.\d+\.\d+$
     script:
-    - ./gradlew publishToNexus closeAndReleaseRepository -x test -Pgradle.publish.key=$GRADLE_PUBLISH_KEY -Pgradle.publish.secret=$GRADLE_PUBLISH_SECRET --stacktrace
+    - ./gradlew publishToNexus closeAndReleaseRepository publishPlugins -x test -Pgradle.publish.key=$GRADLE_PUBLISH_KEY -Pgradle.publish.secret=$GRADLE_PUBLISH_SECRET --stacktrace
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/

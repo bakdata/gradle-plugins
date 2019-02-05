@@ -2,14 +2,13 @@ import org.jetbrains.kotlin.serialization.js.DynamicTypeDeserializer.id
 
 buildscript {
     repositories {
-        mavenCentral()
         maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
-        maven {
-            url = uri("https://plugins.gradle.org/m2/")
-        }
+        maven(url = "https://plugins.gradle.org/m2/")
     }
     dependencies {
         classpath("com.bakdata.gradle:sonatype:1.0.1-SNAPSHOT")
+        classpath("org.gradle.kotlin:plugins:1.2.0")
+        classpath("com.gradle.publish:plugin-publish-plugin:0.10.1")
     }
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor(0, "seconds")
@@ -18,16 +17,13 @@ buildscript {
 
 plugins {
     // kotlin stuff
-    `kotlin-dsl`
-    kotlin("jvm") version "1.3.11"
+    kotlin("jvm") version "1.3.20"
     id("org.jetbrains.dokka") version "0.9.17"
     // release
     id("net.researchgate.release") version "2.6.0"
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.sonar") version "1.0.0"
 //    id("com.bakdata.sonatype") version "1.0.0"
-
-    id("com.gradle.plugin-publish") version "0.10.1"
 }
 apply(plugin = "com.bakdata.sonatype")
 
@@ -62,10 +58,6 @@ subprojects {
     }
 
     dependencies {
-//        "api"(gradleApi())
-//        "api"(gradleKotlinDsl())
-//        implementation(kotlin("stdlib"))
-
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.0")
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.0")
         testImplementation("org.assertj", "assertj-core", "3.11.1")
@@ -106,10 +98,10 @@ if(!version.toString().endsWith("-SNAPSHOT")) {
             }
         }
     }
-}
-
-allprojects {
-    configure<GradlePluginDevelopmentExtension> {
-        isAutomatedPublishing = false
+} else {
+    allprojects {
+        configure<GradlePluginDevelopmentExtension> {
+            isAutomatedPublishing = false
+        }
     }
 }
