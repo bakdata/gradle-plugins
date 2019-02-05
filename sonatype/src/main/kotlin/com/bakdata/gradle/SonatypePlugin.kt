@@ -73,7 +73,7 @@ class SonatypePlugin : Plugin<Project> {
 
             addParentPublishToNexusTasks()
 
-            if (!project.getOverriddenSetting(SonatypeSettings::disallowLocalRelease)!!) {
+            if (project.getOverriddenSetting(SonatypeSettings::disallowLocalRelease)!!) {
                 disallowPublishTasks()
             }
         }
