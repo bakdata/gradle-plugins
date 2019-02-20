@@ -24,12 +24,12 @@
 
 package com.bakdata.gradle
 
-import de.marcphilipp.gradle.nexus.InitializeNexusStagingRepository
 import io.codearte.gradle.nexus.NexusStagingExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.UnknownTaskException
+import org.gradle.api.logging.Logging
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
@@ -46,6 +46,8 @@ import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 
 class SonatypePlugin : Plugin<Project> {
+    private val log = Logging.getLogger(SonatypePlugin::class.java)
+
     override fun apply(rootProject: Project) {
         if(rootProject.parent != null) {
             throw GradleException("Apply this plugin only to the top-level project.")
@@ -73,9 +75,7 @@ class SonatypePlugin : Plugin<Project> {
 
             addParentPublishToNexusTasks()
 
-            if (project.getOverriddenSetting(SonatypeSettings::disallowLocalRelease)!!) {
-                disallowPublishTasks()
-            }
+            disallowPublishTasks()
         }
     }
 
@@ -135,7 +135,7 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             this.allTasks.filter { it is GenerateMavenPom }.forEach {
-                println("Adding pom information for ${it.project}")
+                log.info("Adding pom information for ${it.project}")
                 it.project.configure<PublishingExtension> {
                     publications.withType<MavenPublication> {
                         pom {
@@ -159,14 +159,17 @@ class SonatypePlugin : Plugin<Project> {
 
     private fun Project.disallowPublishTasks() {
         gradle.taskGraph.whenReady {
-            if (hasTask(":publishToNexus") && System.getenv("CI") == null) {
-                throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
-            }
-            if (hasTask(":release") && System.getenv("CI") == null) {
-                throw GradleException("Release is only supported through CI (e.g., Travis)")
-            }
-            if (hasTask(":closeAndReleaseRepository") && System.getenv("CI") == null) {
-                throw GradleException("Closing a release is only supported through CI (e.g., Travis)")
+            if (getOverriddenSetting(SonatypeSettings::disallowLocalRelease)!!) {
+                log.info("disallowing publish tasks")
+                if (hasTask(":publishToNexus") && System.getenv("CI") == null) {
+                    throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
+                }
+                if (hasTask(":release") && System.getenv("CI") == null) {
+                    throw GradleException("Release is only supported through CI (e.g., Travis)")
+                }
+                if (hasTask(":closeAndReleaseRepository") && System.getenv("CI") == null) {
+                    throw GradleException("Closing a release is only supported through CI (e.g., Travis)")
+                }
             }
         }
     }

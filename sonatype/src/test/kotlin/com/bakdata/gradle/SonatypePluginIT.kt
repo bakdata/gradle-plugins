@@ -55,16 +55,6 @@ internal class SonatypePluginIT {
         return withPluginClasspath(classpath.split(":").map { File(it) })
     }
 
-    private val TEST_GROUP: String = "com.bakdata"
-
-    private val PROFILE_ID: Int = 7
-
-    private val STAGING_ID: Int = 5
-
-    private val REPO_ID: Int = 9
-
-    private val TEST_VERSION: String = "1.0.0"
-
     @Test
     fun testSingleModuleProject(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
@@ -133,7 +123,7 @@ internal class SonatypePluginIT {
 
     private fun mockNexusProtocol(wiremock: WireMockServer) {
         wiremock.stubFor(get(urlMatching("/staging/profiles"))
-                .willReturn(okJson("""{"data": [{"id": $PROFILE_ID, "name": "$TEST_GROUP"}]}""")))
+                .willReturn(okJson("""{"data": [{"id": $PROFILE_ID, "name": "${TEST_GROUP}"}]}""")))
         wiremock.stubFor(post(urlMatching("/staging/profiles/$PROFILE_ID/start"))
                 .willReturn(okJson("""{"data": {"stagedRepositoryId": $STAGING_ID}}""")))
         wiremock.stubFor(any(urlMatching("/staging/deploy.*"))
@@ -161,7 +151,7 @@ internal class SonatypePluginIT {
             }
             allprojects {
                 version = "$TEST_VERSION"
-                group = "$TEST_GROUP"
+                group = "${TEST_GROUP}"
 
                 configure<com.bakdata.gradle.SonatypeSettings> {
                     disallowLocalRelease = false
@@ -203,7 +193,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToNexus", "closeAndReleaseRepository", "--stacktrace")
+                .withArguments("publishToNexus", "closeAndReleaseRepository", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -225,5 +215,17 @@ internal class SonatypePluginIT {
                 .plus(children.map { child -> "$child/maven-metadata.xml" })
                 .flatMap { file -> listOf(file, "$file.md5", "$file.sha1") }
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploades)
+    }
+
+    companion object {
+        private const val TEST_GROUP: String = "com.bakdata"
+
+        private const val PROFILE_ID: Int = 7
+
+        private const val STAGING_ID: Int = 5
+
+        private const val REPO_ID: Int = 9
+
+        private const val TEST_VERSION: String = "1.0.0"
     }
 }
