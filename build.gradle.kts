@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.serialization.js.DynamicTypeDeserializer.id
-
 buildscript {
     repositories {
         maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
@@ -12,6 +10,7 @@ buildscript {
 }
 
 plugins {
+    java
     // kotlin stuff
     kotlin("jvm") version "1.3.20"
     id("org.jetbrains.dokka") version "0.9.17"
@@ -20,6 +19,7 @@ plugins {
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.sonar") version "1.0.0"
     id("com.bakdata.sonatype") version "1.0.1"
+    id("org.hildan.github.changelog") version "0.8.0"
 }
 apply(plugin = "com.bakdata.sonatype")
 
@@ -29,6 +29,11 @@ allprojects {
     }
 
     group = "com.bakdata.gradle"
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
 
     tasks.withType<Test> {
         maxParallelForks = 4
