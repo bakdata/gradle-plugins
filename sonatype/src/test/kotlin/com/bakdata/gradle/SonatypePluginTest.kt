@@ -32,6 +32,8 @@ import org.gradle.api.internal.project.DefaultProject
 import org.gradle.kotlin.dsl.apply
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
+import java.io.File
+import java.nio.file.Files
 
 
 internal class SonatypePluginTest {
@@ -47,6 +49,12 @@ internal class SonatypePluginTest {
 
         Assertions.assertThatCode {
             project.apply(plugin = "com.bakdata.sonatype")
+            project.apply(plugin = "java")
+
+            File(project.projectDir, "src/main/java/").mkdirs()
+            Files.copy(SonatypePluginTest::class.java.getResourceAsStream("/Demo.java"),
+                    File(project.projectDir, "src/main/java/Demo.java").toPath())
+
             project.evaluate()
         }.doesNotThrowAnyException()
 
@@ -68,6 +76,14 @@ internal class SonatypePluginTest {
 
         Assertions.assertThatCode {
             parent.apply(plugin = "com.bakdata.sonatype")
+
+            children.forEach {
+                it.apply(plugin = "java")
+                File(it.projectDir, "src/main/java/").mkdirs()
+                Files.copy(SonatypePluginTest::class.java.getResourceAsStream("/Demo.java"),
+                        File(it.projectDir, "src/main/java/Demo.java").toPath())
+            }
+
             parent.evaluate()
             children.forEach { it.evaluate() }
         }.doesNotThrowAnyException()

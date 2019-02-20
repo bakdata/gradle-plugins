@@ -61,14 +61,9 @@ internal class SonatypePluginIT {
             plugins {
                 id("com.bakdata.sonatype")
             }
+            apply(plugin = "java")
             group = "$TEST_GROUP"
             version = "$TEST_VERSION"
-            configure<io.codearte.gradle.nexus.NexusStagingExtension> {
-                serverUrl = "${wiremock.baseUrl()}"
-            }
-            configure<de.marcphilipp.gradle.nexus.NexusPublishExtension> {
-                serverUrl.set(uri("${wiremock.baseUrl()}"))
-            }
             configure<com.bakdata.gradle.SonatypeSettings> {
                 disallowLocalRelease = false
                 osshrUsername = "dummy user"
@@ -83,6 +78,7 @@ internal class SonatypePluginIT {
                         id.set("dummy id")
                     }
                 }
+                nexusUrl = "${wiremock.baseUrl()}"
             }
         """.trimIndent())
 
@@ -94,7 +90,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToNexus", "closeAndReleaseRepository", "--stacktrace")
+                .withArguments("publishToNexus", "closeAndReleaseRepository", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -149,34 +145,28 @@ internal class SonatypePluginIT {
             plugins {
                 id("com.bakdata.sonatype")
             }
-            allprojects {
-                version = "$TEST_VERSION"
-                group = "${TEST_GROUP}"
 
-                configure<com.bakdata.gradle.SonatypeSettings> {
-                    disallowLocalRelease = false
-                    osshrUsername = "dummy user"
-                    osshrPassword = "dummy pw"
-                    description = "dummy description"
-                    signingKeyId = "72217EAF"
-                    signingPassword = "test_password"
-                    signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
-                    developers {
-                        developer {
-                            name.set("dummy name")
-                            id.set("dummy id")
-                        }
+            configure<com.bakdata.gradle.SonatypeSettings> {
+                disallowLocalRelease = false
+                osshrUsername = "dummy user"
+                osshrPassword = "dummy pw"
+                description = "dummy description"
+                signingKeyId = "72217EAF"
+                signingPassword = "test_password"
+                signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
+                developers {
+                    developer {
+                        name.set("dummy name")
+                        id.set("dummy id")
                     }
                 }
+                nexusUrl = "${wiremock.baseUrl()}"
             }
-            // for IT
-            configure<io.codearte.gradle.nexus.NexusStagingExtension> {
-                serverUrl = "${wiremock.baseUrl()}"
-            }
+
             subprojects {
-                configure<de.marcphilipp.gradle.nexus.NexusPublishExtension> {
-                    serverUrl.set(uri("${wiremock.baseUrl()}"))
-                }
+                apply(plugin = "java")
+                version = "$TEST_VERSION"
+                group = "${TEST_GROUP}"
             }
         """.trimIndent())
 

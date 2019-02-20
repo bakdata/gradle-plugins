@@ -24,6 +24,7 @@ open class SonatypeSettings(var project: Project) {
           get() = field ?: "https://github.com/bakdata/${repoName}"
      var description: String? = null
           get() = field ?: project.description
+     var nexusUrl: String? = null
      var developers: Action<in MavenPomDeveloperSpec>? = null
 
      fun developers(developerSpec: Action<in MavenPomDeveloperSpec>) {

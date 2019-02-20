@@ -9,3 +9,9 @@ dependencies {
     testImplementation("com.github.tomakehurst:wiremock:2.20.0")
     testImplementation("ru.lanwen.wiremock:wiremock-junit5:1.1.1")
 }
+
+tasks.withType<Test> {
+    testLogging {
+        showStandardStreams = true
+    }
+}

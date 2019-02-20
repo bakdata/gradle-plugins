@@ -18,7 +18,7 @@ plugins {
     id("net.researchgate.release") version "2.6.0"
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.sonar") version "1.0.0"
-    id("com.bakdata.sonatype") version "1.0.1"
+    id("com.bakdata.sonatype") version "1.0.2"
     id("org.hildan.github.changelog") version "0.8.0"
 }
 apply(plugin = "com.bakdata.sonatype")
