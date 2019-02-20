@@ -21,7 +21,6 @@ plugins {
     id("com.bakdata.sonatype") version "1.0.2"
     id("org.hildan.github.changelog") version "0.8.0"
 }
-apply(plugin = "com.bakdata.sonatype")
 
 allprojects {
     repositories {
@@ -47,6 +46,12 @@ configure<com.bakdata.gradle.SonatypeSettings> {
             id.set("AHeise")
         }
     }
+}
+
+configure<org.hildan.github.changelog.plugin.GitHubChangelogExtension> {
+    githubUser = "bakdata"
+    futureVersionTag = findProperty("changelog.releaseVersion")?.toString()
+    sinceTag = findProperty("changelog.sinceTag")?.toString()
 }
 
 subprojects {
