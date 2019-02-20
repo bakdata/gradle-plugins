@@ -24,6 +24,7 @@
 
 package com.bakdata.gradle
 
+import de.marcphilipp.gradle.nexus.NexusPublishExtension
 import io.codearte.gradle.nexus.NexusStagingExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -41,7 +42,6 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
-import java.io.File
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 
@@ -58,19 +58,18 @@ class SonatypePlugin : Plugin<Project> {
                 extensions.create<SonatypeSettings>("sonatype", this)
             }
 
-            // lazy execution, so that settings configurations are actually used
-            // note that we need to have afterEvaluate before applying the plugins (nexus-staging, nexus-publish),
-            // so we can adjust the respective settings of the used plugins
-            // (they use afterEvaluate to apply their settings in turn which is registered after ours)
-            afterEvaluate {
-                adjustConfiguration()
-            }
+            adjustConfiguration()
 
             plugins.apply("base")
             plugins.apply("io.codearte.nexus-staging")
 
-            getPublishableProjects().forEach { project ->
-                addPublishTasks(project)
+            allprojects {
+                components.matching { it.name == "java" }.configureEach {
+                    if (extensions.findByType<PublishingExtension>() == null) {
+                        log.info("Found java component in $project. Adding publishing tasks.")
+                        addPublishTasks(project)
+                    }
+                }
             }
 
             addParentPublishToNexusTasks()
@@ -83,33 +82,44 @@ class SonatypePlugin : Plugin<Project> {
      * Recursively add publishToNexus (if not exists) which depends on the children.
      */
     private fun Project.addParentPublishToNexusTasks() {
-        allprojects.forEach { project ->
+        allprojects {
             val parent = project.parent
             if (parent != null) {
-                val provider =
-                        try {
-                            parent.tasks.named("publishToNexus")
-                        } catch (e: UnknownTaskException) {
-                            parent.tasks.register("publishToNexus")
+                tasks.matching { it.name == "publishToNexus" }.configureEach {
+                    val parentProvider =
+                            try {
+                                parent.tasks.named("publishToNexus")
+                            } catch (e: UnknownTaskException) {
+                                parent.tasks.register("publishToNexus")
+                            }
+                    this.let { childTask ->
+                        parentProvider.configure {
+                            dependsOn(childTask)
                         }
-                provider.configure {
-                    dependsOn(project.tasks.named("publishToNexus"))
+                    }
                 }
             }
         }
     }
 
     private fun Project.adjustConfiguration() {
-        // first try to set all settings, even if not given (yet)
-        project.configure<NexusStagingExtension> {
-            packageGroup = "com.bakdata"
-            username = getOverriddenSetting(SonatypeSettings::osshrUsername)
-            password = getOverriddenSetting(SonatypeSettings::osshrPassword)
-        }
-
         allprojects {
             signExtras.forEach { (key, property) ->
                 extra[key] = getOverriddenSetting(property)
+            }
+        }
+
+        // lazy execution, so that settings configurations are actually used
+        // note that we need to have afterEvaluate before applying the plugins (nexus-staging, nexus-publish),
+        // so we can adjust the respective settings of the used plugins
+        // (they use afterEvaluate to apply their settings in turn which is registered after ours)
+        afterEvaluate {
+            // first try to set all settings, even if not given (yet)
+            project.configure<NexusStagingExtension> {
+                packageGroup = "com.bakdata"
+                username = getOverriddenSetting(SonatypeSettings::osshrUsername)
+                password = getOverriddenSetting(SonatypeSettings::osshrPassword)
+                getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }
             }
         }
 
@@ -118,9 +128,15 @@ class SonatypePlugin : Plugin<Project> {
         gradle.taskGraph.whenReady {
             val missingProps = mutableSetOf<KProperty1<SonatypeSettings, Any?>>()
             this.allTasks.filter { it is Sign }.forEach {
-                missingProps += signExtras
-                        .filter { (key, _) -> !it.project.extra.has(key) }
-                        .map { it.value }
+                signExtras.forEach { (key, property) ->
+                    if (it.project.extra[key] == null) {
+                        if (getOverriddenSetting(property) == null) {
+                            missingProps += property
+                        } else {
+                            it.project.extra[key] = getOverriddenSetting(property)
+                        }
+                    }
+                }
             }
 
             if(this.allTasks.any { it is AbstractPublishToMaven }) {
@@ -130,6 +146,13 @@ class SonatypePlugin : Plugin<Project> {
                     }
                     if(password == null) {
                         missingProps.add(SonatypeSettings::osshrPassword)
+                    }
+                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }
+                }
+
+                allprojects {
+                    extensions.findByType<NexusPublishExtension>()?.let { nexus ->
+                        getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexus.serverUrl.set(uri(it)) }
                     }
                 }
             }
@@ -154,9 +177,6 @@ class SonatypePlugin : Plugin<Project> {
     private tailrec fun <T> Project.getOverriddenSetting(property: KProperty1<SonatypeSettings, T?>): T? =
             property.get(extensions.getByType(SonatypeSettings::class)) ?: project.parent?.getOverriddenSetting(property)
 
-    private fun Project.getPublishableProjects() =
-        allprojects.filter { it.subprojects.isEmpty() || File(it.projectDir, "src/main").exists() }
-
     private fun Project.disallowPublishTasks() {
         gradle.taskGraph.whenReady {
             if (getOverriddenSetting(SonatypeSettings::disallowLocalRelease)!!) {
@@ -177,7 +197,6 @@ class SonatypePlugin : Plugin<Project> {
 
     private fun addPublishTasks(project: Project) {
         with(project) {
-            apply(plugin = "java")
             apply(plugin = "signing")
             apply(plugin = "de.marcphilipp.nexus-publish")
 
@@ -195,7 +214,6 @@ class SonatypePlugin : Plugin<Project> {
                 from(project.the<SourceSetContainer>()["main"].allSource)
             }
 
-            // java plugin already creates a MavenPublication, we try to extend it instead of creating a new one to avoid duplicate uploads.
             configure<PublishingExtension> {
                publications.create<MavenPublication>("sonatype") {
                     from(components["java"])

@@ -21,16 +21,16 @@ before_install:
     base64 --decode <<< $GITHUB_DEPLOY_SSH_KEY > .secrets/deploy-key
     base64 --decode <<< $SIGNING_SECRET_KEY_RING > .secrets/pgp-keyring
     export SIGNING_SECRET_KEY_RING_FILE=$(pwd)/.secrets/pgp-keyring
-    md5sum .secrets/deploy-key
 matrix:
   include:
     - stage: build
       script:
+        - ./gradlew signSonatypePublication
         - ./gradlew sonarqube
 
     - stage: deploy
       name: upload snapshot
-      if: branch = master AND tag IS blank
+      if: branch = master AND tag IS blank AND type = push
       script:
         - ./gradlew publishToNexus --stacktrace
 
@@ -50,7 +50,7 @@ matrix:
       name: upload tagged release
       if: tag =~ ^\d+\.\d+\.\d+$
       script:
-        - ./gradlew publishToNexus closeAndReleaseRepository publishPlugins -x test -Pgradle.publish.key=$GRADLE_PUBLISH_KEY -Pgradle.publish.secret=$GRADLE_PUBLISH_SECRET --stacktrace
+        - ./gradlew publishToNexus closeAndReleaseRepository -x test --stacktrace
 deploy:
   provider: releases
   api_key: ${GITHUB_TOKEN}
