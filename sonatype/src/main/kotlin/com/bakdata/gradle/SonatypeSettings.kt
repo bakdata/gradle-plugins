@@ -19,7 +19,7 @@ open class SonatypeSettings(var project: Project) {
      var signingPassword: String? = System.getenv("SIGNING_PASSWORD")
           get() = field ?: project.findProperty("signing.password")?.toString()
      var repoName: String? = null
-          get() = field ?: project.name
+          get() = field ?: project.rootProject.name
      var repoUrl: String? = null
           get() = field ?: "https://github.com/bakdata/${repoName}"
      var description: String? = null
