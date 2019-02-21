@@ -30,11 +30,9 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
-import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.withType
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
@@ -43,7 +41,7 @@ class SonarPlugin : Plugin<Project> {
     private val log = Logging.getLogger(SonarPlugin::class.java)
 
     override fun apply(rootProject: Project) {
-        if(rootProject.parent != null) {
+        if (rootProject.parent != null) {
             throw GradleException("Apply this plugin only to the top-level project.")
         }
 
@@ -52,33 +50,31 @@ class SonarPlugin : Plugin<Project> {
 
             allprojects {
                 components.matching { it.name == "java" }.configureEach {
-                    if (extensions.findByType<PublishingExtension>() == null) {
-                        log.info("Found java component in $project. Adding jacoco and wiring to sonarqube.")
+                    log.info("Found java component in $project. Adding jacoco and wiring to sonarqube.")
 
-                        project.apply(plugin = "jacoco")
+                    project.apply(plugin = "jacoco")
 
-                        project.tasks.withType<Test> {
-                            testLogging {
-                                showStandardStreams = true
+                    project.tasks.withType<Test> {
+                        testLogging {
+                            showStandardStreams = true
 
-                                events("passed", "skipped", "failed")
-                                exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-                            }
-                            useJUnitPlatform()
-                            systemProperty("java.util.logging.config.file", "src/test/resources/logging.properties")
+                            events("passed", "skipped", "failed")
+                            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
                         }
-
-                        project.configure<JacocoPluginExtension> {
-                            // smaller versions won't work with kotlin properly
-                            toolVersion = "0.8.3"
-                        }
-
-                        tasks.withType<JacocoReport> {
-                            reports.xml.isEnabled = true
-                        }
-
-                        rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>()) }
+                        useJUnitPlatform()
+                        systemProperty("java.util.logging.config.file", "src/test/resources/logging.properties")
                     }
+
+                    project.configure<JacocoPluginExtension> {
+                        // smaller versions won't work with kotlin properly
+                        toolVersion = "0.8.3"
+                    }
+
+                    tasks.withType<JacocoReport> {
+                        reports.xml.isEnabled = true
+                    }
+
+                    rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>()) }
                 }
             }
 
