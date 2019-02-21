@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.1.1](https://github.com/bakdata/gradle-plugins/tree/1.1.1) (2019-02-21)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.0...1.1.1)
+
+**Merged pull requests:**
+
+- Fixing the release changelog post\-deploy script [\#11](https://github.com/bakdata/gradle-plugins/pull/11) ([@AHeise](https://github.com/AHeise))
+- Sonar plugin uses the same java project detection as in sonatype [\#10](https://github.com/bakdata/gradle-plugins/pull/10) ([@AHeise](https://github.com/AHeise))
+
 ## [1.1.0](https://github.com/bakdata/gradle-plugins/tree/1.1.0) (2019-02-20)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.0.2...1.1.0)
 
