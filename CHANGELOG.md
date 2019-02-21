@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.1.2](https://github.com/bakdata/gradle-plugins/tree/1.1.2) (2019-02-21)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.1...1.1.2)
+
+**Fixed bugs:**
+
+- Coverage always at 0% [\#13](https://github.com/bakdata/gradle-plugins/issues/13)
+
+**Merged pull requests:**
+
+- Bugfix incorrect repo name in multi module [\#12](https://github.com/bakdata/gradle-plugins/pull/12) ([@AHeise](https://github.com/AHeise))
+- Correctly applying jacoco plugin to all java projects [\#14](https://github.com/bakdata/gradle-plugins/pull/14) ([@AHeise](https://github.com/AHeise))
+
 ## [1.1.1](https://github.com/bakdata/gradle-plugins/tree/1.1.1) (2019-02-21)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.0...1.1.1)
 
