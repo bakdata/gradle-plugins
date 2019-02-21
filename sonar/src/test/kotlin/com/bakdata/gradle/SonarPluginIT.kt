@@ -52,6 +52,7 @@ internal class SonarPluginIT {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
             plugins {
                 id("com.bakdata.sonar")
+                java
             }
             repositories {
                 mavenCentral()
@@ -90,6 +91,7 @@ internal class SonarPluginIT {
                 id("com.bakdata.sonar")
             }
             subprojects {
+                apply(plugin = "java")
                 repositories {
                     mavenCentral()
                 }
@@ -114,7 +116,7 @@ internal class SonarPluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}", "--stacktrace")
+                .withArguments("sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 

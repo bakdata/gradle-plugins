@@ -58,6 +58,9 @@ class SonatypePlugin : Plugin<Project> {
                 extensions.create<SonatypeSettings>("sonatype", this)
             }
 
+            // note that we need to use adjustConfiguration before applying the plugins (nexus-staging, nexus-publish),
+            // so we can adjust the respective settings of the used plugins
+            // (they use afterEvaluate to apply their settings in turn which is registered after ours)
             adjustConfiguration()
 
             plugins.apply("base")
@@ -110,9 +113,6 @@ class SonatypePlugin : Plugin<Project> {
         }
 
         // lazy execution, so that settings configurations are actually used
-        // note that we need to have afterEvaluate before applying the plugins (nexus-staging, nexus-publish),
-        // so we can adjust the respective settings of the used plugins
-        // (they use afterEvaluate to apply their settings in turn which is registered after ours)
         afterEvaluate {
             // first try to set all settings, even if not given (yet)
             project.configure<NexusStagingExtension> {
