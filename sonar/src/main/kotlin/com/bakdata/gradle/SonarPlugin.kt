@@ -29,18 +29,18 @@ package com.bakdata.gradle
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.Logging
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.withType
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
-import java.io.File
 
 class SonarPlugin : Plugin<Project> {
-
-    private fun Project.getCodeProjects() =
-            allprojects.filter { it.subprojects.isEmpty() || File(it.projectDir, "src/main").exists() }
+    private val log = Logging.getLogger(SonarPlugin::class.java)
 
     override fun apply(rootProject: Project) {
         if(rootProject.parent != null) {
@@ -50,30 +50,35 @@ class SonarPlugin : Plugin<Project> {
         with(rootProject) {
             apply(plugin = "org.sonarqube")
 
-            getCodeProjects().forEach { project ->
-                project.apply(plugin = "java")
-                project.apply(plugin = "jacoco")
-
-                project.tasks.withType<Test> {
-                    testLogging {
-                        showStandardStreams = true
-
-                        events("passed", "skipped", "failed")
-                        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-                    }
-                    useJUnitPlatform()
-                    systemProperty("java.util.logging.config.file", "src/test/resources/logging.properties")
-                }
-
-                project.configure<JacocoPluginExtension> {
-                    // smaller versions won't work with kotlin properly
-                    toolVersion = "0.8.3"
-                }
-            }
-
             allprojects {
-                tasks.withType<JacocoReport> {
-                    reports.xml.isEnabled = true
+                components.matching { it.name == "java" }.configureEach {
+                    if (extensions.findByType<PublishingExtension>() == null) {
+                        log.info("Found java component in $project. Adding jacoco and wiring to sonarqube.")
+
+                        project.apply(plugin = "jacoco")
+
+                        project.tasks.withType<Test> {
+                            testLogging {
+                                showStandardStreams = true
+
+                                events("passed", "skipped", "failed")
+                                exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+                            }
+                            useJUnitPlatform()
+                            systemProperty("java.util.logging.config.file", "src/test/resources/logging.properties")
+                        }
+
+                        project.configure<JacocoPluginExtension> {
+                            // smaller versions won't work with kotlin properly
+                            toolVersion = "0.8.3"
+                        }
+
+                        tasks.withType<JacocoReport> {
+                            reports.xml.isEnabled = true
+                        }
+
+                        rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>()) }
+                    }
                 }
             }
 
@@ -83,8 +88,6 @@ class SonarPlugin : Plugin<Project> {
                     property("sonar.coverage.jacoco.xmlReportPaths", allprojects.flatMap { it.tasks.withType<JacocoReport>() }.map { it.reports.xml.destination })
                 }
             }
-
-            tasks.named("sonarqube") { dependsOn(allprojects.flatMap { it.tasks.withType<JacocoReport>() }) }
         }
     }
 }

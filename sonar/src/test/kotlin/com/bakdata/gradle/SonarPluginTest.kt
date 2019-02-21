@@ -43,10 +43,11 @@ internal class SonarPluginTest {
     }
 
     @Test
-    fun testSingleModuleProject() {
+    fun testSingleModuleProjectWithJavaFirst() {
         val project = ProjectBuilder.builder().build()
 
         Assertions.assertThatCode {
+            project.pluginManager.apply("java")
             project.pluginManager.apply("com.bakdata.sonar")
             project.evaluate()
         }.doesNotThrowAnyException()
@@ -59,13 +60,59 @@ internal class SonarPluginTest {
     }
 
     @Test
-    fun testMultiModuleProject() {
+    fun testSingleModuleProjectWithJavaLast() {
+        val project = ProjectBuilder.builder().build()
+
+        Assertions.assertThatCode {
+            project.pluginManager.apply("com.bakdata.sonar")
+            project.pluginManager.apply("java")
+            project.evaluate()
+        }.doesNotThrowAnyException()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(project.tasks)
+                    .haveExactly(1, taskWithName("jacocoTestReport"))
+                    .haveExactly(1, taskWithName("sonarqube"))
+        }
+    }
+
+    @Test
+    fun testMultiModuleProjectWithJavaLast() {
         val parent = ProjectBuilder.builder().withName("parent").build()
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
         val child2 = ProjectBuilder.builder().withName("child2").withParent(parent).build()
         val children = listOf(child1, child2)
 
         Assertions.assertThatCode {
+            parent.pluginManager.apply("com.bakdata.sonar")
+            children.forEach { it.pluginManager.apply("java") }
+            parent.evaluate()
+        }.doesNotThrowAnyException()
+
+        SoftAssertions.assertSoftly { softly ->
+            children.forEach { child ->
+                softly.assertThat(child.tasks)
+                        .haveExactly(1, taskWithName("jacocoTestReport"))
+                        .haveExactly(0, taskWithName("sonarqube"))
+            }
+        }
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(parent.tasks)
+                    .haveExactly(0, taskWithName("jacocoTestReport"))
+                    .haveExactly(1, taskWithName("sonarqube"))
+        }
+    }
+
+    @Test
+    fun testMultiModuleProjectWithJavaFirst() {
+        val parent = ProjectBuilder.builder().withName("parent").build()
+        val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
+        val child2 = ProjectBuilder.builder().withName("child2").withParent(parent).build()
+        val children = listOf(child1, child2)
+
+        Assertions.assertThatCode {
+            children.forEach { it.pluginManager.apply("java") }
             parent.pluginManager.apply("com.bakdata.sonar")
             parent.evaluate()
         }.doesNotThrowAnyException()
