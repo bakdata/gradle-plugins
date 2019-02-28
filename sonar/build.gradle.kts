@@ -1,3 +1,8 @@
+plugins {
+    java
+    id("org.jetbrains.dokka") version "0.9.17"
+}
+
 description = "Configures sonar for multi project setups for all jvm languages"
 
 dependencies {
