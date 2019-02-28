@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.1.3](https://github.com/bakdata/gradle-plugins/tree/1.1.3) (2019-02-28)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.2...1.1.3)
+
+**Fixed bugs:**
+
+- Cannot upload release to sonatype in parallel [\#16](https://github.com/bakdata/gradle-plugins/issues/16)
+
+**Merged pull requests:**
+
+- Bumped nexus\-publish\-plugin to 0.2.0 to solve parallel release issue \#16 [\#17](https://github.com/bakdata/gradle-plugins/pull/17) ([@AHeise](https://github.com/AHeise))
+
 ## [1.1.2](https://github.com/bakdata/gradle-plugins/tree/1.1.2) (2019-02-21)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.1...1.1.2)
 
