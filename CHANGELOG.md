@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.4](https://github.com/bakdata/gradle-plugins/tree/1.1.4) (2019-02-28)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.3...1.1.4)
+
+**Merged pull requests:**
+
+- Fixed empty plugins \(no compilation of Kotlin code\) [\#18](https://github.com/bakdata/gradle-plugins/pull/18) ([@AHeise](https://github.com/AHeise))
+
 ## [1.1.3](https://github.com/bakdata/gradle-plugins/tree/1.1.3) (2019-02-28)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.2...1.1.3)
 
