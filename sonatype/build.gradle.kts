@@ -1,13 +1,14 @@
 plugins {
-    java
+    kotlin("jvm")
     id("org.jetbrains.dokka") version "0.9.17"
 }
+apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
 description = "Sets up nexusPublish and closeAndReleaseRepository tasks to push to sonatype (and later synced to central)"
 
 dependencies {
     implementation("au.com.console:kassava:1.0.0")
-    implementation( "io.codearte.gradle.nexus", "gradle-nexus-staging-plugin", "0.12.0")
+    implementation("io.codearte.gradle.nexus", "gradle-nexus-staging-plugin", "0.20.0")
     implementation("de.marcphilipp.gradle", "nexus-publish-plugin", "0.2.0")
 
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.3.0")

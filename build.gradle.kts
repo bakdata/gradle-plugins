@@ -6,7 +6,6 @@ buildscript {
     dependencies {
         classpath("org.gradle.kotlin:plugins:1.2.0")
         classpath("com.gradle.publish:plugin-publish-plugin:0.10.1")
-        classpath("de.marcphilipp.gradle", "nexus-publish-plugin", "0.2.0")
     }
 }
 
