@@ -6,19 +6,16 @@ buildscript {
     dependencies {
         classpath("org.gradle.kotlin:plugins:1.2.0")
         classpath("com.gradle.publish:plugin-publish-plugin:0.10.1")
+        classpath("de.marcphilipp.gradle", "nexus-publish-plugin", "0.2.0")
     }
 }
 
 plugins {
-    java
-    // kotlin stuff
-    kotlin("jvm") version "1.3.20"
-    id("org.jetbrains.dokka") version "0.9.17"
     // release
     id("net.researchgate.release") version "2.6.0"
     // eat your own dog food - apply the plugins to this plugin project
-    id("com.bakdata.sonar") version "1.0.0"
-    id("com.bakdata.sonatype") version "1.0.2"
+    id("com.bakdata.sonar") version "1.1.2"
+    id("com.bakdata.sonatype") version "1.1.2"
     id("org.hildan.github.changelog") version "0.8.0"
 }
 
@@ -28,11 +25,6 @@ allprojects {
     }
 
     group = "com.bakdata.gradle"
-
-    java {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
 
     tasks.withType<Test> {
         maxParallelForks = 4
@@ -55,19 +47,13 @@ configure<org.hildan.github.changelog.plugin.GitHubChangelogExtension> {
 }
 
 subprojects {
-    apply(plugin = "kotlin")
-    apply(plugin = "org.jetbrains.dokka")
-    apply(plugin = "org.gradle.kotlin.kotlin-dsl")
-
-    configure<org.gradle.kotlin.dsl.plugins.dsl.KotlinDslPluginOptions> {
-        experimentalWarning.set(false)
-    }
+    apply(plugin = "java")
 
     dependencies {
-        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.0")
-        testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.0")
-        testImplementation("org.assertj", "assertj-core", "3.11.1")
-        testImplementation("org.junit-pioneer", "junit-pioneer", "0.3.0")
+        "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
+        "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
+        "testImplementation"("org.assertj", "assertj-core", "3.11.1")
+        "testImplementation"("org.junit-pioneer", "junit-pioneer", "0.3.0")
     }
 }
 
