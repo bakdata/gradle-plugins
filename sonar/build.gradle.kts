@@ -1,7 +1,8 @@
 plugins {
-    java
+    kotlin("jvm")
     id("org.jetbrains.dokka") version "0.9.17"
 }
+apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
 description = "Configures sonar for multi project setups for all jvm languages"
 
