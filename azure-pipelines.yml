@@ -6,12 +6,13 @@ trigger:
 pr:
   branches:
     include:
-    - master
-    
+      - master
+
 variables:
-- group: sonarqube
-- group: sign
-- group: ossrh
+  - group: sonarqube
+  - group: sign
+  - group: ossrh
+  - group: gradle plugin portal
 
 resources:
   repositories:
@@ -21,7 +22,9 @@ resources:
       endpoint: bot
 
 jobs:
-- template: azure/gradle/build.yml@templates
-- template: azure/gradle/create_tag_version.yml@templates
-- template: azure/gradle/upload_release.yml@templates
-- template: azure/gradle/upload_snapshot.yml@templates
+  - template: azure/gradle/build.yml@templates
+  - template: azure/gradle/create_tag_version.yml@templates
+  - template: azure/gradle/upload_release.yml@templates
+    parameters:
+      plugin: 'true'
+  - template: azure/gradle/upload_snapshot.yml@templates
