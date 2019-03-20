@@ -30,11 +30,12 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.*
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
+import org.gradle.testing.jacoco.tasks.JacocoMerge
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
 class SonarPlugin : Plugin<Project> {
@@ -49,7 +50,7 @@ class SonarPlugin : Plugin<Project> {
             apply(plugin = "org.sonarqube")
 
             allprojects {
-                components.matching { it.name == "java" }.configureEach {
+                plugins.withType<JavaPlugin> {
                     log.info("Found java component in $project. Adding jacoco and wiring to sonarqube.")
 
                     project.apply(plugin = "jacoco")
@@ -78,10 +79,33 @@ class SonarPlugin : Plugin<Project> {
                 }
             }
 
-            // using a newer feature of sonarqube to use the xml reports which also makes it language-agnostic
-            configure<org.sonarqube.gradle.SonarQubeExtension> {
-                properties {
-                    property("sonar.coverage.jacoco.xmlReportPaths", allprojects.flatMap { it.tasks.withType<JacocoReport>() }.map { it.reports.xml.destination })
+            if(!subprojects.isEmpty()) {
+                val jacocoMerge by tasks.registering(JacocoMerge::class) {
+                    subprojects {
+                        executionData(tasks.withType<JacocoReport>().map { it.executionData })
+                    }
+                    destinationFile = file("$buildDir/jacoco")
+                }
+                tasks.register<JacocoReport>("jacocoRootReport") {
+                    dependsOn(jacocoMerge)
+                    sourceDirectories.from(files(subprojects.map {
+                        it.the<SourceSetContainer>()["main"].allSource.srcDirs
+                    }))
+                    classDirectories.from(files(subprojects.map { it.the<SourceSetContainer>()["main"].output }))
+                    executionData(jacocoMerge.get().destinationFile)
+                    reports {
+                        html.isEnabled = true
+                        xml.isEnabled = true
+                        csv.isEnabled = false
+                    }
+                }
+
+                // using a newer feature of sonarqube to use the xml reports which also makes it language-agnostic
+                configure<org.sonarqube.gradle.SonarQubeExtension> {
+                    properties {
+                        property("sonar.coverage.jacoco.xmlReportPaths",
+                                rootProject.tasks.withType<JacocoReport>().map { it.reports.xml.destination })
+                    }
                 }
             }
         }
