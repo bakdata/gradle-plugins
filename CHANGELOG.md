@@ -1,14 +1,18 @@
 # Change Log
 
-## [1.1.4](https://github.com/bakdata/gradle-plugins/tree/1.1.4) (2019-02-28)
-[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.3...1.1.4)
+## [1.1.5](https://github.com/bakdata/gradle-plugins/tree/1.1.5) (2021-02-04)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.4...1.1.5)
+
+**Closed issues:**
+
+- Allow configuration of timeout when publishing to nexus [\#19](https://github.com/bakdata/gradle-plugins/issues/19)
 
 **Merged pull requests:**
 
-- Fixed empty plugins \(no compilation of Kotlin code\) [\#18](https://github.com/bakdata/gradle-plugins/pull/18) ([@AHeise](https://github.com/AHeise))
+- Allow configurable timeouts and simplify local maven publishing [\#20](https://github.com/bakdata/gradle-plugins/pull/20) ([@torbsto](https://github.com/torbsto))
 
-## [1.1.3](https://github.com/bakdata/gradle-plugins/tree/1.1.3) (2019-02-28)
-[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.2...1.1.3)
+## [1.1.4](https://github.com/bakdata/gradle-plugins/tree/1.1.4) (2019-02-28)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.2...1.1.4)
 
 **Fixed bugs:**
 
@@ -16,6 +20,7 @@
 
 **Merged pull requests:**
 
+- Fixed empty plugins \(no compilation of Kotlin code\) [\#18](https://github.com/bakdata/gradle-plugins/pull/18) ([@AHeise](https://github.com/AHeise))
 - Bumped nexus\-publish\-plugin to 0.2.0 to solve parallel release issue \#16 [\#17](https://github.com/bakdata/gradle-plugins/pull/17) ([@AHeise](https://github.com/AHeise))
 
 ## [1.1.2](https://github.com/bakdata/gradle-plugins/tree/1.1.2) (2019-02-21)
