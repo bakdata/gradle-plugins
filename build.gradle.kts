@@ -1,8 +1,4 @@
 buildscript {
-    repositories {
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
-        maven(url = "https://plugins.gradle.org/m2/")
-    }
     dependencies {
         classpath("org.gradle.kotlin:plugins:1.2.0")
         classpath("com.gradle.publish:plugin-publish-plugin:0.10.1")
@@ -58,7 +54,7 @@ subprojects {
 
 // config for gradle plugin portal
 // doesn't support snapshot, so we add config only if release version
-if(!version.toString().endsWith("-SNAPSHOT")) {
+if (!version.toString().endsWith("-SNAPSHOT")) {
     subprojects.forEach { project ->
         with(project) {
             // com.gradle.plugin-publish depends on java-gradle-plugin, but it screws a bit this project

@@ -8,8 +8,8 @@ description = "Sets up nexusPublish and closeAndReleaseRepository tasks to push 
 
 dependencies {
     implementation("au.com.console:kassava:1.0.0")
-    implementation("io.codearte.gradle.nexus", "gradle-nexus-staging-plugin", "0.20.0")
-    implementation("de.marcphilipp.gradle", "nexus-publish-plugin", "0.2.0")
+    implementation("io.codearte.gradle.nexus", "gradle-nexus-staging-plugin", "0.22.0")
+    implementation("de.marcphilipp.gradle", "nexus-publish-plugin", "0.4.0")
 
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.3.0")
     testImplementation("com.github.tomakehurst:wiremock:2.20.0")

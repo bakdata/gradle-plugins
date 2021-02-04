@@ -33,15 +33,17 @@ import org.gradle.api.UnknownTaskException
 import org.gradle.api.logging.Logging
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
+import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
 import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
+import java.net.URI
+import java.time.Duration
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 
@@ -49,7 +51,7 @@ class SonatypePlugin : Plugin<Project> {
     private val log = Logging.getLogger(SonatypePlugin::class.java)
 
     override fun apply(rootProject: Project) {
-        if(rootProject.parent != null) {
+        if (rootProject.parent != null) {
             throw GradleException("Apply this plugin only to the top-level project.")
         }
 
@@ -90,11 +92,11 @@ class SonatypePlugin : Plugin<Project> {
             if (parent != null) {
                 tasks.matching { it.name == "publishToNexus" }.configureEach {
                     val parentProvider =
-                            try {
-                                parent.tasks.named("publishToNexus")
-                            } catch (e: UnknownTaskException) {
-                                parent.tasks.register("publishToNexus")
-                            }
+                        try {
+                            parent.tasks.named("publishToNexus")
+                        } catch (e: UnknownTaskException) {
+                            parent.tasks.register("publishToNexus")
+                        }
                     this.let { childTask ->
                         parentProvider.configure {
                             dependsOn(childTask)
@@ -127,7 +129,15 @@ class SonatypePlugin : Plugin<Project> {
         // note that we test the affected settings to allow users of the plugin to provide the values natively (e.g., directly on the used plugins)
         gradle.taskGraph.whenReady {
             val missingProps = mutableSetOf<KProperty1<SonatypeSettings, Any?>>()
+
+            val onlyLocalPublish = this.allTasks
+                .filterIsInstance<AbstractPublishToMaven>()
+                .all { it is PublishToMavenLocal }
+
             this.allTasks.filter { it is Sign }.forEach {
+                // disable sign for publishToLocalMaven
+                it.onlyIf { !onlyLocalPublish }
+
                 signExtras.forEach { (key, property) ->
                     if (it.project.extra[key] == null) {
                         if (getOverriddenSetting(property) == null) {
@@ -139,12 +149,12 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            if(this.allTasks.any { it is AbstractPublishToMaven }) {
+            if (this.allTasks.any { it is AbstractPublishToMaven }) {
                 project.configure<NexusStagingExtension> {
-                    if(username == null) {
+                    if (username == null) {
                         missingProps.add(SonatypeSettings::osshrUsername)
                     }
-                    if(password == null) {
+                    if (password == null) {
                         missingProps.add(SonatypeSettings::osshrPassword)
                     }
                     getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }
@@ -152,7 +162,21 @@ class SonatypePlugin : Plugin<Project> {
 
                 allprojects {
                     extensions.findByType<NexusPublishExtension>()?.let { nexus ->
-                        getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexus.serverUrl.set(uri(it)) }
+                        getOverriddenSetting(SonatypeSettings::nexusUrl)?.let {
+                            nexus.repositories["nexus"].nexusUrl.value(uri(it))
+                        }
+
+                        getOverriddenSetting(SonatypeSettings::snapshotUrl)?.let {
+                            nexus.repositories["nexus"].snapshotRepositoryUrl.value(uri(it))
+                        }
+
+                        getOverriddenSetting(SonatypeSettings::clientTimeout)?.let {
+                            nexus.clientTimeout.value(Duration.ofSeconds(it))
+                        }
+
+                        getOverriddenSetting(SonatypeSettings::connectTimeout)?.let {
+                            nexus.connectTimeout.value(Duration.ofSeconds(it))
+                        }
                     }
                 }
             }
@@ -168,14 +192,16 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            if(missingProps.isNotEmpty()) {
+            logNexusPublishingSetting()
+            // disable check if we only do a publishToLocalMaven as no credentials are required
+            if (!onlyLocalPublish && missingProps.isNotEmpty()) {
                 throw GradleException("Missing the following configurations ${missingProps.map { "sonatype.${it.name}" }} for ${project.name}")
             }
         }
     }
 
     private tailrec fun <T> Project.getOverriddenSetting(property: KProperty1<SonatypeSettings, T?>): T? =
-            property.get(extensions.getByType(SonatypeSettings::class)) ?: project.parent?.getOverriddenSetting(property)
+        property.get(extensions.getByType(SonatypeSettings::class)) ?: project.parent?.getOverriddenSetting(property)
 
     private fun Project.disallowPublishTasks() {
         gradle.taskGraph.whenReady {
@@ -215,18 +241,26 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             configure<PublishingExtension> {
-               publications.create<MavenPublication>("sonatype") {
+                publications.create<MavenPublication>("sonatype") {
                     from(components["java"])
                     artifact(sourcesJar).classifier = "sources"
                     artifact(javadocJar).classifier = "javadoc"
                 }
             }
 
+            configure<NexusPublishExtension> {
+                // create default repository called 'nexus' and set the corresponding default urls
+                repositories.create("nexus") {
+                    nexusUrl.set(URI.create("https://oss.sonatype.org/service/local/"))
+                    snapshotRepositoryUrl.set(URI.create("https://oss.sonatype.org/content/repositories/snapshots/"))
+                }
+            }
+
             configure<SigningExtension> {
                 sign(the<PublishingExtension>().publications)
             }
+
             tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
-            tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
         }
     }
 
@@ -236,12 +270,13 @@ class SonatypePlugin : Plugin<Project> {
         val developers = project.getOverriddenSetting(SonatypeSettings::developers)
 
         val emptySettings = mapOf<Any?, KMutableProperty1<SonatypeSettings, *>>(
-                repoUrl to SonatypeSettings::repoUrl,
-                projectDescription to SonatypeSettings::description,
-                developers to (SonatypeSettings::developers))
-                .filter { (key, _) -> key ==null }
-                .map { it.value }
-        if(emptySettings.isNotEmpty()) {
+            repoUrl to SonatypeSettings::repoUrl,
+            projectDescription to SonatypeSettings::description,
+            developers to (SonatypeSettings::developers)
+        )
+            .filter { (key, _) -> key == null }
+            .map { it.value }
+        if (emptySettings.isNotEmpty()) {
             return emptySettings
         }
 
@@ -274,9 +309,21 @@ class SonatypePlugin : Plugin<Project> {
         return listOf()
     }
 
+    private fun Project.logNexusPublishingSetting() {
+        extensions.findByType(NexusPublishExtension::class)?.let {
+            project.logger.debug(
+                "Publish to Nexus (${it.repositories["nexus"].nexusUrl.get()}) " +
+                        "with connect timeout of ${it.connectTimeout.get()} " +
+                        "and client timeout of ${it.clientTimeout.get()}"
+            )
+        }
+    }
+
     companion object {
-        private val signExtras = mapOf("signing.keyId" to SonatypeSettings::signingKeyId,
-                "signing.password" to SonatypeSettings::signingPassword,
-                "signing.secretKeyRingFile" to SonatypeSettings::signingSecretKeyRingFile)
+        private val signExtras = mapOf(
+            "signing.keyId" to SonatypeSettings::signingKeyId,
+            "signing.password" to SonatypeSettings::signingPassword,
+            "signing.secretKeyRingFile" to SonatypeSettings::signingSecretKeyRingFile
+        )
     }
 }

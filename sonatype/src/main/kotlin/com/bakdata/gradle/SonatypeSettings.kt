@@ -25,7 +25,10 @@ open class SonatypeSettings(var project: Project) {
      var description: String? = null
           get() = field ?: project.description
      var nexusUrl: String? = null
+     var snapshotUrl: String? = null
      var developers: Action<in MavenPomDeveloperSpec>? = null
+     var connectTimeout: Long = 300
+     var clientTimeout: Long = 300
 
      fun developers(developerSpec: Action<in MavenPomDeveloperSpec>) {
           this.developers = developerSpec
