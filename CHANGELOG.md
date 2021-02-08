@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.6](https://github.com/bakdata/gradle-plugins/tree/1.1.6) (2021-02-08)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.5...1.1.6)
+
+**Merged pull requests:**
+
+- Use new variable group name [\#21](https://github.com/bakdata/gradle-plugins/pull/21) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.1.5](https://github.com/bakdata/gradle-plugins/tree/1.1.5) (2021-02-04)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.4...1.1.5)
 
