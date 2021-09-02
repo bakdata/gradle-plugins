@@ -32,6 +32,14 @@ configure<com.bakdata.gradle.SonatypeSettings> {
             name.set("Arvid Heise")
             id.set("AHeise")
         }
+        developer {
+            name.set("Philipp Schirmer")
+            id.set("philipp94831")
+        }
+        developer {
+            name.set("Torben Meyer")
+            id.set("torbsto")
+        }
     }
 }
 
