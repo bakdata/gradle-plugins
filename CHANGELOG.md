@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.1.7](https://github.com/bakdata/gradle-plugins/tree/1.1.7) (2021-09-02)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.6...1.1.7)
+
+**Closed issues:**
+
+- Update plugins [\#23](https://github.com/bakdata/gradle-plugins/issues/23)
+
+**Merged pull requests:**
+
+- Update plugins for Gradle 7 compatibility [\#24](https://github.com/bakdata/gradle-plugins/pull/24) ([@philipp94831](https://github.com/philipp94831))
+- Improved deployment fault tolerance [\#15](https://github.com/bakdata/gradle-plugins/pull/15) ([@AHeise](https://github.com/AHeise))
+
 ## [1.1.6](https://github.com/bakdata/gradle-plugins/tree/1.1.6) (2021-02-08)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.5...1.1.6)
 
