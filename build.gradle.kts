@@ -9,8 +9,8 @@ plugins {
     // release
     id("net.researchgate.release") version "2.6.0"
     // eat your own dog food - apply the plugins to this plugin project
-    id("com.bakdata.sonar") version "1.1.4"
-    id("com.bakdata.sonatype") version "1.1.4"
+    id("com.bakdata.sonar") version "1.1.6"
+    id("com.bakdata.sonatype") version "1.1.6"
     id("org.hildan.github.changelog") version "0.8.0"
 }
 
@@ -31,6 +31,14 @@ configure<com.bakdata.gradle.SonatypeSettings> {
         developer {
             name.set("Arvid Heise")
             id.set("AHeise")
+        }
+        developer {
+            name.set("Philipp Schirmer")
+            id.set("philipp94831")
+        }
+        developer {
+            name.set("Torben Meyer")
+            id.set("torbsto")
         }
     }
 }
