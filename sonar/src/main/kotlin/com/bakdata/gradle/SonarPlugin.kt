@@ -75,11 +75,11 @@ class SonarPlugin : Plugin<Project> {
                         reports.xml.isEnabled = true
                     }
 
-                    rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>()) }
+                    rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>(), tasks.withType<Test>()) }
                 }
             }
 
-            if(!subprojects.isEmpty()) {
+            if (!subprojects.isEmpty()) {
                 val jacocoMerge by tasks.registering(JacocoMerge::class) {
                     subprojects {
                         executionData(tasks.withType<JacocoReport>().map { it.executionData })
