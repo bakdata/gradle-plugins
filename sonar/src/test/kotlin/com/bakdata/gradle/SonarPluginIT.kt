@@ -71,7 +71,7 @@ internal class SonarPluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}")
+                .withArguments("test", "sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -116,7 +116,7 @@ internal class SonarPluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}", "--stacktrace", "--info")
+                .withArguments("test", "sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
