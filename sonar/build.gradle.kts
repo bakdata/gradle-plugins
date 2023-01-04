@@ -7,7 +7,7 @@ apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 description = "Configures sonar for multi project setups for all jvm languages"
 
 dependencies {
-    implementation( "org.sonarsource.scanner.gradle", "sonarqube-gradle-plugin", "3.3")
+    implementation( "org.sonarsource.scanner.gradle", "sonarqube-gradle-plugin", "3.5.0.2730")
 }
 
 tasks.withType<Test> {
