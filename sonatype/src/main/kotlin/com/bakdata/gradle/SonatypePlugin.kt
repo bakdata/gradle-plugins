@@ -26,10 +26,7 @@ package com.bakdata.gradle
 
 import de.marcphilipp.gradle.nexus.NexusPublishExtension
 import io.codearte.gradle.nexus.NexusStagingExtension
-import org.gradle.api.GradleException
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.UnknownTaskException
+import org.gradle.api.*
 import org.gradle.api.logging.Logging
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -57,7 +54,7 @@ class SonatypePlugin : Plugin<Project> {
 
         with(rootProject) {
             allprojects {
-                extensions.create<SonatypeSettings>("sonatype", this)
+                extensions.create("sonatype", SonatypeSettings::class.java)
             }
 
             // note that we need to use adjustConfiguration before applying the plugins (nexus-staging, nexus-publish),
@@ -70,7 +67,7 @@ class SonatypePlugin : Plugin<Project> {
 
             allprojects {
                 components.matching { it.name == "java" }.configureEach {
-                    if (extensions.findByType<PublishingExtension>() == null) {
+                    if (extensions.findByType(PublishingExtension::class.java) == null) {
                         log.info("Found java component in $project. Adding publishing tasks.")
                         addPublishTasks(project)
                     }
@@ -99,7 +96,7 @@ class SonatypePlugin : Plugin<Project> {
                         }
                     this.let { childTask ->
                         parentProvider.configure {
-                            dependsOn(childTask)
+                            it.dependsOn(childTask)
                         }
                     }
                 }
@@ -117,7 +114,7 @@ class SonatypePlugin : Plugin<Project> {
         // lazy execution, so that settings configurations are actually used
         afterEvaluate {
             // first try to set all settings, even if not given (yet)
-            project.configure<NexusStagingExtension> {
+            project.configure(NexusStagingExtension::class.java) {
                 packageGroup = "com.bakdata"
                 username = getOverriddenSetting(SonatypeSettings::osshrUsername)
                 password = getOverriddenSetting(SonatypeSettings::osshrPassword)
@@ -130,11 +127,11 @@ class SonatypePlugin : Plugin<Project> {
         gradle.taskGraph.whenReady {
             val missingProps = mutableSetOf<KProperty1<SonatypeSettings, Any?>>()
 
-            val onlyLocalPublish = this.allTasks
+            val onlyLocalPublish = getAllTasks(true).values.flatMap { it }
                 .filterIsInstance<AbstractPublishToMaven>()
                 .all { it is PublishToMavenLocal }
 
-            this.allTasks.filter { it is Sign }.forEach {
+            this.getAllTasks(true).values.flatMap { it }.filter { it is Sign }.forEach {
                 // disable sign for publishToLocalMaven
                 it.onlyIf { !onlyLocalPublish }
 
@@ -149,7 +146,7 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            if (this.allTasks.any { it is AbstractPublishToMaven }) {
+            if (this.getAllTasks(true).values.flatMap { it }.any { it is AbstractPublishToMaven }) {
                 project.configure<NexusStagingExtension> {
                     if (username == null) {
                         missingProps.add(SonatypeSettings::osshrUsername)
@@ -310,9 +307,9 @@ class SonatypePlugin : Plugin<Project> {
     }
 
     private fun Project.logNexusPublishingSetting() {
-        extensions.findByType(NexusPublishExtension::class)?.let {
+        extensions.findByType(NexusPublishExtension::class.java)?.let {
             project.logger.debug(
-                "Publish to Nexus (${it.repositories["nexus"].nexusUrl.get()}) " +
+                "Publish to Nexus (${it.repositories.getByName("nexus").nexusUrl.get()}) " +
                         "with connect timeout of ${it.connectTimeout.get()} " +
                         "and client timeout of ${it.clientTimeout.get()}"
             )

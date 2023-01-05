@@ -47,40 +47,40 @@ class SonarPlugin : Plugin<Project> {
         }
 
         with(rootProject) {
-            apply(plugin = "org.sonarqube")
+            plugins.apply("org.sonarqube")
 
             allprojects {
-                plugins.withType<JavaPlugin> {
+                plugins.withType(JavaPlugin::class.java) {
                     log.info("Found java component in $project. Adding jacoco and wiring to sonarqube.")
 
-                    project.apply(plugin = "jacoco")
+                    project.plugins.apply("jacoco")
 
-                    project.tasks.withType<Test> {
-                        testLogging {
-                            showStandardStreams = true
+                    project.tasks.withType(Test::class.java) {
+                        it.testLogging { logging ->
+                            logging.showStandardStreams = true
 
-                            events("passed", "skipped", "failed")
-                            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+                            logging.events("passed", "skipped", "failed")
+                            logging.exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
                         }
-                        useJUnitPlatform()
-                        systemProperty("java.util.logging.config.file", "src/test/resources/logging.properties")
+                        it.useJUnitPlatform()
+                        it.systemProperty("java.util.logging.config.file", "src/test/resources/logging.properties")
                     }
 
                     project.configure<JacocoPluginExtension> {
                         // smaller versions won't work with kotlin properly
-                        toolVersion = "0.8.3"
+                        it.toolVersion = "0.8.3"
                     }
 
-                    tasks.withType<JacocoReport> {
-                        reports.xml.isEnabled = true
+                    tasks.withType(JacocoReport::class.java) {
+                        it.reports.xml.required.set(true)
                     }
 
-                    rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>(), tasks.withType<Test>()) }
+                    rootProject.tasks.named("sonarqube") { it.dependsOn(tasks.withType(JacocoReport::class.java), tasks.withType(Test::class.java)) }
                 }
             }
 
             if (!subprojects.isEmpty()) {
-                val jacocoMerge by tasks.registering(JacocoMerge::class) {
+                project.getTasks().register("jacocoMerge", JacocoMerge.class, task -> {
                     subprojects {
                         executionData(tasks.withType<JacocoReport>().map { it.executionData })
                     }

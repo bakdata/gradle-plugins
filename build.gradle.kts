@@ -1,17 +1,12 @@
-buildscript {
-    dependencies {
-        classpath("org.gradle.kotlin:plugins:1.2.0")
-        classpath("com.gradle.publish:plugin-publish-plugin:0.11.0")
-    }
-}
-
 plugins {
+    `kotlin-dsl`
+    id("com.gradle.plugin-publish") version "0.11.0"
     // release
-    id("net.researchgate.release") version "2.6.0"
+    id("net.researchgate.release") version "3.0.2"
     // eat your own dog food - apply the plugins to this plugin project
-    id("com.bakdata.sonar") version "1.1.6"
-    id("com.bakdata.sonatype") version "1.1.6"
-    id("org.hildan.github.changelog") version "0.8.0"
+//    id("com.bakdata.sonar") version "1.1.7"
+    id("com.bakdata.sonatype") version "1.1.7"
+    id("org.hildan.github.changelog") version "1.12.1"
 }
 
 allprojects {
@@ -26,22 +21,22 @@ allprojects {
     }
 }
 
-configure<com.bakdata.gradle.SonatypeSettings> {
-    developers {
-        developer {
-            name.set("Arvid Heise")
-            id.set("AHeise")
-        }
-        developer {
-            name.set("Philipp Schirmer")
-            id.set("philipp94831")
-        }
-        developer {
-            name.set("Torben Meyer")
-            id.set("torbsto")
-        }
-    }
-}
+//configure<com.bakdata.gradle.SonatypeSettings> {
+//    developers {
+//        developer {
+//            name.set("Arvid Heise")
+//            id.set("AHeise")
+//        }
+//        developer {
+//            name.set("Philipp Schirmer")
+//            id.set("philipp94831")
+//        }
+//        developer {
+//            name.set("Torben Meyer")
+//            id.set("torbsto")
+//        }
+//    }
+//}
 
 configure<org.hildan.github.changelog.plugin.GitHubChangelogExtension> {
     githubUser = "bakdata"
@@ -53,6 +48,7 @@ subprojects {
     apply(plugin = "java")
 
     dependencies {
+        implementation(gradleApi())
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
         "testImplementation"("org.assertj", "assertj-core", "3.11.1")

@@ -1,8 +1,7 @@
 plugins {
-    kotlin("jvm")
-    id("org.jetbrains.dokka") version "0.9.17"
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.dokka") version "1.7.20"
 }
-apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
 description = "Sets up nexusPublish and closeAndReleaseRepository tasks to push to sonatype (and later synced to central)"
 
