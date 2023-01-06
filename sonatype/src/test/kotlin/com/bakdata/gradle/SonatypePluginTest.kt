@@ -63,7 +63,7 @@ internal class SonatypePluginTest {
                     .haveExactly(1, taskWithName("signSonatypePublication"))
                     .haveExactly(1, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
-                    .haveExactly(1, taskWithName("closeAndReleaseRepository"))
+                    .haveExactly(1, taskWithName("closeAndReleaseStagingRepository"))
         }
     }
 
@@ -94,7 +94,7 @@ internal class SonatypePluginTest {
                         .haveExactly(1, taskWithName("signSonatypePublication"))
                         .haveExactly(1, taskWithName("publish"))
                         .haveExactly(1, taskWithName("publishToNexus"))
-                        .haveExactly(0, taskWithName("closeAndReleaseRepository"))
+                        .haveExactly(0, taskWithName("closeAndReleaseStagingRepository"))
             }
         }
 
@@ -103,7 +103,7 @@ internal class SonatypePluginTest {
                     .haveExactly(0, taskWithName("signSonatypePublication"))
                     .haveExactly(0, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
-                    .haveExactly(1, taskWithName("closeAndReleaseRepository"))
+                    .haveExactly(1, taskWithName("closeAndReleaseStagingRepository"))
         }
     }
 

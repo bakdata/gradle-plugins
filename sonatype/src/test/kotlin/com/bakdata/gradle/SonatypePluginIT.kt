@@ -56,7 +56,7 @@ internal class SonatypePluginIT {
     }
 
     @Test
-    fun testSingleModuleProject(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
+    fun `test single module project`(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
             plugins {
                 id("com.bakdata.sonatype")
@@ -90,7 +90,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToNexus", "closeAndReleaseRepository", "--stacktrace", "--info")
+                .withArguments("publishToNexus", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -98,7 +98,7 @@ internal class SonatypePluginIT {
             softly.assertThat(result.tasks)
                     .haveExactly(1, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepository", TaskOutcome.SUCCESS))
         }
 
         val projectName = testProjectDir.fileName.toString()

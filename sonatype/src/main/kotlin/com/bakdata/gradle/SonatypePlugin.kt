@@ -24,8 +24,10 @@
 
 package com.bakdata.gradle
 
-import de.marcphilipp.gradle.nexus.NexusPublishExtension
-import io.codearte.gradle.nexus.NexusStagingExtension
+import io.github.gradlenexus.publishplugin.NexusPublishException
+import io.github.gradlenexus.publishplugin.NexusPublishExtension
+import io.github.gradlenexus.publishplugin.NexusPublishPlugin
+import io.github.gradlenexus.publishplugin.NexusRepository
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -33,6 +35,7 @@ import org.gradle.api.UnknownTaskException
 import org.gradle.api.logging.Logging
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
@@ -66,11 +69,11 @@ class SonatypePlugin : Plugin<Project> {
             adjustConfiguration()
 
             plugins.apply("base")
-            plugins.apply("io.codearte.nexus-staging")
+            plugins.apply("io.github.gradle-nexus.publish-plugin")
 
             allprojects {
                 components.matching { it.name == "java" }.configureEach {
-                    if (extensions.findByType<PublishingExtension>() == null) {
+                    if (extensions.findByType(PublishingExtension::class.java) == null) {
                         log.info("Found java component in $project. Adding publishing tasks.")
                         addPublishTasks(project)
                     }
@@ -117,11 +120,17 @@ class SonatypePlugin : Plugin<Project> {
         // lazy execution, so that settings configurations are actually used
         afterEvaluate {
             // first try to set all settings, even if not given (yet)
-            project.configure<NexusStagingExtension> {
-                packageGroup = "com.bakdata"
-                username = getOverriddenSetting(SonatypeSettings::osshrUsername)
-                password = getOverriddenSetting(SonatypeSettings::osshrPassword)
-                getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }
+            project.configure<NexusPublishExtension> {
+                packageGroup.set("com.bakdata")
+
+                repositories.sonatype {
+                    username.set(getOverriddenSetting(SonatypeSettings::osshrUsername))
+                    password.set(getOverriddenSetting(SonatypeSettings::osshrPassword))
+                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(URI(it)) }
+                }
+
+                val findByName = repositories.withType(NexusRepository::class).findByName("sonatype")
+                log.info("Ramin chosefil: {}", findByName?.username)
             }
         }
 
@@ -150,14 +159,16 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             if (this.allTasks.any { it is AbstractPublishToMaven }) {
-                project.configure<NexusStagingExtension> {
-                    if (username == null) {
+
+                project.configure<NexusPublishExtension> {
+                    val withType = repositories.withType(NexusRepository::class).findByName("sonatype")
+                    if (withType?.username == null) {
                         missingProps.add(SonatypeSettings::osshrUsername)
                     }
-                    if (password == null) {
+                    if (withType?.password == null) {
                         missingProps.add(SonatypeSettings::osshrPassword)
                     }
-                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }
+                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { withType?.nexusUrl?.set(URI(it)) }
                 }
 
                 allprojects {
@@ -213,7 +224,7 @@ class SonatypePlugin : Plugin<Project> {
                 if (hasTask(":release") && System.getenv("CI") == null) {
                     throw GradleException("Release is only supported through CI (e.g., Travis)")
                 }
-                if (hasTask(":closeAndReleaseRepository") && System.getenv("CI") == null) {
+                if (hasTask(":closeAndReleaseStagingRepository") && System.getenv("CI") == null) {
                     throw GradleException("Closing a release is only supported through CI (e.g., Travis)")
                 }
             }
@@ -223,8 +234,8 @@ class SonatypePlugin : Plugin<Project> {
 
     private fun addPublishTasks(project: Project) {
         with(project) {
+            apply(plugin = "org.gradle.maven-publish")
             apply(plugin = "signing")
-            apply(plugin = "de.marcphilipp.nexus-publish")
 
             repositories {
                 maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
