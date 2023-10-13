@@ -17,7 +17,7 @@ jobs:
       signing-secret-key-ring: ${{ secrets.SONATYPE_SIGNING_SECRET_KEY_RING }}
       ossrh-password: ${{ secrets.SONATYPE_OSSRH_PASSWORD }}
       ossrh-username: ${{ secrets.SONATYPE_OSSRH_USERNAME }}
-      gradle-publish-key: ${{ secrets.GRADLE_PUBLISH_KEY }}
-      gradle-publish-secret: ${{ secrets.GRADLE_PUBLISH_SECRET }}
+      gradle-publish-key: ${{ secrets.GRADLE_PLUGIN_PUBLISH_KEY }}
+      gradle-publish-secret: ${{ secrets.GRADLE_PLUGIN_PUBLISH_SECRET }}
       github-username: ${{ secrets.GH_USERNAME }}
       github-token: ${{ secrets.GH_TOKEN }}
