@@ -19,6 +19,7 @@ jobs:
     uses: bakdata/ci-templates/.github/workflows/java-gradle-release.yaml@1.39.0
     with:
       release-type: "${{ inputs.release-type }}"
+    
     secrets:
       github-email: "${{ secrets.GH_EMAIL }}"
       github-username: "${{ secrets.GH_USERNAME }}"
