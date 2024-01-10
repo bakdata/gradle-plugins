@@ -212,7 +212,7 @@ internal class SonatypePluginIT {
 
         private const val PROFILE_ID: Int = 7
 
-        private const val STAGING_ID: Int = 5
+        private const val STAGING_ID: String = "8412378836ed9c"
 
         private const val REPO_ID: Int = 9
 
