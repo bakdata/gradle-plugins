@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.1.8](https://github.com/bakdata/gradle-plugins/tree/1.1.8) (2024-01-10)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.7...1.1.8)
+
+**Closed issues:**
+
+- docs? [\#22](https://github.com/bakdata/gradle-plugins/issues/22)
+
+**Merged pull requests:**
+
+- Configure staging profile ID for Nexus release [\#31](https://github.com/bakdata/gradle-plugins/pull/31) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.1.7](https://github.com/bakdata/gradle-plugins/tree/1.1.7) (2021-09-02)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.6...1.1.7)
 
