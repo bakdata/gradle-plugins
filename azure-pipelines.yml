@@ -13,6 +13,7 @@ variables:
   - group: sign
   - group: ossrh
   - group: gradle_plugin_portal
+  - group: changelog
 
 resources:
   repositories:
