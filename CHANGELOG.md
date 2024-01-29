@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.11](https://github.com/bakdata/gradle-plugins/tree/1.1.11) (2024-01-29)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.10...1.1.11)
+
+**Merged pull requests:**
+
+- Update Jacoco for Java 21 compatibility [\#32](https://github.com/bakdata/gradle-plugins/pull/32) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.1.10](https://github.com/bakdata/gradle-plugins/tree/1.1.10) (2024-01-29)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.9...1.1.10)
 
