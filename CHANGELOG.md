@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.1.10](https://github.com/bakdata/gradle-plugins/tree/1.1.10) (2024-01-29)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.9...1.1.10)
+
+**Merged pull requests:**
+
+- Update SonarQube Plugin [\#25](https://github.com/bakdata/gradle-plugins/pull/25) ([@philipp94831](https://github.com/philipp94831))
+
+## [1.1.9](https://github.com/bakdata/gradle-plugins/tree/1.1.9) (2024-01-10)
+[Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.8...1.1.9)
+
+
 ## [1.1.8](https://github.com/bakdata/gradle-plugins/tree/1.1.8) (2024-01-10)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.7...1.1.8)
 
