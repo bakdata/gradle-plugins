@@ -210,7 +210,7 @@ internal class SonatypePluginIT {
     companion object {
         private const val TEST_GROUP: String = "com.bakdata"
 
-        private const val PROFILE_ID: Int = 7
+        private const val PROFILE_ID: String = "8412378836ed9c"
 
         private const val STAGING_ID: Int = 5
 
