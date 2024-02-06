@@ -119,6 +119,7 @@ class SonatypePlugin : Plugin<Project> {
             // first try to set all settings, even if not given (yet)
             project.configure<NexusStagingExtension> {
                 packageGroup = "com.bakdata"
+                stagingProfileId = "8412378836ed9c"
                 username = getOverriddenSetting(SonatypeSettings::osshrUsername)
                 password = getOverriddenSetting(SonatypeSettings::osshrPassword)
                 getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }

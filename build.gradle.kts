@@ -9,8 +9,8 @@ plugins {
     // release
     id("net.researchgate.release") version "2.6.0"
     // eat your own dog food - apply the plugins to this plugin project
-    id("com.bakdata.sonar") version "1.1.6"
-    id("com.bakdata.sonatype") version "1.1.6"
+    id("com.bakdata.sonar") version "1.1.7"
+    id("com.bakdata.sonatype") version "1.1.7"
     id("org.hildan.github.changelog") version "0.8.0"
 }
 
@@ -94,3 +94,6 @@ if (!version.toString().endsWith("-SNAPSHOT")) {
         }
     }
 }
+
+val sonarqube by tasks
+sonarqube.enabled = false //FIXME requires Java 17
