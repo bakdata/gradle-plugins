@@ -80,6 +80,10 @@ class SonatypePlugin : Plugin<Project> {
             addParentPublishToNexusTasks()
 
             disallowPublishTasks()
+
+            tasks.named("closeRepository") {
+                mustRunAfter("publishToNexus")
+            }
         }
     }
 
