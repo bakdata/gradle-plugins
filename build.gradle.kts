@@ -97,3 +97,7 @@ if (!version.toString().endsWith("-SNAPSHOT")) {
 
 val sonarqube by tasks
 sonarqube.enabled = false //FIXME requires Java 17
+
+tasks.named("closeRepository") {
+    mustRunAfter("publishToNexus")
+}
