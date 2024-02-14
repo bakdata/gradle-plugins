@@ -77,11 +77,9 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            if (tasks.findByName("publishToNexus") == null) {
-                tasks.register("publishToNexus")
-            }
+            val publishToNexus = tasks.findByName("publishToNexus") ?: tasks.create("publishToNexus")
             tasks.named("closeRepository") {
-                mustRunAfter("publishToNexus")
+                mustRunAfter(publishToNexus)
             }
 
             addParentPublishToNexusTasks()
