@@ -80,6 +80,10 @@ class SonatypePlugin : Plugin<Project> {
             addParentPublishToNexusTasks()
 
             disallowPublishTasks()
+
+            tasks.named("closeRepository") {
+                mustRunAfter("publishToNexus")
+            }
         }
     }
 
@@ -91,12 +95,7 @@ class SonatypePlugin : Plugin<Project> {
             val parent = project.parent
             if (parent != null) {
                 tasks.matching { it.name == "publishToNexus" }.configureEach {
-                    val parentProvider =
-                        try {
-                            parent.tasks.named("publishToNexus")
-                        } catch (e: UnknownTaskException) {
-                            parent.tasks.register("publishToNexus")
-                        }
+                    val parentProvider = parent.tasks.named("publishToNexus")
                     this.let { childTask ->
                         parentProvider.configure {
                             dependsOn(childTask)
