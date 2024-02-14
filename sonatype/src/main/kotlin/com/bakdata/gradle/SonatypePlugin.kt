@@ -77,9 +77,7 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            try {
-                tasks.named("publishToNexus")
-            } catch (e: UnknownTaskException) {
+            if (tasks.findByName("publishToNexus") == null) {
                 tasks.register("publishToNexus")
             }
             tasks.named("closeRepository") {
