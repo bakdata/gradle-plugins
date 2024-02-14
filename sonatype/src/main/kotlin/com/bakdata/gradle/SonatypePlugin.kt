@@ -77,26 +77,32 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            val publishToNexus = tasks.findByName("publishToNexus") ?: tasks.create("publishToNexus")
-            tasks.named("closeRepository") {
-                mustRunAfter(publishToNexus)
-            }
-
             addParentPublishToNexusTasks()
 
             disallowPublishTasks()
+
+            afterEvaluate {
+                tasks.named("closeRepository") {
+                    mustRunAfter("publishToNexus")
+                }
+            }
         }
     }
 
     /**
-     * Recursively add dependency for parent publishToNexus task on the children.
+     * Recursively add publishToNexus (if not exists) which depends on the children.
      */
     private fun Project.addParentPublishToNexusTasks() {
         allprojects {
             val parent = project.parent
             if (parent != null) {
                 tasks.matching { it.name == "publishToNexus" }.configureEach {
-                    val parentProvider = parent.tasks.named("publishToNexus")
+                    val parentProvider =
+                        try {
+                            parent.tasks.named("publishToNexus")
+                        } catch (e: UnknownTaskException) {
+                            parent.tasks.register("publishToNexus")
+                        }
                     this.let { childTask ->
                         parentProvider.configure {
                             dependsOn(childTask)
