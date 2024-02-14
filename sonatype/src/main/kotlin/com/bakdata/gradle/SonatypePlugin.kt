@@ -77,13 +77,20 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
+            val publishToNexusProvider = try {
+                tasks.named("publishToNexus")
+            } catch (e: UnknownTaskException) {
+                tasks.register("publishToNexus")
+            }
+            publishToNexusProvider.configure {
+                tasks.named("closeRepository") {
+                    mustRunAfter(this@configure)
+                }
+            }
+
             addParentPublishToNexusTasks()
 
             disallowPublishTasks()
-
-            tasks.named("closeRepository") {
-                mustRunAfter("publishToNexus")
-            }
         }
     }
 
