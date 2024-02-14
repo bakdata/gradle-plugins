@@ -1,4 +1,6 @@
 # Change Log
+- no changes!
+
 
 ## [1.1.11](https://github.com/bakdata/gradle-plugins/tree/1.1.11) (2024-01-29)
 [Full Changelog](https://github.com/bakdata/gradle-plugins/compare/1.1.10...1.1.11)
