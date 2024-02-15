@@ -101,7 +101,7 @@ class SonarPlugin : Plugin<Project> {
                 }
 
                 // using a newer feature of sonarqube to use the xml reports which also makes it language-agnostic
-                configure<org.sonarqube.gradle.SonarQubeExtension> {
+                configure<org.sonarqube.gradle.SonarExtension> {
                     properties {
                         property("sonar.coverage.jacoco.xmlReportPaths",
                                 rootProject.tasks.withType<JacocoReport>().map { it.reports.xml.destination })
