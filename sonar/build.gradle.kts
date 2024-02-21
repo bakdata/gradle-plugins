@@ -15,3 +15,7 @@ tasks.withType<Test> {
     environment("SONAR_SCANNER_HOME", "")
     environment("SONARQUBE_SCANNER_PARAMS", "{}")
 }
+
+tasks.withType<Sign> {
+    enabled = false //FIXME Signing Gradle Module Metadata is not supported for snapshot dependencies
+}
