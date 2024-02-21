@@ -140,7 +140,7 @@ internal class SonarPluginTest {
 // FIXME If original type is SAM type, then candidate should have same type constructor and corresponding function type
 //originalExpectType: (java.util.function.Consumer<(ACTUAL..ACTUAL?)>..java.util.function.Consumer<(ACTUAL..ACTUAL?)>?), candidateExpectType: Nothing
 //functionTypeByOriginal: (((ACTUAL..ACTUAL?)) -> kotlin.Unit..(((ACTUAL..ACTUAL?)) -> kotlin.Unit)?), functionTypeByCandidate: null
-        assertThatCode { child1.pluginManager.apply("com.bakdata.sonar") }.isNull()
+        assertThatCode { child1.pluginManager.apply("com.bakdata.sonar") }.isNotNull()
 //                .satisfies { assertThat(it.cause).hasMessageContaining("top-level project") }
     }
 }
