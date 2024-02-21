@@ -80,19 +80,14 @@ class SonarPlugin : Plugin<Project> {
             }
 
             if (!subprojects.isEmpty()) {
-                val jacocoMerge by tasks.registering(JacocoMerge::class) {
+                tasks.register<JacocoReport>("jacocoRootReport") {
                     subprojects {
                         executionData(tasks.withType<JacocoReport>().map { it.executionData })
                     }
-                    destinationFile = file("$buildDir/jacoco")
-                }
-                tasks.register<JacocoReport>("jacocoRootReport") {
-                    dependsOn(jacocoMerge)
                     sourceDirectories.from(files(subprojects.map {
                         it.the<SourceSetContainer>()["main"].allSource.srcDirs
                     }))
                     classDirectories.from(files(subprojects.map { it.the<SourceSetContainer>()["main"].output }))
-                    executionData(jacocoMerge.get().destinationFile)
                     reports {
                         html.isEnabled = true
                         xml.isEnabled = true
