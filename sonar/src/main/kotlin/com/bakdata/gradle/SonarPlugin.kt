@@ -99,7 +99,7 @@ class SonarPlugin : Plugin<Project> {
                 configure<org.sonarqube.gradle.SonarExtension> {
                     properties {
                         property("sonar.coverage.jacoco.xmlReportPaths",
-                                rootProject.tasks.withType<JacocoReport>().map { it.reports.xml.destination })
+                                rootProject.tasks.withType<JacocoReport>().map { it.reports.xml.outputLocation.asFile })
                     }
                 }
             }
