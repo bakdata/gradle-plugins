@@ -97,3 +97,7 @@ if (!version.toString().endsWith("-SNAPSHOT")) {
 
 val sonarqube by tasks
 sonarqube.enabled = false //FIXME requires Java 17
+
+tasks.withType<Sign> {
+    enabled = false //FIXME Signing Gradle Module Metadata is not supported for snapshot dependencies
+}
