@@ -32,11 +32,14 @@ import org.assertj.core.api.SoftAssertions
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
+import org.gradle.kotlin.dsl.apply
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
 internal class SonarPluginTest {
     fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
+
+    fun causeWithMessage(message: String): Condition<Throwable> = Condition({ it.cause?.message?.contains(message) ?: false }, "Cause with message $message")
 
     fun Project.evaluate() {
         (this as DefaultProject).evaluate()
@@ -137,10 +140,12 @@ internal class SonarPluginTest {
         val parent = ProjectBuilder.builder().withName("parent").build()
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
-// FIXME If original type is SAM type, then candidate should have same type constructor and corresponding function type
-//originalExpectType: (java.util.function.Consumer<(ACTUAL..ACTUAL?)>..java.util.function.Consumer<(ACTUAL..ACTUAL?)>?), candidateExpectType: Nothing
-//functionTypeByOriginal: (((ACTUAL..ACTUAL?)) -> kotlin.Unit..(((ACTUAL..ACTUAL?)) -> kotlin.Unit)?), functionTypeByCandidate: null
-        assertThatCode { child1.pluginManager.apply("com.bakdata.sonar") }.isNotNull()
-//                .satisfies { assertThat(it.cause).hasMessageContaining("top-level project") }
+        // Error message is thrown when passing as Consumer to satisfies
+        // If original type is SAM type, then candidate should have same type constructor and corresponding function type
+        // originalExpectType: (java.util.function.Consumer<(ACTUAL..ACTUAL?)>..java.util.function.Consumer<(ACTUAL..ACTUAL?)>?), candidateExpectType: Nothing
+        // functionTypeByOriginal: (((ACTUAL..ACTUAL?)) -> kotlin.Unit..(((ACTUAL..ACTUAL?)) -> kotlin.Unit)?), functionTypeByCandidate: null
+        // Seems related to https://github.com/assertj/assertj/issues/2357
+        assertThatCode { child1.pluginManager.apply("com.bakdata.sonar") }
+            .satisfies(causeWithMessage("top-level project"))
     }
 }
