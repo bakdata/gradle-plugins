@@ -21,7 +21,3 @@ tasks.withType<Test> {
         showStandardStreams = true
     }
 }
-
-tasks.withType<Sign> {
-    enabled = false //FIXME Signing Gradle Module Metadata is not supported for snapshot dependencies
-}

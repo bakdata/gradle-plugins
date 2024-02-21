@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.dokka") version "0.10.1"
+    id("org.jetbrains.dokka") version "0.9.17"
 }
 apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
@@ -14,8 +14,4 @@ tasks.withType<Test> {
     // overwrite the sonarqube env variable on travis
     environment("SONAR_SCANNER_HOME", "")
     environment("SONARQUBE_SCANNER_PARAMS", "{}")
-}
-
-tasks.withType<Sign> {
-    enabled = false //FIXME Signing Gradle Module Metadata is not supported for snapshot dependencies
 }
