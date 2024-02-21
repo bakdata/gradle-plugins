@@ -137,10 +137,7 @@ internal class SonarPluginTest {
         val parent = ProjectBuilder.builder().withName("parent").build()
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
-// FIXME If original type is SAM type, then candidate should have same type constructor and corresponding function type
-//originalExpectType: (java.util.function.Consumer<(ACTUAL..ACTUAL?)>..java.util.function.Consumer<(ACTUAL..ACTUAL?)>?), candidateExpectType: Nothing
-//functionTypeByOriginal: (((ACTUAL..ACTUAL?)) -> kotlin.Unit..(((ACTUAL..ACTUAL?)) -> kotlin.Unit)?), functionTypeByCandidate: null
-//        assertThatCode { child1.pluginManager.apply("com.bakdata.sonar") }
-//                .satisfies { assertThat(it.cause?.message).contains("top-level project") }
+        assertThatCode { child1.pluginManager.apply("com.bakdata.sonar") }
+                .satisfies { assertThat(it.cause).hasMessageContaining("top-level project") }
     }
 }
