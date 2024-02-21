@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2019 bakdata GmbH
+ * Copyright (c) 2024 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ class SonarPlugin : Plugin<Project> {
                     }
 
                     tasks.withType<JacocoReport> {
-                        reports.xml.isEnabled = true
+                        reports.xml.getRequired().set(true)
                     }
 
                     rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>(), tasks.withType<Test>()) }

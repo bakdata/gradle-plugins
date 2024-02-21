@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2019 bakdata GmbH
+ * Copyright (c) 2024 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -102,12 +102,12 @@ internal class SonatypePluginIT {
         }
 
         val projectName = testProjectDir.fileName.toString()
-        val expectedUploades = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar")
+        val expectedUploads = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar", ".module")
                 .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus("$projectName/maven-metadata.xml")
-                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1") }
-        assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploades)
+                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+        assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
     private fun getUploadedFilesInGroup(wiremock: WireMockServer): List<String> {
@@ -122,7 +122,13 @@ internal class SonatypePluginIT {
                 .willReturn(okJson("""{"data": [{"id": $PROFILE_ID, "name": "${TEST_GROUP}"}]}""")))
         wiremock.stubFor(post(urlMatching("/staging/profiles/$PROFILE_ID/start"))
                 .willReturn(okJson("""{"data": {"stagedRepositoryId": $STAGING_ID}}""")))
-        wiremock.stubFor(any(urlMatching("/staging/deploy.*"))
+        wiremock.stubFor(get(urlMatching("/staging/deployByRepositoryId/$STAGING_ID/.*/maven-metadata.xml"))
+                .willReturn(okXml("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <metadata modelVersion="1.1.0">
+                    </metadata>
+                """.trimIndent())))
+        wiremock.stubFor(put(urlMatching("/staging/deploy.*"))
                 .willReturn(ok()))
         wiremock.stubFor(get(urlMatching("/staging/profile_repositories/$PROFILE_ID"))
                 .willReturn(okJson("""{"data": [{"type": "open", "repositoryId": "$REPO_ID"}]}""")))
@@ -199,12 +205,12 @@ internal class SonatypePluginIT {
                     .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
         }
 
-        val expectedUploades = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar")
+        val expectedUploads = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar", ".module")
                 .flatMap { classifier -> children.map { child -> "$child/$TEST_VERSION/$child-$TEST_VERSION$classifier" } }
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus(children.map { child -> "$child/maven-metadata.xml" })
-                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1") }
-        assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploades)
+                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+        assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
     companion object {
