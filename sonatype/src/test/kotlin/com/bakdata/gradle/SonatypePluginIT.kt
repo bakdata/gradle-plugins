@@ -56,7 +56,6 @@ internal class SonatypePluginIT {
         return withPluginClasspath(classpath.split(":").map { File(it) })
     }
 
-    @Disabled("java.io.EOFException: input contained no data") //FIXME
     @Test
     fun testSingleModuleProject(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
