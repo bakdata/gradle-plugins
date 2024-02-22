@@ -1,17 +1,17 @@
 buildscript {
     dependencies {
-        classpath("org.gradle.kotlin:plugins:1.3.3")
-        classpath("com.gradle.publish:plugin-publish-plugin:0.11.0")
+        classpath("org.gradle.kotlin:gradle-kotlin-dsl-plugins:4.3.0")
+        classpath("com.gradle.publish:plugin-publish-plugin:1.2.1")
     }
 }
 
 plugins {
     // release
-    id("net.researchgate.release") version "2.6.0"
+    id("net.researchgate.release") version "3.0.2"
     // eat your own dog food - apply the plugins to this plugin project
-    id("com.bakdata.sonar") version "1.1.14"
+    id("com.bakdata.sonar") version "1.1.17"
     id("com.bakdata.sonatype") version "1.1.14"
-    id("org.hildan.github.changelog") version "0.8.0"
+    id("org.hildan.github.changelog") version "2.2.0"
 }
 
 allprojects {
@@ -52,6 +52,12 @@ configure<org.hildan.github.changelog.plugin.GitHubChangelogExtension> {
 subprojects {
     apply(plugin = "java")
 
+    configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(11)
+        }
+    }
+
     dependencies {
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
@@ -76,6 +82,7 @@ if (!version.toString().endsWith("-SNAPSHOT")) {
                             id = "com.bakdata.${project.name}"
                             implementationClass = "com.bakdata.gradle.${project.name.capitalize()}Plugin"
                             description = project.description
+                            displayName = "Bakdata $name plugin"
                         }
                     }
                 }
@@ -83,17 +90,15 @@ if (!version.toString().endsWith("-SNAPSHOT")) {
                 configure<com.gradle.publish.PluginBundleExtension> {
                     website = "https://github.com/bakdata/gradle-plugins"
                     vcsUrl = "https://github.com/bakdata/gradle-plugins"
-                    (plugins) {
-                        "${name.capitalize()}Plugin" {
-                            displayName = "Bakdata $name plugin"
-                            tags = listOf("bakdata", name)
-                        }
-                    }
+                    tags = listOf("bakdata", name)
                 }
             }
         }
     }
 }
 
-val sonarqube by tasks
-sonarqube.enabled = false //FIXME requires Java 17
+release {
+    git {
+        requireBranch.set("master")
+    }
+}
