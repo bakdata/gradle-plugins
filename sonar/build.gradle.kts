@@ -1,12 +1,13 @@
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") version "1.4.20"
     id("org.jetbrains.dokka") version "1.9.10"
 }
-apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
 description = "Configures sonar for multi project setups for all jvm languages"
 
 dependencies {
+    implementation(gradleApi())
+    implementation(gradleKotlinDsl())
     implementation( "org.sonarsource.scanner.gradle", "sonarqube-gradle-plugin", "4.4.1.3373")
 }
 
