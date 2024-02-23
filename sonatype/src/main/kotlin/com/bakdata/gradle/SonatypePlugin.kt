@@ -233,10 +233,6 @@ class SonatypePlugin : Plugin<Project> {
             apply(plugin = "signing")
             apply(plugin = "de.marcphilipp.nexus-publish")
 
-            repositories {
-                maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
-            }
-
             val javadocJar by tasks.creating(Jar::class) {
                 archiveClassifier.set("javadoc")
                 from(tasks.findByName("javadoc") ?: tasks.findByName("dokka"))
@@ -258,8 +254,8 @@ class SonatypePlugin : Plugin<Project> {
             configure<NexusPublishExtension> {
                 // create default repository called 'nexus' and set the corresponding default urls
                 repositories.create("nexus") {
-                    nexusUrl.set(URI.create("https://oss.sonatype.org/service/local/"))
-                    snapshotRepositoryUrl.set(URI.create("https://oss.sonatype.org/content/repositories/snapshots/"))
+                    nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
+                    snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
                 }
             }
 
