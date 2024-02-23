@@ -41,8 +41,6 @@ configure<com.bakdata.gradle.SonatypeSettings> {
             id.set("torbsto")
         }
     }
-    nexusUrl = "https://s01.oss.sonatype.org/service/local/"
-    snapshotUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
 }
 
 configure<org.hildan.github.changelog.plugin.GitHubChangelogExtension> {
