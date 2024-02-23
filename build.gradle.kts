@@ -3,7 +3,7 @@ plugins {
     id("net.researchgate.release") version "3.0.2"
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.sonar") version "1.1.17"
-    id("com.bakdata.sonatype") version "1.1.14"
+    id("com.bakdata.sonatype") version "1.1.18"
     id("org.hildan.github.changelog") version "1.13.1"
     id("org.gradle.kotlin.kotlin-dsl") version "1.4.9" apply false
     id("com.gradle.plugin-publish") version "1.2.1" apply false
