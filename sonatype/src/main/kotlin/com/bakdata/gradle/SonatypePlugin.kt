@@ -220,15 +220,13 @@ class SonatypePlugin : Plugin<Project> {
                 from(tasks.findByName("javadoc") ?: tasks.findByName("dokka"))
             }
 
-            val sourcesJar by tasks.creating(Jar::class) {
-                archiveClassifier.set("sources")
-                from(project.the<SourceSetContainer>()["main"].allSource)
+            configure<JavaPluginExtension> {
+                withSourcesJar()
             }
 
             configure<PublishingExtension> {
                 publications.create<MavenPublication>("sonatype") {
                     from(components["java"])
-                    artifact(sourcesJar)
                     artifact(javadocJar)
                 }
             }
@@ -238,7 +236,7 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             tasks.withType<InitializeNexusStagingRepository> {
-                shouldRunAfter(tasks.withType<Sign>())
+                mustRunAfter(tasks.withType<Sign>())
             }
         }
     }
