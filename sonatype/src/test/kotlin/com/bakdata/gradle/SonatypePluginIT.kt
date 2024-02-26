@@ -56,7 +56,6 @@ internal class SonatypePluginIT {
         return withPluginClasspath(classpath.split(":").map { File(it) })
     }
 
-    @Disabled
     @Test
     fun testSingleModuleProject(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
@@ -120,6 +119,9 @@ internal class SonatypePluginIT {
     }
 
     private fun mockNexusProtocol(wiremock: WireMockServer) {
+        wiremock.addMockServiceRequestListener { request, response ->
+            println("Got request ${request.method} ${request.url} with response ${response.status}")
+        }
         wiremock.stubFor(get(urlMatching("/staging/profiles"))
                 .willReturn(okJson("""{"data": [{"id": $PROFILE_ID, "name": "${TEST_GROUP}"}]}""")))
         wiremock.stubFor(post(urlMatching("/staging/profiles/$PROFILE_ID/start"))
