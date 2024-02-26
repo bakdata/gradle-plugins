@@ -76,39 +76,7 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            addParentPublishToSonatypeTasks()
-
             disallowPublishTasks()
-
-            afterEvaluate {
-                tasks.named("closeStagingRepository") {
-                    mustRunAfter("publishToSonatype")
-                }
-            }
-        }
-    }
-
-    /**
-     * Recursively add publishToSonatype (if not exists) which depends on the children.
-     */
-    private fun Project.addParentPublishToSonatypeTasks() {
-        allprojects {
-            val parent = project.parent
-            if (parent != null) {
-                tasks.matching { it.name == "publishToSonatype" }.configureEach {
-                    val parentProvider =
-                        try {
-                            parent.tasks.named("publishToSonatype")
-                        } catch (e: UnknownTaskException) {
-                            parent.tasks.register("publishToSonatype")
-                        }
-                    this.let { childTask ->
-                        parentProvider.configure {
-                            dependsOn(childTask)
-                        }
-                    }
-                }
-            }
         }
     }
 
