@@ -62,7 +62,7 @@ internal class SonatypePluginTest {
             softly.assertThat(project.tasks)
                     .haveExactly(1, taskWithName("signSonatypePublication"))
                     .haveExactly(1, taskWithName("publish"))
-                    .haveExactly(1, taskWithName("publishToNexus"))
+                    .haveExactly(1, taskWithName("publishToSonatype"))
                     .haveExactly(1, taskWithName("closeAndReleaseStagingRepository"))
         }
     }
@@ -93,7 +93,7 @@ internal class SonatypePluginTest {
                 softly.assertThat(child.tasks)
                         .haveExactly(1, taskWithName("signSonatypePublication"))
                         .haveExactly(1, taskWithName("publish"))
-                        .haveExactly(1, taskWithName("publishToNexus"))
+                        .haveExactly(1, taskWithName("publishToSonatype"))
                         .haveExactly(0, taskWithName("closeAndReleaseStagingRepository"))
             }
         }
@@ -102,7 +102,7 @@ internal class SonatypePluginTest {
             softly.assertThat(parent.tasks)
                     .haveExactly(0, taskWithName("signSonatypePublication"))
                     .haveExactly(0, taskWithName("publish"))
-                    .haveExactly(0, taskWithName("publishToNexus"))
+                    .haveExactly(1, taskWithName("publishToSonatype"))
                     .haveExactly(1, taskWithName("closeAndReleaseStagingRepository"))
         }
     }

@@ -93,7 +93,7 @@ class SonatypePlugin : Plugin<Project> {
             project.configure<NexusPublishExtension> {
                 packageGroup.set("com.bakdata")
 
-                repositories["nexus"].apply {
+                repositories.getByName("sonatype").apply {
                     stagingProfileId.set("8412378836ed9c")
                     username.set(getOverriddenSetting(SonatypeSettings::osshrUsername))
                     password.set(getOverriddenSetting(SonatypeSettings::osshrPassword))
@@ -128,7 +128,7 @@ class SonatypePlugin : Plugin<Project> {
 
             if (this.allTasks.any { it is AbstractPublishToMaven }) {
                 project.configure<NexusPublishExtension> {
-                    repositories["nexus"].apply {
+                    repositories.getByName("sonatype").apply {
                         if (!username.isPresent) {
                             missingProps.add(SonatypeSettings::osshrUsername)
                         }
@@ -142,11 +142,11 @@ class SonatypePlugin : Plugin<Project> {
                 allprojects {
                     extensions.findByType<NexusPublishExtension>()?.let { nexus ->
                         getOverriddenSetting(SonatypeSettings::nexusUrl)?.let {
-                            nexus.repositories["nexus"].nexusUrl.value(uri(it))
+                            nexus.repositories.getByName("sonatype").nexusUrl.value(uri(it))
                         }
 
                         getOverriddenSetting(SonatypeSettings::snapshotUrl)?.let {
-                            nexus.repositories["nexus"].snapshotRepositoryUrl.value(uri(it))
+                            nexus.repositories.getByName("sonatype").snapshotRepositoryUrl.value(uri(it))
                         }
 
                         getOverriddenSetting(SonatypeSettings::clientTimeout)?.let {
@@ -186,7 +186,7 @@ class SonatypePlugin : Plugin<Project> {
         gradle.taskGraph.whenReady {
             if (getOverriddenSetting(SonatypeSettings::disallowLocalRelease)!!) {
                 log.info("disallowing publish tasks")
-                if (hasTask(":publishToNexus") && System.getenv("CI") == null) {
+                if (hasTask(":publishToSonatype") && System.getenv("CI") == null) {
                     throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
                 }
                 if (hasTask(":release") && System.getenv("CI") == null) {
@@ -224,8 +224,8 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             configure<NexusPublishExtension> {
-                // create default repository called 'nexus' and set the corresponding default urls
-                repositories.create("nexus") {
+                // use default repository called 'sonatype' and set the corresponding default urls
+                repositories.sonatype {
                     nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
                     snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
                 }
@@ -287,7 +287,7 @@ class SonatypePlugin : Plugin<Project> {
     private fun Project.logNexusPublishingSetting() {
         extensions.findByType(NexusPublishExtension::class)?.let {
             project.logger.debug(
-                "Publish to Nexus (${it.repositories["nexus"].nexusUrl.get()}) " +
+                "Publish to Nexus (${it.repositories.getByName("sonatype").nexusUrl.get()}) " +
                         "with connect timeout of ${it.connectTimeout.get()} " +
                         "and client timeout of ${it.clientTimeout.get()}"
             )
