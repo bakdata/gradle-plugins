@@ -90,7 +90,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToNexus", "closeAndReleaseRepository", "--stacktrace", "--info")
+                .withArguments("publishToSonatype", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -98,7 +98,7 @@ internal class SonatypePluginIT {
             softly.assertThat(result.tasks)
                     .haveExactly(1, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepository", TaskOutcome.SUCCESS))
         }
 
         val projectName = testProjectDir.fileName.toString()
@@ -189,7 +189,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToNexus", "closeAndReleaseRepository", "--stacktrace", "--info")
+                .withArguments("publishToSonatype", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -202,7 +202,7 @@ internal class SonatypePluginIT {
             softly.assertThat(result.tasks)
                     .haveExactly(0, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
                     .haveExactly(0, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepository", TaskOutcome.SUCCESS))
         }
 
         val expectedUploads = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar", ".module")

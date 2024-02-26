@@ -24,8 +24,7 @@
 
 package com.bakdata.gradle
 
-import de.marcphilipp.gradle.nexus.NexusPublishExtension
-import io.codearte.gradle.nexus.NexusStagingExtension
+import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -60,13 +59,13 @@ class SonatypePlugin : Plugin<Project> {
                 extensions.create<SonatypeSettings>("sonatype", this)
             }
 
-            // note that we need to use adjustConfiguration before applying the plugins (nexus-staging, nexus-publish),
+            // note that we need to use adjustConfiguration before applying the plugin (publish-plugin),
             // so we can adjust the respective settings of the used plugins
             // (they use afterEvaluate to apply their settings in turn which is registered after ours)
             adjustConfiguration()
 
             plugins.apply("base")
-            plugins.apply("io.codearte.nexus-staging")
+            plugins.apply("io.github.gradle-nexus.publish-plugin")
 
             allprojects {
                 components.matching { it.name == "java" }.configureEach {
@@ -77,31 +76,31 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            addParentPublishToNexusTasks()
+            addParentPublishToSonatypeTasks()
 
             disallowPublishTasks()
 
             afterEvaluate {
                 tasks.named("closeRepository") {
-                    mustRunAfter("publishToNexus")
+                    mustRunAfter("publishToSonatype")
                 }
             }
         }
     }
 
     /**
-     * Recursively add publishToNexus (if not exists) which depends on the children.
+     * Recursively add publishToSonatype (if not exists) which depends on the children.
      */
-    private fun Project.addParentPublishToNexusTasks() {
+    private fun Project.addParentPublishToSonatypeTasks() {
         allprojects {
             val parent = project.parent
             if (parent != null) {
-                tasks.matching { it.name == "publishToNexus" }.configureEach {
+                tasks.matching { it.name == "publishToSonatype" }.configureEach {
                     val parentProvider =
                         try {
-                            parent.tasks.named("publishToNexus")
+                            parent.tasks.named("publishToSonatype")
                         } catch (e: UnknownTaskException) {
-                            parent.tasks.register("publishToNexus")
+                            parent.tasks.register("publishToSonatype")
                         }
                     this.let { childTask ->
                         parentProvider.configure {
@@ -123,12 +122,15 @@ class SonatypePlugin : Plugin<Project> {
         // lazy execution, so that settings configurations are actually used
         afterEvaluate {
             // first try to set all settings, even if not given (yet)
-            project.configure<NexusStagingExtension> {
-                packageGroup = "com.bakdata"
-                stagingProfileId = "8412378836ed9c"
-                username = getOverriddenSetting(SonatypeSettings::osshrUsername)
-                password = getOverriddenSetting(SonatypeSettings::osshrPassword)
-                getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }
+            project.configure<NexusPublishExtension> {
+                packageGroup.set("com.bakdata")
+
+                repositories.sonatype {
+                    stagingProfileId.set("8412378836ed9c")
+                    username.set(getOverriddenSetting(SonatypeSettings::osshrUsername))
+                    password.set(getOverriddenSetting(SonatypeSettings::osshrPassword))
+                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(URI(it)) }
+                }
             }
         }
 
@@ -157,24 +159,26 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             if (this.allTasks.any { it is AbstractPublishToMaven }) {
-                project.configure<NexusStagingExtension> {
-                    if (username == null) {
-                        missingProps.add(SonatypeSettings::osshrUsername)
+                project.configure<NexusPublishExtension> {
+                    repositories.sonatype {
+                        if (!username.isPresent) {
+                            missingProps.add(SonatypeSettings::osshrUsername)
+                        }
+                        if (password.isPresent) {
+                            missingProps.add(SonatypeSettings::osshrPassword)
+                        }
+                        getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(URI(it)) }
                     }
-                    if (password == null) {
-                        missingProps.add(SonatypeSettings::osshrPassword)
-                    }
-                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }
                 }
 
                 allprojects {
                     extensions.findByType<NexusPublishExtension>()?.let { nexus ->
                         getOverriddenSetting(SonatypeSettings::nexusUrl)?.let {
-                            nexus.repositories["nexus"].nexusUrl.value(uri(it))
+                            nexus.repositories.sonatype().nexusUrl.value(uri(it))
                         }
 
                         getOverriddenSetting(SonatypeSettings::snapshotUrl)?.let {
-                            nexus.repositories["nexus"].snapshotRepositoryUrl.value(uri(it))
+                            nexus.repositories.sonatype().snapshotRepositoryUrl.value(uri(it))
                         }
 
                         getOverriddenSetting(SonatypeSettings::clientTimeout)?.let {
@@ -214,13 +218,13 @@ class SonatypePlugin : Plugin<Project> {
         gradle.taskGraph.whenReady {
             if (getOverriddenSetting(SonatypeSettings::disallowLocalRelease)!!) {
                 log.info("disallowing publish tasks")
-                if (hasTask(":publishToNexus") && System.getenv("CI") == null) {
+                if (hasTask(":publishToSonatype") && System.getenv("CI") == null) {
                     throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
                 }
                 if (hasTask(":release") && System.getenv("CI") == null) {
                     throw GradleException("Release is only supported through CI (e.g., Travis)")
                 }
-                if (hasTask(":closeAndReleaseRepository") && System.getenv("CI") == null) {
+                if (hasTask(":closeAndReleaseStagingRepository") && System.getenv("CI") == null) {
                     throw GradleException("Closing a release is only supported through CI (e.g., Travis)")
                 }
             }
@@ -231,7 +235,6 @@ class SonatypePlugin : Plugin<Project> {
     private fun addPublishTasks(project: Project) {
         with(project) {
             apply(plugin = "signing")
-            apply(plugin = "de.marcphilipp.nexus-publish")
 
             val javadocJar by tasks.creating(Jar::class) {
                 archiveClassifier.set("javadoc")
@@ -252,8 +255,8 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             configure<NexusPublishExtension> {
-                // create default repository called 'nexus' and set the corresponding default urls
-                repositories.create("nexus") {
+                // create default repository called 'sonatype' and set the corresponding default urls
+                repositories.sonatype {
                     nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
                     snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
                 }
@@ -315,7 +318,7 @@ class SonatypePlugin : Plugin<Project> {
     private fun Project.logNexusPublishingSetting() {
         extensions.findByType(NexusPublishExtension::class)?.let {
             project.logger.debug(
-                "Publish to Nexus (${it.repositories["nexus"].nexusUrl.get()}) " +
+                "Publish to Nexus (${it.repositories.sonatype().nexusUrl.get()}) " +
                         "with connect timeout of ${it.connectTimeout.get()} " +
                         "and client timeout of ${it.clientTimeout.get()}"
             )
