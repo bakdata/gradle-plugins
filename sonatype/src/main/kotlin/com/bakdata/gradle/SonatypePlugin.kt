@@ -234,8 +234,6 @@ class SonatypePlugin : Plugin<Project> {
             configure<SigningExtension> {
                 sign(the<PublishingExtension>().publications)
             }
-
-            tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
         }
     }
 
