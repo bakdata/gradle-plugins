@@ -141,6 +141,13 @@ internal class SonatypePluginIT {
                 .willReturn(okJson("{}")))
         wiremock.stubFor(get(urlMatching("/staging/repository/$STAGING_ID"))
                 .willReturn(okJson("""{"repositoryId": "$STAGING_ID", "type": "closed", "transitioning": false}""")))
+        wiremock.stubFor(post(urlMatching("/staging/bulk/promote"))
+                .inScenario("promoting").whenScenarioStateIs(STARTED)
+                .willReturn(okJson("{}"))
+                .willSetStateTo("promoting"))
+        wiremock.stubFor(get(urlMatching("/staging/repository/$STAGING_ID"))
+                .inScenario("promoting").whenScenarioStateIs("promoting")
+                .willReturn(okJson("""{"repositoryId": "$STAGING_ID", "type": "released", "transitioning": false}""")))
     }
 
     @Disabled
