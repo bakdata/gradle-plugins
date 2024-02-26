@@ -226,6 +226,7 @@ class SonatypePlugin : Plugin<Project> {
             configure<PublishingExtension> {
                 publications.create<MavenPublication>("sonatype") {
                     from(components["java"])
+                    artifact(sourcesJar)
                     artifact(javadocJar)
                 }
             }
