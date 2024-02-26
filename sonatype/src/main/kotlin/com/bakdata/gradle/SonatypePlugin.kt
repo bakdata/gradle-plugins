@@ -217,7 +217,7 @@ class SonatypePlugin : Plugin<Project> {
 
             configure<JavaPluginExtension> {
                 withSourcesJar()
-                withJavadocJar()
+                withJavadocJar() //TODO support dokka
             }
 
             configure<PublishingExtension> {
@@ -227,12 +227,10 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             configure<SigningExtension> {
-                sign(the<PublishingExtension>().publications["sonatype"])
+                sign(the<PublishingExtension>().publications)
             }
 
-            tasks.withType<InitializeNexusStagingRepository> {
-                mustRunAfter(tasks.withType<Sign>())
-            }
+            tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { dependsOn(tasks.withType<Sign>()) }
         }
     }
 
