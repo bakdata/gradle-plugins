@@ -121,7 +121,7 @@ internal class SonatypePluginIT {
 
     private fun mockNexusProtocol(wiremock: WireMockServer) {
         wiremock.addMockServiceRequestListener { request, response ->
-            println("Got request ${request.method} ${request.url} with response ${response.status}")
+            println("Answered request ${request.method} ${request.url} with response ${response.status}")
         }
         wiremock.stubFor(get(urlMatching("/staging/profiles"))
                 .willReturn(okJson("""{"data": [{"id": $PROFILE_ID, "name": "${TEST_GROUP}"}]}""")))
@@ -140,10 +140,7 @@ internal class SonatypePluginIT {
         wiremock.stubFor(post(urlMatching("/staging/bulk/close"))
                 .willReturn(okJson("{}")))
         wiremock.stubFor(get(urlMatching("/staging/repository/$STAGING_ID"))
-                .willReturn(aResponse()
-                    .withStatus(404)
-                    .withHeader(HTTP.CONTENT_TYPE, "application/json")
-                    .withBody("""{"repositoryId": "$STAGING_ID", "type": "closed", "transitioning": false}""")))
+                .willReturn(okJson("""{"repositoryId": "$STAGING_ID", "type": "closed", "transitioning": false}""")))
     }
 
     @Disabled
