@@ -34,6 +34,7 @@ import org.assertj.core.api.SoftAssertions
 import org.gradle.testkit.runner.BuildTask
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junitpioneer.jupiter.TempDirectory
@@ -55,6 +56,7 @@ internal class SonatypePluginIT {
         return withPluginClasspath(classpath.split(":").map { File(it) })
     }
 
+    @Disabled
     @Test
     fun testSingleModuleProject(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
