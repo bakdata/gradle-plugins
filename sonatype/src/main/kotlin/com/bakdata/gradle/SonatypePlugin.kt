@@ -67,14 +67,6 @@ class SonatypePlugin : Plugin<Project> {
             plugins.apply("base")
             plugins.apply("io.github.gradle-nexus.publish-plugin")
 
-            configure<NexusPublishExtension> {
-                // create default repository called 'nexus' and set the corresponding default urls
-                repositories.create("nexus") {
-                    nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
-                    snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-                }
-            }
-
             allprojects {
                 components.matching { it.name == "java" }.configureEach {
                     if (extensions.findByType<PublishingExtension>() == null) {
@@ -228,6 +220,14 @@ class SonatypePlugin : Plugin<Project> {
                     from(components["java"])
                     artifact(sourcesJar).classifier = "sources"
                     artifact(javadocJar).classifier = "javadoc"
+                }
+            }
+
+            configure<NexusPublishExtension> {
+                // create default repository called 'nexus' and set the corresponding default urls
+                repositories.create("nexus") {
+                    nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
+                    snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
                 }
             }
 
