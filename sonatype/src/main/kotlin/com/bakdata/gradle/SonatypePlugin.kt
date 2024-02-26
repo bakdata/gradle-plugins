@@ -67,20 +67,20 @@ class SonatypePlugin : Plugin<Project> {
             plugins.apply("base")
             plugins.apply("io.github.gradle-nexus.publish-plugin")
 
+            configure<NexusPublishExtension> {
+                // create default repository called 'nexus' and set the corresponding default urls
+                repositories.create("nexus") {
+                    nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
+                    snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+                }
+            }
+
             allprojects {
                 components.matching { it.name == "java" }.configureEach {
                     if (extensions.findByType<PublishingExtension>() == null) {
                         log.info("Found java component in $project. Adding publishing tasks.")
                         addPublishTasks(project)
                     }
-                }
-            }
-
-            configure<NexusPublishExtension> {
-                // create default repository called 'nexus' and set the corresponding default urls
-                repositories.create("nexus") {
-                    nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
-                    snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
                 }
             }
 
@@ -102,7 +102,7 @@ class SonatypePlugin : Plugin<Project> {
                 packageGroup.set("com.bakdata")
 
                 repositories["nexus"].apply {
-                    stagingProfileId.set("8412378836ed9c")
+                    stagingProfileId.set("746f6fd1d91a4")
                     username.set(getOverriddenSetting(SonatypeSettings::osshrUsername))
                     password.set(getOverriddenSetting(SonatypeSettings::osshrPassword))
                     getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(uri(it)) }
