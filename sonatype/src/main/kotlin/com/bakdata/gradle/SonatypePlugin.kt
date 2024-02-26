@@ -31,6 +31,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.UnknownTaskException
 import org.gradle.api.logging.Logging
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
@@ -233,7 +234,7 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             configure<SigningExtension> {
-                sign(the<PublishingExtension>().publications)
+                sign(the<PublishingExtension>().publications["sonatype"])
             }
 
             tasks.withType<InitializeNexusStagingRepository> {
