@@ -215,9 +215,14 @@ class SonatypePlugin : Plugin<Project> {
             apply(plugin = "signing")
             apply(plugin = "org.gradle.maven-publish")
 
+            val javadocJar by tasks.creating(Jar::class) {
+                archiveClassifier.set("javadoc")
+                from(tasks.findByName("javadoc") ?: tasks.findByName("dokka"))
+            }
+
             configure<JavaPluginExtension> {
                 withSourcesJar()
-                withJavadocJar() //TODO support dokka
+                withJavadocJar()
             }
 
             configure<PublishingExtension> {
