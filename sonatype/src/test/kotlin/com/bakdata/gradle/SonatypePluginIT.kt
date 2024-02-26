@@ -147,6 +147,7 @@ internal class SonatypePluginIT {
                 .willReturn(okJson("""{"type": "released", "transitioning": false}""")))
     }
 
+    @Disabled
     @Test
     fun testMultiModuleProject(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """

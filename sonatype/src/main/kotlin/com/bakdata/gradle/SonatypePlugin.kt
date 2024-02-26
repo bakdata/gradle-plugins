@@ -76,6 +76,14 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
+            configure<NexusPublishExtension> {
+                // use default repository called 'sonatype' and set the corresponding default urls
+                repositories.sonatype {
+                    nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
+                    snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+                }
+            }
+
             disallowPublishTasks()
         }
     }
@@ -220,14 +228,6 @@ class SonatypePlugin : Plugin<Project> {
                     from(components["java"])
                     artifact(sourcesJar).classifier = "sources"
                     artifact(javadocJar).classifier = "javadoc"
-                }
-            }
-
-            configure<NexusPublishExtension> {
-                // use default repository called 'sonatype' and set the corresponding default urls
-                repositories.sonatype {
-                    nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
-                    snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
                 }
             }
 
