@@ -28,14 +28,12 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.http.RequestMethod
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
-import org.apache.http.protocol.HTTP
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
 import org.gradle.testkit.runner.BuildTask
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junitpioneer.jupiter.TempDirectory
@@ -150,7 +148,6 @@ internal class SonatypePluginIT {
                 .willReturn(okJson("""{"repositoryId": "$STAGING_ID", "type": "released", "transitioning": false}""")))
     }
 
-    @Disabled
     @Test
     fun testMultiModuleProject(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
