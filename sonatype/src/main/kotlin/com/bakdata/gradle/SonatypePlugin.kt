@@ -132,7 +132,7 @@ class SonatypePlugin : Plugin<Project> {
                         if (!username.isPresent) {
                             missingProps.add(SonatypeSettings::osshrUsername)
                         }
-                        if (password.isPresent) {
+                        if (!password.isPresent) {
                             missingProps.add(SonatypeSettings::osshrPassword)
                         }
                         getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(uri(it)) }
