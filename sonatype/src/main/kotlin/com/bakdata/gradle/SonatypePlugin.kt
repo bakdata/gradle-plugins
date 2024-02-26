@@ -203,7 +203,7 @@ class SonatypePlugin : Plugin<Project> {
     private fun addPublishTasks(project: Project) {
         with(project) {
             apply(plugin = "signing")
-            apply(plugin = "org.gradle.maven-publish")
+            apply(plugin = "io.github.gradle-nexus.publish-plugin")
 
             val javadocJar by tasks.creating(Jar::class) {
                 archiveClassifier.set("javadoc")
