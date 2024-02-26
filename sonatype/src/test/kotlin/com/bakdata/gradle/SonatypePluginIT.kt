@@ -92,7 +92,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToSonatype", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
+                .withArguments("publishToNexus", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -192,7 +192,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToSonatype", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
+                .withArguments("publishToNexus", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
