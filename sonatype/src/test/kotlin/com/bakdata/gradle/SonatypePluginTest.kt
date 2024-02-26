@@ -102,7 +102,7 @@ internal class SonatypePluginTest {
             softly.assertThat(parent.tasks)
                     .haveExactly(0, taskWithName("signSonatypePublication"))
                     .haveExactly(0, taskWithName("publish"))
-                    .haveExactly(1, taskWithName("publishToNexus"))
+                    .haveExactly(0, taskWithName("publishToNexus"))
                     .haveExactly(1, taskWithName("closeAndReleaseStagingRepository"))
         }
     }
