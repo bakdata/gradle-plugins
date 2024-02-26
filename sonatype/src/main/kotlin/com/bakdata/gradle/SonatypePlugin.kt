@@ -93,11 +93,11 @@ class SonatypePlugin : Plugin<Project> {
             project.configure<NexusPublishExtension> {
                 packageGroup.set("com.bakdata")
 
-                repositories.findByName("sonatype")?.apply {
+                repositories.getByName("sonatype").apply {
                     stagingProfileId.set("8412378836ed9c")
                     username.set(getOverriddenSetting(SonatypeSettings::osshrUsername))
                     password.set(getOverriddenSetting(SonatypeSettings::osshrPassword))
-                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(URI(it)) }
+                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(uri(it)) }
                 }
             }
         }
@@ -128,29 +128,25 @@ class SonatypePlugin : Plugin<Project> {
 
             if (this.allTasks.any { it is AbstractPublishToMaven }) {
                 project.configure<NexusPublishExtension> {
-                    repositories.findByName("sonatype")?.apply {
+                    repositories.getByName("sonatype").apply {
                         if (!username.isPresent) {
                             missingProps.add(SonatypeSettings::osshrUsername)
                         }
                         if (password.isPresent) {
                             missingProps.add(SonatypeSettings::osshrPassword)
                         }
-                        getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(URI(it)) }
+                        getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(uri(it)) }
                     }
                 }
 
                 allprojects {
                     extensions.findByType<NexusPublishExtension>()?.let { nexus ->
                         getOverriddenSetting(SonatypeSettings::nexusUrl)?.let {
-                            nexus.repositories.findByName("sonatype")?.apply {
-                                nexusUrl.value(uri(it))
-                            }
+                            nexus.repositories.getByName("sonatype").nexusUrl.value(uri(it))
                         }
 
                         getOverriddenSetting(SonatypeSettings::snapshotUrl)?.let {
-                            nexus.repositories.findByName("sonatype")?.apply {
-                                snapshotRepositoryUrl.value(uri(it))
-                            }
+                            nexus.repositories.getByName("sonatype").snapshotRepositoryUrl.value(uri(it))
                         }
 
                         getOverriddenSetting(SonatypeSettings::clientTimeout)?.let {
@@ -208,6 +204,7 @@ class SonatypePlugin : Plugin<Project> {
         with(project) {
             apply(plugin = "signing")
             apply(plugin = "org.gradle.maven-publish")
+            apply(plugin = "io.github.gradle-nexus.publish-plugin")
 
             val javadocJar by tasks.creating(Jar::class) {
                 archiveClassifier.set("javadoc")
@@ -291,7 +288,7 @@ class SonatypePlugin : Plugin<Project> {
     private fun Project.logNexusPublishingSetting() {
         extensions.findByType(NexusPublishExtension::class)?.let {
             project.logger.debug(
-                "Publish to Nexus (${it.repositories.findByName("sonatype")?.nexusUrl?.get()}) " +
+                "Publish to Nexus (${it.repositories.getByName("sonatype").nexusUrl.get()}) " +
                         "with connect timeout of ${it.connectTimeout.get()} " +
                         "and client timeout of ${it.clientTimeout.get()}"
             )
