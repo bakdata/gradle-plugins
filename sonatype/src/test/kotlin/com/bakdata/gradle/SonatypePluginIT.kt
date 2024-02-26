@@ -28,6 +28,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.http.RequestMethod
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
+import org.apache.http.protocol.HTTP
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
@@ -139,14 +140,10 @@ internal class SonatypePluginIT {
         wiremock.stubFor(post(urlMatching("/staging/bulk/close"))
                 .willReturn(okJson("{}")))
         wiremock.stubFor(get(urlMatching("/staging/repository/$STAGING_ID"))
-                .willReturn(notFound()))
-        wiremock.stubFor(post(urlMatching("/staging/bulk/promote"))
-                .inScenario("promoting").whenScenarioStateIs(STARTED)
-                .willReturn(okJson("{}"))
-                .willSetStateTo("promoting"))
-        wiremock.stubFor(get(urlMatching("/staging/repository/$STAGING_ID"))
-                .inScenario("promoting").whenScenarioStateIs("promoting")
-                .willReturn(okJson("""{"type": "released", "transitioning": false}""")))
+                .willReturn(aResponse()
+                    .withStatus(404)
+                    .withHeader(HTTP.CONTENT_TYPE, "application/json")
+                    .withBody("""{"repositoryId": "$STAGING_ID", "type": "closed", "transitioning": false}""")))
     }
 
     @Disabled
