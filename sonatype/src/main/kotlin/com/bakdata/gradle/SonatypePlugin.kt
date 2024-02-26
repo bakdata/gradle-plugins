@@ -81,7 +81,7 @@ class SonatypePlugin : Plugin<Project> {
             disallowPublishTasks()
 
             afterEvaluate {
-                tasks.named("closeRepository") {
+                tasks.named("closeStagingRepository") {
                     mustRunAfter("publishToSonatype")
                 }
             }
@@ -125,7 +125,7 @@ class SonatypePlugin : Plugin<Project> {
             project.configure<NexusPublishExtension> {
                 packageGroup.set("com.bakdata")
 
-                repositories.sonatype {
+                repositories.findByName("sonatype")?.apply {
                     stagingProfileId.set("8412378836ed9c")
                     username.set(getOverriddenSetting(SonatypeSettings::osshrUsername))
                     password.set(getOverriddenSetting(SonatypeSettings::osshrPassword))
@@ -160,7 +160,7 @@ class SonatypePlugin : Plugin<Project> {
 
             if (this.allTasks.any { it is AbstractPublishToMaven }) {
                 project.configure<NexusPublishExtension> {
-                    repositories.sonatype {
+                    repositories.findByName("sonatype")?.apply {
                         if (!username.isPresent) {
                             missingProps.add(SonatypeSettings::osshrUsername)
                         }
@@ -174,11 +174,15 @@ class SonatypePlugin : Plugin<Project> {
                 allprojects {
                     extensions.findByType<NexusPublishExtension>()?.let { nexus ->
                         getOverriddenSetting(SonatypeSettings::nexusUrl)?.let {
-                            nexus.repositories.sonatype().nexusUrl.value(uri(it))
+                            nexus.repositories.findByName("sonatype")?.apply {
+                                nexusUrl.value(uri(it))
+                            }
                         }
 
                         getOverriddenSetting(SonatypeSettings::snapshotUrl)?.let {
-                            nexus.repositories.sonatype().snapshotRepositoryUrl.value(uri(it))
+                            nexus.repositories.findByName("sonatype")?.apply {
+                                snapshotRepositoryUrl.value(uri(it))
+                            }
                         }
 
                         getOverriddenSetting(SonatypeSettings::clientTimeout)?.let {
@@ -256,7 +260,7 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             configure<NexusPublishExtension> {
-                // create default repository called 'sonatype' and set the corresponding default urls
+                // use default repository called 'sonatype' and set the corresponding default urls
                 repositories.sonatype {
                     nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
                     snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
@@ -319,7 +323,7 @@ class SonatypePlugin : Plugin<Project> {
     private fun Project.logNexusPublishingSetting() {
         extensions.findByType(NexusPublishExtension::class)?.let {
             project.logger.debug(
-                "Publish to Nexus (${it.repositories.sonatype().nexusUrl.get()}) " +
+                "Publish to Nexus (${it.repositories.findByName("sonatype")?.nexusUrl?.get()}) " +
                         "with connect timeout of ${it.connectTimeout.get()} " +
                         "and client timeout of ${it.clientTimeout.get()}"
             )
