@@ -24,6 +24,7 @@
 
 package com.bakdata.gradle
 
+import io.github.gradlenexus.publishplugin.InitializeNexusStagingRepository
 import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -233,6 +234,10 @@ class SonatypePlugin : Plugin<Project> {
 
             configure<SigningExtension> {
                 sign(the<PublishingExtension>().publications)
+            }
+
+            tasks.withType<InitializeNexusStagingRepository> {
+                shouldRunAfter(tasks.withType<Sign>())
             }
         }
     }
