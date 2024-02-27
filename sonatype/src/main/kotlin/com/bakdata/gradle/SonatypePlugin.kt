@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2019 bakdata GmbH
+ * Copyright (c) 2024 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,14 @@
 
 package com.bakdata.gradle
 
-import de.marcphilipp.gradle.nexus.NexusPublishExtension
-import io.codearte.gradle.nexus.NexusStagingExtension
+import io.github.gradlenexus.publishplugin.InitializeNexusStagingRepository
+import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.UnknownTaskException
 import org.gradle.api.logging.Logging
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
@@ -60,13 +61,21 @@ class SonatypePlugin : Plugin<Project> {
                 extensions.create<SonatypeSettings>("sonatype", this)
             }
 
-            // note that we need to use adjustConfiguration before applying the plugins (nexus-staging, nexus-publish),
+            // note that we need to use adjustConfiguration before applying the plugin (publish-plugin),
             // so we can adjust the respective settings of the used plugins
             // (they use afterEvaluate to apply their settings in turn which is registered after ours)
             adjustConfiguration()
 
             plugins.apply("base")
-            plugins.apply("io.codearte.nexus-staging")
+            plugins.apply("io.github.gradle-nexus.publish-plugin")
+
+            configure<NexusPublishExtension> {
+                // create default repository called 'nexus' and set the corresponding default urls
+                repositories.create("nexus") {
+                    nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
+                    snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+                }
+            }
 
             allprojects {
                 components.matching { it.name == "java" }.configureEach {
@@ -77,39 +86,7 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            addParentPublishToNexusTasks()
-
             disallowPublishTasks()
-
-            afterEvaluate {
-                tasks.named("closeRepository") {
-                    mustRunAfter("publishToNexus")
-                }
-            }
-        }
-    }
-
-    /**
-     * Recursively add publishToNexus (if not exists) which depends on the children.
-     */
-    private fun Project.addParentPublishToNexusTasks() {
-        allprojects {
-            val parent = project.parent
-            if (parent != null) {
-                tasks.matching { it.name == "publishToNexus" }.configureEach {
-                    val parentProvider =
-                        try {
-                            parent.tasks.named("publishToNexus")
-                        } catch (e: UnknownTaskException) {
-                            parent.tasks.register("publishToNexus")
-                        }
-                    this.let { childTask ->
-                        parentProvider.configure {
-                            dependsOn(childTask)
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -123,12 +100,15 @@ class SonatypePlugin : Plugin<Project> {
         // lazy execution, so that settings configurations are actually used
         afterEvaluate {
             // first try to set all settings, even if not given (yet)
-            project.configure<NexusStagingExtension> {
-                packageGroup = "com.bakdata"
-                stagingProfileId = "8412378836ed9c"
-                username = getOverriddenSetting(SonatypeSettings::osshrUsername)
-                password = getOverriddenSetting(SonatypeSettings::osshrPassword)
-                getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }
+            project.configure<NexusPublishExtension> {
+                packageGroup.set("com.bakdata")
+
+                repositories["nexus"].apply {
+                    stagingProfileId.set("746f6fd1d91a4")
+                    username.set(getOverriddenSetting(SonatypeSettings::osshrUsername))
+                    password.set(getOverriddenSetting(SonatypeSettings::osshrPassword))
+                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(uri(it)) }
+                }
             }
         }
 
@@ -157,14 +137,16 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             if (this.allTasks.any { it is AbstractPublishToMaven }) {
-                project.configure<NexusStagingExtension> {
-                    if (username == null) {
-                        missingProps.add(SonatypeSettings::osshrUsername)
+                project.configure<NexusPublishExtension> {
+                    repositories["nexus"].apply {
+                        if (!username.isPresent) {
+                            missingProps.add(SonatypeSettings::osshrUsername)
+                        }
+                        if (!password.isPresent) {
+                            missingProps.add(SonatypeSettings::osshrPassword)
+                        }
+                        getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(uri(it)) }
                     }
-                    if (password == null) {
-                        missingProps.add(SonatypeSettings::osshrPassword)
-                    }
-                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { serverUrl = it }
                 }
 
                 allprojects {
@@ -220,7 +202,7 @@ class SonatypePlugin : Plugin<Project> {
                 if (hasTask(":release") && System.getenv("CI") == null) {
                     throw GradleException("Release is only supported through CI (e.g., Travis)")
                 }
-                if (hasTask(":closeAndReleaseRepository") && System.getenv("CI") == null) {
+                if (hasTask(":closeAndReleaseStagingRepository") && System.getenv("CI") == null) {
                     throw GradleException("Closing a release is only supported through CI (e.g., Travis)")
                 }
             }
@@ -231,31 +213,23 @@ class SonatypePlugin : Plugin<Project> {
     private fun addPublishTasks(project: Project) {
         with(project) {
             apply(plugin = "signing")
-            apply(plugin = "de.marcphilipp.nexus-publish")
+            apply(plugin = "org.gradle.maven-publish")
 
-            val javadocJar by tasks.creating(Jar::class) {
-                archiveClassifier.set("javadoc")
-                from(tasks.findByName("javadoc") ?: tasks.findByName("dokka"))
+            tasks.findByName("dokka")?.apply {
+                tasks.creating(Jar::class) {
+                    archiveClassifier.set("javadoc")
+                    from(this)
+                }
             }
 
-            val sourcesJar by tasks.creating(Jar::class) {
-                archiveClassifier.set("sources")
-                from(project.the<SourceSetContainer>()["main"].allSource)
+            configure<JavaPluginExtension> {
+                withSourcesJar()
+                withJavadocJar()
             }
 
             configure<PublishingExtension> {
                 publications.create<MavenPublication>("sonatype") {
                     from(components["java"])
-                    artifact(sourcesJar).classifier = "sources"
-                    artifact(javadocJar).classifier = "javadoc"
-                }
-            }
-
-            configure<NexusPublishExtension> {
-                // create default repository called 'nexus' and set the corresponding default urls
-                repositories.create("nexus") {
-                    nexusUrl.set(URI.create("https://s01.oss.sonatype.org/service/local/"))
-                    snapshotRepositoryUrl.set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
                 }
             }
 

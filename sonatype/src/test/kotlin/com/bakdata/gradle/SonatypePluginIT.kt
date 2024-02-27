@@ -90,7 +90,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToNexus", "closeAndReleaseRepository", "--stacktrace", "--info")
+                .withArguments("publishToNexus", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -98,7 +98,7 @@ internal class SonatypePluginIT {
             softly.assertThat(result.tasks)
                     .haveExactly(1, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepository", TaskOutcome.SUCCESS))
         }
 
         val projectName = testProjectDir.fileName.toString()
@@ -118,6 +118,9 @@ internal class SonatypePluginIT {
     }
 
     private fun mockNexusProtocol(wiremock: WireMockServer) {
+        wiremock.addMockServiceRequestListener { request, response ->
+            println("Answered request ${request.method} ${request.url} with response ${response.status}")
+        }
         wiremock.stubFor(get(urlMatching("/staging/profiles"))
                 .willReturn(okJson("""{"data": [{"id": $PROFILE_ID, "name": "${TEST_GROUP}"}]}""")))
         wiremock.stubFor(post(urlMatching("/staging/profiles/$PROFILE_ID/start"))
@@ -135,14 +138,14 @@ internal class SonatypePluginIT {
         wiremock.stubFor(post(urlMatching("/staging/bulk/close"))
                 .willReturn(okJson("{}")))
         wiremock.stubFor(get(urlMatching("/staging/repository/$STAGING_ID"))
-                .willReturn(okJson("""{"type": "closed", "transitioning": false}""")))
+                .willReturn(okJson("""{"repositoryId": "$STAGING_ID", "type": "closed", "transitioning": false}""")))
         wiremock.stubFor(post(urlMatching("/staging/bulk/promote"))
                 .inScenario("promoting").whenScenarioStateIs(STARTED)
                 .willReturn(okJson("{}"))
                 .willSetStateTo("promoting"))
         wiremock.stubFor(get(urlMatching("/staging/repository/$STAGING_ID"))
                 .inScenario("promoting").whenScenarioStateIs("promoting")
-                .willReturn(okJson("""{"type": "released", "transitioning": false}""")))
+                .willReturn(okJson("""{"repositoryId": "$STAGING_ID", "type": "released", "transitioning": false}""")))
     }
 
     @Test
@@ -189,7 +192,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToNexus", "closeAndReleaseRepository", "--stacktrace", "--info")
+                .withArguments("publishToNexus", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -202,7 +205,7 @@ internal class SonatypePluginIT {
             softly.assertThat(result.tasks)
                     .haveExactly(0, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
                     .haveExactly(0, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseRepository", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepository", TaskOutcome.SUCCESS))
         }
 
         val expectedUploads = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar", ".module")
@@ -216,7 +219,7 @@ internal class SonatypePluginIT {
     companion object {
         private const val TEST_GROUP: String = "com.bakdata"
 
-        private const val PROFILE_ID: String = "8412378836ed9c"
+        private const val PROFILE_ID: String = "746f6fd1d91a4"
 
         private const val STAGING_ID: Int = 5
 
