@@ -24,8 +24,6 @@
 
 package com.bakdata.gradle
 
-//import org.gradle.testing.jacoco.tasks.JacocoMerge
-
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -35,7 +33,6 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
-import org.gradle.testing.jacoco.tasks.JacocoMerge
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
 class SonarPlugin : Plugin<Project> {
