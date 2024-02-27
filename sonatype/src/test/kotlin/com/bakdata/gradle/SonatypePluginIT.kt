@@ -79,6 +79,7 @@ internal class SonatypePluginIT {
                     }
                 }
                 nexusUrl = "${wiremock.baseUrl()}"
+                allowInsecureProtocol = true
             }
         """.trimIndent())
 
@@ -170,6 +171,7 @@ internal class SonatypePluginIT {
                     }
                 }
                 nexusUrl = "${wiremock.baseUrl()}"
+                allowInsecureProtocol = true
             }
 
             subprojects {

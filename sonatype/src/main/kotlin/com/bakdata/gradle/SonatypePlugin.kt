@@ -108,6 +108,7 @@ class SonatypePlugin : Plugin<Project> {
                     username.set(getOverriddenSetting(SonatypeSettings::osshrUsername))
                     password.set(getOverriddenSetting(SonatypeSettings::osshrPassword))
                     getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(uri(it)) }
+                    allowInsecureProtocol.set(getOverriddenSetting(SonatypeSettings::allowInsecureProtocol))
                 }
             }
         }
@@ -165,6 +166,10 @@ class SonatypePlugin : Plugin<Project> {
 
                         getOverriddenSetting(SonatypeSettings::connectTimeout)?.let {
                             nexus.connectTimeout.value(Duration.ofSeconds(it))
+                        }
+
+                        getOverriddenSetting(SonatypeSettings::allowInsecureProtocol)?.let {
+                            nexus.repositories["nexus"].allowInsecureProtocol.value(it)
                         }
                     }
                 }
