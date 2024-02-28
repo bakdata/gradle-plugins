@@ -221,16 +221,16 @@ class SonatypePlugin : Plugin<Project> {
             apply(plugin = "signing")
             apply(plugin = "org.gradle.maven-publish")
 
-            project.tasks.matching { it.name == "dokkaJavadoc" }.all {
-                val javadocTask: Task = this
-                val main: SourceSet = the<JavaPluginExtension>().sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-                tasks.create<Jar>(main.javadocJarTaskName) {
-                    archiveClassifier.set(JAVADOC)
-                    from(javadocTask)
-                }
-            }
-
             project.plugins.matching { it is JavaPlugin }.all {
+                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
+                    val javadocTask: Task = this
+                    val main: SourceSet = the<JavaPluginExtension>().sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+                    tasks.create<Jar>(main.javadocJarTaskName) {
+                        archiveClassifier.set(JAVADOC)
+                        from(javadocTask)
+                    }
+                }
+
                 configure<JavaPluginExtension> {
                     withSourcesJar()
                     withJavadocJar()
