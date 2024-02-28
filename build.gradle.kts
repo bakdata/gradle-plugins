@@ -54,13 +54,15 @@ subprojects {
 
     apply(plugin = "java-gradle-plugin")
 
-    configure<GradlePluginDevelopmentExtension> {
-        plugins {
-            create("${project.name.capitalize()}Plugin") {
-                id = "com.bakdata.${project.name}"
-                implementationClass = "com.bakdata.gradle.${project.name.capitalize()}Plugin"
-                description = project.description
-                displayName = "Bakdata $name plugin"
+    afterEvaluate {
+        configure<GradlePluginDevelopmentExtension> {
+            plugins {
+                create("${project.name.capitalize()}Plugin") {
+                    id = "com.bakdata.${project.name}"
+                    implementationClass = "com.bakdata.gradle.${project.name.capitalize()}Plugin"
+                    description = project.description
+                    displayName = "Bakdata $name plugin"
+                }
             }
         }
     }
