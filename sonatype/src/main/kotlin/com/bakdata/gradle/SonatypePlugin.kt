@@ -224,8 +224,7 @@ class SonatypePlugin : Plugin<Project> {
             project.plugins.matching { it is JavaPlugin }.all {
                 project.tasks.matching { it.name == "dokkaJavadoc" }.all {
                     val javadocTask: Task = this
-                    val main: SourceSet = the<JavaPluginExtension>().sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-                    tasks.create<Jar>(main.javadocJarTaskName) {
+                    tasks.create<Jar>("javadocJar") {
                         archiveClassifier.set(JAVADOC)
                         from(javadocTask)
                     }
