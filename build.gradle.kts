@@ -52,6 +52,19 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    apply(plugin = "java-gradle-plugin")
+
+    configure<GradlePluginDevelopmentExtension> {
+        plugins {
+            create("${project.name.capitalize()}Plugin") {
+                id = "com.bakdata.${project.name}"
+                implementationClass = "com.bakdata.gradle.${project.name.capitalize()}Plugin"
+                description = project.description
+                displayName = "Bakdata $name plugin"
+            }
+        }
+    }
+
     dependencies {
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
@@ -63,30 +76,13 @@ subprojects {
 // config for gradle plugin portal
 // doesn't support snapshot, so we add config only if release version
 if (!version.toString().endsWith("-SNAPSHOT")) {
-    subprojects.forEach { project ->
-        with(project) {
-            // com.gradle.plugin-publish depends on java-gradle-plugin, but it screws a bit this project
-            apply(plugin = "java-gradle-plugin")
-            apply(plugin = "com.gradle.plugin-publish")
-            project.afterEvaluate {
-                // java-gradle-plugin requires this block, but we already added the definitions in META-INF for unit testing...
-                configure<GradlePluginDevelopmentExtension> {
-                    plugins {
-                        create("${project.name.capitalize()}Plugin") {
-                            id = "com.bakdata.${project.name}"
-                            implementationClass = "com.bakdata.gradle.${project.name.capitalize()}Plugin"
-                            description = project.description
-                            displayName = "Bakdata $name plugin"
-                        }
-                    }
-                }
-                // actual block of plugin portal config, need to be done on each subproject as the plugin does not support multi-module projects yet...
-                configure<com.gradle.publish.PluginBundleExtension> {
-                    website = "https://github.com/bakdata/gradle-plugins"
-                    vcsUrl = "https://github.com/bakdata/gradle-plugins"
-                    tags = listOf("bakdata", name)
-                }
-            }
+    subprojects {
+        apply(plugin = "com.gradle.plugin-publish")
+        // actual block of plugin portal config, need to be done on each subproject as the plugin does not support multi-module projects yet...
+        configure<com.gradle.publish.PluginBundleExtension> {
+            website = "https://github.com/bakdata/gradle-plugins"
+            vcsUrl = "https://github.com/bakdata/gradle-plugins"
+            tags = listOf("bakdata", name)
         }
     }
 }
