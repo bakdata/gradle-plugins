@@ -28,6 +28,8 @@ import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.attributes.DocsType.JAVADOC
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
@@ -220,10 +222,14 @@ class SonatypePlugin : Plugin<Project> {
 
             // Java and Dokka plugins might not have been applied yet
             project.afterEvaluate {
-                val main: SourceSet = the<JavaPluginExtension>().sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-                tasks.create<Jar>(main.javadocJarTaskName) {
-                    archiveClassifier.set("javadoc")
-                    from(tasks.findByName("javadoc") ?: tasks.findByName("dokka"))
+                tasks.findByName("dokka")?.apply {
+                    val javadocTask: Task = this
+                    val main: SourceSet =
+                        the<JavaPluginExtension>().sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+                    tasks.create<Jar>(main.javadocJarTaskName) {
+                        archiveClassifier.set(JAVADOC)
+                        from(javadocTask)
+                    }
                 }
 
                 configure<JavaPluginExtension> {
