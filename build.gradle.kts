@@ -54,6 +54,12 @@ subprojects {
 
     apply(plugin = "java-gradle-plugin")
 
+    // config for gradle plugin portal doesn't support snapshot, so we add config only if release version
+    if (!version.toString().endsWith("-SNAPSHOT")) {
+        apply(plugin = "com.gradle.plugin-publish")
+    }
+
+    // description is only ready after evaluation
     afterEvaluate {
         configure<GradlePluginDevelopmentExtension> {
             plugins {
@@ -65,6 +71,13 @@ subprojects {
                 }
             }
         }
+
+        extensions.findByType(com.gradle.publish.PluginBundleExtension::class)?.apply {
+            // actual block of plugin portal config, need to be done on each subproject as the plugin does not support multi-module projects yet...
+            website = "https://github.com/bakdata/gradle-plugins"
+            vcsUrl = "https://github.com/bakdata/gradle-plugins"
+            tags = listOf("bakdata", name)
+        }
     }
 
     dependencies {
@@ -72,20 +85,6 @@ subprojects {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
         "testImplementation"("org.assertj", "assertj-core", "3.11.1")
         "testImplementation"("org.junit-pioneer", "junit-pioneer", "0.3.0")
-    }
-}
-
-// config for gradle plugin portal
-// doesn't support snapshot, so we add config only if release version
-if (!version.toString().endsWith("-SNAPSHOT")) {
-    subprojects {
-        apply(plugin = "com.gradle.plugin-publish")
-        // actual block of plugin portal config, need to be done on each subproject as the plugin does not support multi-module projects yet...
-        configure<com.gradle.publish.PluginBundleExtension> {
-            website = "https://github.com/bakdata/gradle-plugins"
-            vcsUrl = "https://github.com/bakdata/gradle-plugins"
-            tags = listOf("bakdata", name)
-        }
     }
 }
 
