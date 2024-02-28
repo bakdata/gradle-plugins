@@ -222,7 +222,7 @@ class SonatypePlugin : Plugin<Project> {
             apply(plugin = "org.gradle.maven-publish")
 
             project.plugins.matching { it is JavaPlugin }.all {
-                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
+                project.tasks.matching { it.name == "dokka" }.all {
                     val javadocTask: Task = this
                     tasks.create<Jar>("javadocJar") {
                         archiveClassifier.set(JAVADOC)
