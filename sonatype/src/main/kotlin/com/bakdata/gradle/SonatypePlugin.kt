@@ -221,15 +221,18 @@ class SonatypePlugin : Plugin<Project> {
             apply(plugin = "org.gradle.maven-publish")
 
             tasks.findByName("dokka")?.apply {
-                tasks.creating(Jar::class) {
+                tasks.create("javadocJar", Jar::class.java) {
                     archiveClassifier.set("javadoc")
                     from(this)
                 }
             }
 
-            configure<JavaPluginExtension> {
-                withSourcesJar()
-                withJavadocJar()
+            // JavaPlugin might not have been applied yet
+            project.afterEvaluate {
+                configure<JavaPluginExtension> {
+                    withSourcesJar()
+                    withJavadocJar()
+                }
             }
 
             configure<PublishingExtension> {
