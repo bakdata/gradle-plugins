@@ -24,12 +24,10 @@
 
 package com.bakdata.gradle
 
-import io.github.gradlenexus.publishplugin.InitializeNexusStagingRepository
 import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.UnknownTaskException
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
@@ -38,7 +36,7 @@ import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
 import org.gradle.api.publish.plugins.PublishingPlugin
-import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.Sign
@@ -220,15 +218,14 @@ class SonatypePlugin : Plugin<Project> {
             apply(plugin = "signing")
             apply(plugin = "org.gradle.maven-publish")
 
-            tasks.findByName("dokka")?.apply {
-                tasks.create("javadocJar", Jar::class.java) {
-                    archiveClassifier.set("javadoc")
-                    from(this)
-                }
-            }
-
-            // JavaPlugin might not have been applied yet
+            // Java and Dokka plugins might not have been applied yet
             project.afterEvaluate {
+                val main: SourceSet = the<JavaPluginExtension>().sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+                tasks.create<Jar>(main.javadocJarTaskName) {
+                    archiveClassifier.set("javadoc")
+                    from(from(tasks.findByName("javadoc") ?: tasks.findByName("dokka")))
+                }
+
                 configure<JavaPluginExtension> {
                     withSourcesJar()
                     withJavadocJar()
