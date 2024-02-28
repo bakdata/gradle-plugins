@@ -24,12 +24,12 @@
 
 package com.bakdata.gradle
 
-import io.github.gradlenexus.publishplugin.InitializeNexusStagingRepository
 import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.UnknownTaskException
+import org.gradle.api.Task
+import org.gradle.api.attributes.DocsType.JAVADOC
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
@@ -38,7 +38,7 @@ import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
 import org.gradle.api.publish.plugins.PublishingPlugin
-import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.Sign
@@ -220,16 +220,22 @@ class SonatypePlugin : Plugin<Project> {
             apply(plugin = "signing")
             apply(plugin = "org.gradle.maven-publish")
 
-            tasks.findByName("dokka")?.apply {
-                tasks.creating(Jar::class) {
-                    archiveClassifier.set("javadoc")
-                    from(this)
+            // Java and Dokka plugins might not have been applied yet
+            project.afterEvaluate {
+                tasks.findByName("dokka")?.apply {
+                    val javadocTask: Task = this
+                    val main: SourceSet =
+                        the<JavaPluginExtension>().sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+                    tasks.create<Jar>(main.javadocJarTaskName) {
+                        archiveClassifier.set(JAVADOC)
+                        from(javadocTask)
+                    }
                 }
-            }
 
-            configure<JavaPluginExtension> {
-                withSourcesJar()
-                withJavadocJar()
+                configure<JavaPluginExtension> {
+                    withSourcesJar()
+                    withJavadocJar()
+                }
             }
 
             configure<PublishingExtension> {
