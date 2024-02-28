@@ -223,7 +223,7 @@ class SonatypePlugin : Plugin<Project> {
                 val main: SourceSet = the<JavaPluginExtension>().sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
                 tasks.create<Jar>(main.javadocJarTaskName) {
                     archiveClassifier.set("javadoc")
-                    from(from(tasks.findByName("javadoc") ?: tasks.findByName("dokka")))
+                    from(tasks.findByName("javadoc") ?: tasks.findByName("dokka"))
                 }
 
                 configure<JavaPluginExtension> {
