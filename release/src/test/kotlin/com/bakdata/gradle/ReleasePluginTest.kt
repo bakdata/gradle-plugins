@@ -24,6 +24,7 @@
 
 package com.bakdata.gradle
 
+import net.researchgate.release.ReleaseExtension
 import net.researchgate.release.ReleasePlugin
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatCode
@@ -31,6 +32,7 @@ import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
 import org.gradle.api.Project
 import org.gradle.api.internal.project.DefaultProject
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
@@ -41,7 +43,7 @@ internal class ReleasePluginTest {
     }
 
     @Test
-    fun testSingleModuleProjectWithJavaFirst() {
+    fun testSingleModuleProject() {
         val project = ProjectBuilder.builder().build()
 
         assertThatCode {
@@ -52,6 +54,44 @@ internal class ReleasePluginTest {
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(project.plugins)
                 .haveExactly(1, Condition({ it is ReleasePlugin }, "Has release plugin"))
+            softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git?.pushToRemote)
+                .isNull()
+        }
+    }
+
+    @Test
+    fun testDisablePushToRemote() {
+        val project = ProjectBuilder.builder().build()
+
+        assertThatCode {
+            project.pluginManager.apply("com.bakdata.release")
+            project.setProperty("disablePushToRemote", "true")
+            project.evaluate()
+        }.doesNotThrowAnyException()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(project.plugins)
+                .haveExactly(1, Condition({ it is ReleasePlugin }, "Has release plugin"))
+            softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git?.pushToRemote)
+                .isEqualTo(false)
+        }
+    }
+
+    @Test
+    fun testEnablePushToRemote() {
+        val project = ProjectBuilder.builder().build()
+
+        assertThatCode {
+            project.pluginManager.apply("com.bakdata.release")
+            project.setProperty("disablePushToRemote", "true")
+            project.evaluate()
+        }.doesNotThrowAnyException()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(project.plugins)
+                .haveExactly(1, Condition({ it is ReleasePlugin }, "Has release plugin"))
+            softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git?.pushToRemote)
+                .isNull()
         }
     }
 
