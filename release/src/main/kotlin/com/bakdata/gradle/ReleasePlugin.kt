@@ -42,7 +42,7 @@ class ReleasePlugin : Plugin<Project> {
             apply(plugin = "net.researchgate.release")
 
             val disablePushToRemote: String? = project.findProperty("disablePushToRemote") as? String
-            disablePushToRemote?.takeIf { it.toBoolean() }.apply {
+            if (disablePushToRemote?.toBoolean() == true) {
                 configure<ReleaseExtension> {
                     git {
                         pushToRemote.set(false)
