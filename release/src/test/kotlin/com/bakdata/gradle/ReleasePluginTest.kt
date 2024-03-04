@@ -55,8 +55,11 @@ internal class ReleasePluginTest {
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(project.plugins)
                 .haveExactly(1, Condition({ it is ReleasePlugin }, "Has release plugin"))
-            softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git?.pushToRemote?.get())
-                .isEqualTo("origin")
+            softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git)
+                .satisfies {
+                    softly.assertThat(it?.pushToRemote?.get()).isEqualTo("origin")
+                    softly.assertThat(it?.requireBranch?.get()).isEqualTo("main")
+                }
         }
     }
 
@@ -65,14 +68,12 @@ internal class ReleasePluginTest {
         val project = ProjectBuilder.builder().build()
 
         assertThatCode {
-            project.extra.set("disablePushToRemote", "false")
+            project.extra.set(DISABLE_PUSH_TO_REMOTE, "false")
             project.pluginManager.apply("com.bakdata.release")
             project.evaluate()
         }.doesNotThrowAnyException()
 
         SoftAssertions.assertSoftly { softly ->
-            softly.assertThat(project.plugins)
-                .haveExactly(1, Condition({ it is ReleasePlugin }, "Has release plugin"))
             softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git?.pushToRemote?.get())
                 .isEqualTo("origin")
         }
@@ -83,16 +84,30 @@ internal class ReleasePluginTest {
         val project = ProjectBuilder.builder().build()
 
         assertThatCode {
-            project.extra.set("disablePushToRemote", "true")
+            project.extra.set(DISABLE_PUSH_TO_REMOTE, "true")
             project.pluginManager.apply("com.bakdata.release")
             project.evaluate()
         }.doesNotThrowAnyException()
 
         SoftAssertions.assertSoftly { softly ->
-            softly.assertThat(project.plugins)
-                .haveExactly(1, Condition({ it is ReleasePlugin }, "Has release plugin"))
             softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git?.pushToRemote?.get())
                 .isEqualTo(false)
+        }
+    }
+
+    @Test
+    fun testRequireBranch() {
+        val project = ProjectBuilder.builder().build()
+
+        assertThatCode {
+            project.extra.set(REQUIRE_BRANCH, "my-branch")
+            project.pluginManager.apply("com.bakdata.release")
+            project.evaluate()
+        }.doesNotThrowAnyException()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git?.requireBranch?.get())
+                .isEqualTo("my-branch")
         }
     }
 

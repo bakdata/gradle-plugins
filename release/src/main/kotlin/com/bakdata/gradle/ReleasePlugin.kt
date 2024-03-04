@@ -31,6 +31,9 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
+const val DISABLE_PUSH_TO_REMOTE = "release.disablePushToRemote"
+const val REQUIRE_BRANCH = "release.requireBranch"
+
 class ReleasePlugin : Plugin<Project> {
 
     override fun apply(rootProject: Project) {
@@ -41,11 +44,15 @@ class ReleasePlugin : Plugin<Project> {
         with(rootProject) {
             apply(plugin = "net.researchgate.release")
 
-            val disablePushToRemote: String? = project.findProperty("disablePushToRemote") as? String
-            if (disablePushToRemote?.toBoolean() == true) {
-                configure<ReleaseExtension> {
-                    git {
+            val disablePushToRemote: String? = project.findProperty(DISABLE_PUSH_TO_REMOTE) as? String
+            val branch: String? = project.findProperty(REQUIRE_BRANCH) as? String
+            configure<ReleaseExtension> {
+                git {
+                    if (disablePushToRemote?.toBoolean() == true) {
                         pushToRemote.set(false)
+                    }
+                    branch?.also {
+                        requireBranch.set(it)
                     }
                 }
             }
