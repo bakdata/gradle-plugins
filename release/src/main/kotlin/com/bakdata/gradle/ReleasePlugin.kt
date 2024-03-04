@@ -31,10 +31,12 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
-const val DISABLE_PUSH_TO_REMOTE = "release.disablePushToRemote"
-const val REQUIRE_BRANCH = "release.requireBranch"
-
 class ReleasePlugin : Plugin<Project> {
+
+    companion object {
+        const val DISABLE_PUSH_TO_REMOTE = "release.disablePushToRemote"
+        const val REQUIRE_BRANCH = "release.requireBranch"
+    }
 
     override fun apply(rootProject: Project) {
         if (rootProject.parent != null) {
