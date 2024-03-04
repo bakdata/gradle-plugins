@@ -5,7 +5,7 @@
 bakdata gradle plugins
 ======================
 
-A collection of small gradle plugin, mostly focused on deployment.
+A collection of small Gradle plugins, mostly focused on deployment.
 
 - **Sonar** Some defaults for easy integration of sonar on multi-module projects
 - **Sonatype** is used for uploading to sonatype repos and ultimately publish to Maven Central
