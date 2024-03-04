@@ -5,10 +5,11 @@
 bakdata gradle plugins
 ======================
 
-A collection of small gradle plugin, mostly focused on deployment.
+A collection of small Gradle plugins, mostly focused on deployment.
 
-**Sonar** Some defaults for easy integration of sonar on multi-module projects
-**Sonatype** is used for uploading to sonatype repos and ultimately publish to Maven Central 
+- **Sonar** Some defaults for easy integration of sonar on multi-module projects
+- **Sonatype** is used for uploading to sonatype repos and ultimately publish to Maven Central
+- **Release** adds configurable push behavior for version bumping
 
 ## Development
 
@@ -25,9 +26,11 @@ buildscript {
   dependencies {
     classpath("com.bakdata.gradle:sonar:0.0.1-SNAPSHOT")
     classpath("com.bakdata.gradle:sonatype:0.0.1-SNAPSHOT")
+    classpath("com.bakdata.gradle:release:0.0.1-SNAPSHOT")
   }
 }
 
 apply(plugin = "com.bakdata.sonar")
 apply(plugin = "com.bakdata.sonatype")
+apply(plugin = "com.bakdata.release")
 ```
