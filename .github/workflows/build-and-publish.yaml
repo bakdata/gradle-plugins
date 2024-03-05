@@ -8,7 +8,7 @@ on:
 jobs:
   build-and-publish:
     name: Java Gradle
-    uses: bakdata/ci-templates/.github/workflows/java-gradle-plugin.yaml@1.42.0
+    uses: bakdata/ci-templates/.github/workflows/java-gradle-plugin.yaml@1.43.0
     secrets:
       sonar-token: ${{ secrets.SONARCLOUD_TOKEN }}
       sonar-organization: ${{ secrets.SONARCLOUD_ORGANIZATION }}
@@ -19,5 +19,4 @@ jobs:
       ossrh-username: ${{ secrets.SONATYPE_OSSRH_USERNAME }}
       gradle-publish-key: ${{ secrets.GRADLE_PLUGIN_PUBLISH_KEY }}
       gradle-publish-secret: ${{ secrets.GRADLE_PLUGIN_PUBLISH_SECRET }}
-      github-username: ${{ secrets.GH_USERNAME }}
       github-token: ${{ secrets.GH_TOKEN }}
