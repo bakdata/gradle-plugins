@@ -1,6 +1,6 @@
 plugins {
     // release
-    id("com.bakdata.sonar") version "1.3.0"
+    id("com.bakdata.release") version "1.3.0"
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.sonar") version "1.1.17"
     id("com.bakdata.sonatype") version "1.2.2"
