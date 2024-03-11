@@ -1,5 +1,5 @@
 /*
- * MIT License
+ * The MIT License
  *
  * Copyright (c) 2024 bakdata GmbH
  *
@@ -31,7 +31,9 @@ import com.bakdata.gradle.ReleasePlugin.Companion.REQUIRE_BRANCH
 import com.bakdata.gradle.ReleasePlugin.Companion.SINCE_TAG
 import net.researchgate.release.ReleaseExtension
 import net.researchgate.release.ReleasePlugin
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatCode
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
 import org.gradle.api.Project
