@@ -26,6 +26,7 @@ package com.bakdata.gradle
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions.assertSoftly
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
@@ -60,7 +61,7 @@ internal class SonatypePluginTest {
         }.doesNotThrowAnyException()
 
         assertSoftly { softly ->
-            softly.assertThat(project.tasks)
+            softly.assertThat(project.collectTasks())
                     .haveExactly(1, taskWithName("signSonatypePublication"))
                     .haveExactly(1, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
@@ -100,7 +101,7 @@ internal class SonatypePluginTest {
         }
 
         assertSoftly { softly ->
-            softly.assertThat(parent.tasks)
+            softly.assertThat(parent.collectTasks())
                     .haveExactly(0, taskWithName("signSonatypePublication"))
                     .haveExactly(0, taskWithName("publish"))
                     .haveExactly(0, taskWithName("publishToNexus"))
@@ -115,6 +116,13 @@ internal class SonatypePluginTest {
 
         Assertions.assertThatThrownBy { child1.apply(plugin = "com.bakdata.sonatype") }
             .satisfies(Consumer { Assertions.assertThat(it.cause).hasMessageContaining("top-level project") })
+    }
+
+    private fun Project.collectTasks(): List<Task> = try {
+        tasks.toList()
+    } catch (e: GradleException) {
+        // FIXME bug since Gradle 7.3 https://github.com/gradle/gradle/issues/20301
+        if (e.message.equals("Could not create task ':init'.")) tasks.toList() else throw e
     }
 
 }
