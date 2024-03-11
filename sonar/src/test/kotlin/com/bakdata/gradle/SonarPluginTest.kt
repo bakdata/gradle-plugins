@@ -1,5 +1,5 @@
 /*
- * The MIT License
+ * MIT License
  *
  * Copyright (c) 2024 bakdata GmbH
  *
@@ -26,7 +26,7 @@ package com.bakdata.gradle
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatCode
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
 import org.gradle.api.Project
@@ -34,6 +34,7 @@ import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
+import java.util.function.Consumer
 
 internal class SonarPluginTest {
     fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
@@ -137,7 +138,7 @@ internal class SonarPluginTest {
         val parent = ProjectBuilder.builder().withName("parent").build()
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
-        assertThatCode { child1.pluginManager.apply("com.bakdata.sonar") }
-            .satisfies { assertThat(it.cause).hasMessageContaining("top-level project") }
+        assertThatThrownBy { child1.pluginManager.apply("com.bakdata.sonar") }
+            .satisfies(Consumer { assertThat(it.cause).hasMessageContaining("top-level project") })
     }
 }

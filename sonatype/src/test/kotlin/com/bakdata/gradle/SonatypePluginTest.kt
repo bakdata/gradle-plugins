@@ -1,5 +1,5 @@
 /*
- * The MIT License
+ * MIT License
  *
  * Copyright (c) 2024 bakdata GmbH
  *
@@ -34,6 +34,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.nio.file.Files
+import java.util.function.Consumer
 
 
 internal class SonatypePluginTest {
@@ -112,8 +113,8 @@ internal class SonatypePluginTest {
         val parent = ProjectBuilder.builder().withName("parent").build()
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
-        Assertions.assertThatCode { child1.apply(plugin = "com.bakdata.sonatype") }
-            .satisfies { Assertions.assertThat(it.cause).hasMessageContaining("top-level project") }
+        Assertions.assertThatThrownBy { child1.apply(plugin = "com.bakdata.sonatype") }
+            .satisfies(Consumer { Assertions.assertThat(it.cause).hasMessageContaining("top-level project") })
     }
 
 }
