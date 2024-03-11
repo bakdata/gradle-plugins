@@ -56,21 +56,17 @@ subprojects {
     // description is only ready after evaluation
     afterEvaluate {
         configure<GradlePluginDevelopmentExtension> {
+            website.set("https://github.com/bakdata/gradle-plugins")
+            vcsUrl.set("https://github.com/bakdata/gradle-plugins")
             plugins {
                 create("${project.name.capitalize()}Plugin") {
                     id = "com.bakdata.${project.name}"
                     implementationClass = "com.bakdata.gradle.${project.name.capitalize()}Plugin"
                     description = project.description
                     displayName = "Bakdata $name plugin"
+                    tags = listOf("bakdata", name)
                 }
             }
-        }
-
-        extensions.findByType(com.gradle.publish.PluginBundleExtension::class)?.apply {
-            // actual block of plugin portal config, need to be done on each subproject as the plugin does not support multi-module projects yet...
-            website = "https://github.com/bakdata/gradle-plugins"
-            vcsUrl = "https://github.com/bakdata/gradle-plugins"
-            tags = listOf("bakdata", name)
         }
     }
 
