@@ -41,8 +41,9 @@ subprojects {
     apply(plugin = "java")
 
     configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(11)
+        }
     }
 
     apply(plugin = "java-gradle-plugin")
@@ -74,12 +75,9 @@ subprojects {
     }
 
     dependencies {
-        "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
-        "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
-        "testImplementation"("org.assertj", "assertj-core", "3.11.1")
-        "testImplementation"("org.junit-pioneer", "junit-pioneer", "0.3.0")
+        val junitVersion = "5.10.2"
+        "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+        "testImplementation"("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+        "testImplementation"("org.assertj", "assertj-core", "3.25.3")
     }
 }
-
-val sonarqube by tasks
-sonarqube.enabled = false //FIXME requires Java 17
