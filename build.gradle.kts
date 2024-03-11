@@ -1,10 +1,9 @@
 plugins {
     // release
-    id("net.researchgate.release") version "3.0.2"
+    id("com.bakdata.release") version "1.3.0"
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.sonar") version "1.1.17"
     id("com.bakdata.sonatype") version "1.2.2"
-    id("org.hildan.github.changelog") version "1.13.1"
     id("org.gradle.kotlin.kotlin-dsl") version "2.1.6" apply false
     id("com.gradle.plugin-publish") version "1.2.1" apply false
 }
@@ -36,12 +35,6 @@ configure<com.bakdata.gradle.SonatypeSettings> {
             id.set("torbsto")
         }
     }
-}
-
-configure<org.hildan.github.changelog.plugin.GitHubChangelogExtension> {
-    githubUser = "bakdata"
-    futureVersionTag = findProperty("changelog.releaseVersion")?.toString()
-    sinceTag = findProperty("changelog.sinceTag")?.toString()
 }
 
 subprojects {
@@ -85,12 +78,6 @@ subprojects {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
         "testImplementation"("org.assertj", "assertj-core", "3.11.1")
         "testImplementation"("org.junit-pioneer", "junit-pioneer", "0.3.0")
-    }
-}
-
-release {
-    git {
-        requireBranch.set("master")
     }
 }
 

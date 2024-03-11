@@ -31,6 +31,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.attributes.DocsType.JAVADOC
 import org.gradle.api.logging.Logging
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -220,21 +221,17 @@ class SonatypePlugin : Plugin<Project> {
             apply(plugin = "signing")
             apply(plugin = "org.gradle.maven-publish")
 
-            // Java and Dokka plugins might not have been applied yet
-            project.afterEvaluate {
-                tasks.findByName("dokka")?.apply {
-                    val javadocTask: Task = this
-                    val main: SourceSet =
-                        the<JavaPluginExtension>().sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-                    tasks.create<Jar>(main.javadocJarTaskName) {
-                        archiveClassifier.set(JAVADOC)
-                        from(javadocTask)
-                    }
-                }
-
+            project.plugins.matching { it is JavaPlugin }.all {
                 configure<JavaPluginExtension> {
                     withSourcesJar()
                     withJavadocJar()
+                }
+
+                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
+                    val javadocTask: Task = this
+                    tasks.named<Jar>("javadocJar") {
+                        from(javadocTask)
+                    }
                 }
             }
 
