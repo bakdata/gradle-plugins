@@ -28,6 +28,7 @@ import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
 import org.gradle.kotlin.dsl.apply
@@ -40,7 +41,15 @@ import java.util.function.Consumer
 
 internal class SonatypePluginTest {
     fun Project.evaluate() {
-        (this as DefaultProject).evaluate()
+        val defaultProject: DefaultProject = this as DefaultProject
+        try {
+            defaultProject.evaluate()
+        } catch (e: ProjectConfigurationException) {
+            // FIXME bug since Gradle 7.3 https://github.com/gradle/gradle/issues/20301
+            if (e.message.equals("Failed to apply plugin 'org.gradle.build-init'.")) {
+                defaultProject.evaluate()
+            }
+        }
     }
 
     fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
@@ -61,7 +70,7 @@ internal class SonatypePluginTest {
         }.doesNotThrowAnyException()
 
         assertSoftly { softly ->
-            softly.assertThat(project.collectTasks())
+            softly.assertThat(project.tasks)
                     .haveExactly(1, taskWithName("signSonatypePublication"))
                     .haveExactly(1, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
