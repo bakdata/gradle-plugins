@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.3.2](https://github.com/bakdata/gradle-plugins/tree/1.3.2) (2024-03-11)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.3.1...1.3.2)
+
+**Merged pull requests:**
+
+- Fix sign dependencies with multiple publications [\#51](https://github.com/bakdata/gradle-plugins/pull/51) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.3.1](https://github.com/bakdata/gradle-plugins/tree/1.3.1) (2024-03-11)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.3.0...1.3.1)
 
