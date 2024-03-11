@@ -124,7 +124,9 @@ internal class SonatypePluginTest {
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
         Assertions.assertThatThrownBy { child1.apply(plugin = "com.bakdata.sonatype") }
-            .satisfies(Consumer { Assertions.assertThat(it.cause).hasMessageContaining("top-level project") })
+            .satisfies(Consumer {
+                Assertions.assertThat(it.cause).hasMessageContaining("top-level project")
+            }) // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
     }
 
     private fun Project.collectTasks(): List<Task> = try {

@@ -66,12 +66,12 @@ internal class ReleasePluginTest {
                 .haveExactly(1, Condition({ it is ReleasePlugin }, "Has release plugin"))
                 .haveExactly(1, Condition({ it is GitHubChangelogPlugin }, "Has changelog plugin"))
             softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git)
-                .satisfies(Consumer {
+                .satisfies(Consumer { // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
                     softly.assertThat(it?.pushToRemote?.get()).isEqualTo("origin")
                     softly.assertThat(it?.requireBranch?.get()).isEqualTo("main")
                 })
             softly.assertThat(project.extensions.findByType<GitHubChangelogExtension>())
-                .satisfies(Consumer {
+                .satisfies(Consumer { // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
                     softly.assertThat(it?.githubRepository).isNull()
                     softly.assertThat(it?.futureVersionTag).isNull()
                     softly.assertThat(it?.sinceTag).isNull()
@@ -181,6 +181,6 @@ internal class ReleasePluginTest {
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
         assertThatThrownBy { child1.pluginManager.apply("com.bakdata.release") }
-            .satisfies(Consumer { assertThat(it.cause).hasMessageContaining("top-level project") })
+            .satisfies(Consumer { assertThat(it.cause).hasMessageContaining("top-level project") }) // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
     }
 }

@@ -140,7 +140,7 @@ internal class SonarPluginTest {
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
         assertThatThrownBy { child1.pluginManager.apply("com.bakdata.sonar") }
-            .satisfies(Consumer { assertThat(it.cause).hasMessageContaining("top-level project") })
+            .satisfies(Consumer { assertThat(it.cause).hasMessageContaining("top-level project") }) // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
     }
 
     private fun Project.collectTasks(): List<Task> = try {
