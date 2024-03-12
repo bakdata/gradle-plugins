@@ -26,7 +26,9 @@ package com.bakdata.gradle
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions.assertSoftly
+import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
 import org.gradle.kotlin.dsl.apply
@@ -34,11 +36,20 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.nio.file.Files
+import java.util.function.Consumer
 
 
 internal class SonatypePluginTest {
     fun Project.evaluate() {
-        (this as DefaultProject).evaluate()
+        val defaultProject: DefaultProject = this as DefaultProject
+        try {
+            defaultProject.evaluate()
+        } catch (e: ProjectConfigurationException) {
+            // FIXME bug since Gradle 7.3 https://github.com/gradle/gradle/issues/20301
+            if (e.message.equals("Failed to apply plugin 'org.gradle.build-init'.")) {
+                defaultProject.evaluate()
+            }
+        }
     }
 
     fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
@@ -99,7 +110,7 @@ internal class SonatypePluginTest {
         }
 
         assertSoftly { softly ->
-            softly.assertThat(parent.tasks)
+            softly.assertThat(parent.collectTasks())
                     .haveExactly(0, taskWithName("signSonatypePublication"))
                     .haveExactly(0, taskWithName("publish"))
                     .haveExactly(0, taskWithName("publishToNexus"))
@@ -112,8 +123,17 @@ internal class SonatypePluginTest {
         val parent = ProjectBuilder.builder().withName("parent").build()
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
-        Assertions.assertThatCode { child1.apply(plugin = "com.bakdata.sonatype") }
-            .satisfies { Assertions.assertThat(it.cause).hasMessageContaining("top-level project") }
+        Assertions.assertThatThrownBy { child1.apply(plugin = "com.bakdata.sonatype") }
+            .satisfies(Consumer {
+                Assertions.assertThat(it.cause).hasMessageContaining("top-level project")
+            }) // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
+    }
+
+    private fun Project.collectTasks(): List<Task> = try {
+        tasks.toList()
+    } catch (e: GradleException) {
+        // FIXME bug since Gradle 7.3 https://github.com/gradle/gradle/issues/20301
+        if (e.message.equals("Could not create task ':init'.")) tasks.toList() else throw e
     }
 
 }

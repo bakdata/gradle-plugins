@@ -33,6 +33,7 @@ import net.researchgate.release.ReleaseExtension
 import net.researchgate.release.ReleasePlugin
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatCode
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
 import org.gradle.api.Project
@@ -43,6 +44,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.hildan.github.changelog.plugin.GitHubChangelogExtension
 import org.hildan.github.changelog.plugin.GitHubChangelogPlugin
 import org.junit.jupiter.api.Test
+import java.util.function.Consumer
 
 internal class ReleasePluginTest {
 
@@ -64,16 +66,16 @@ internal class ReleasePluginTest {
                 .haveExactly(1, Condition({ it is ReleasePlugin }, "Has release plugin"))
                 .haveExactly(1, Condition({ it is GitHubChangelogPlugin }, "Has changelog plugin"))
             softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git)
-                .satisfies {
+                .satisfies(Consumer { // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
                     softly.assertThat(it?.pushToRemote?.get()).isEqualTo("origin")
                     softly.assertThat(it?.requireBranch?.get()).isEqualTo("main")
-                }
+                })
             softly.assertThat(project.extensions.findByType<GitHubChangelogExtension>())
-                .satisfies {
+                .satisfies(Consumer { // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
                     softly.assertThat(it?.githubRepository).isNull()
                     softly.assertThat(it?.futureVersionTag).isNull()
                     softly.assertThat(it?.sinceTag).isNull()
-                }
+                })
         }
     }
 
@@ -178,7 +180,7 @@ internal class ReleasePluginTest {
         val parent = ProjectBuilder.builder().withName("parent").build()
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
 
-        assertThatCode { child1.pluginManager.apply("com.bakdata.release") }
-            .satisfies { assertThat(it.cause).hasMessageContaining("top-level project") }
+        assertThatThrownBy { child1.pluginManager.apply("com.bakdata.release") }
+            .satisfies(Consumer { assertThat(it.cause).hasMessageContaining("top-level project") }) // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
     }
 }

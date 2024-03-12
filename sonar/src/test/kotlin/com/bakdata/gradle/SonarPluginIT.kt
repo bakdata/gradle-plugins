@@ -30,14 +30,11 @@ import org.gradle.testkit.runner.BuildTask
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.junitpioneer.jupiter.TempDirectory
-import org.junitpioneer.jupiter.TempDirectory.TempDir
+import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 
-@ExtendWith(TempDirectory::class)
 internal class SonarPluginIT {
     private fun taskWithPathAndOutcome(path: String, outcome: TaskOutcome):
             Condition<BuildTask> = Condition({ it.path == path && it.outcome == outcome }, "Task $path=$outcome")

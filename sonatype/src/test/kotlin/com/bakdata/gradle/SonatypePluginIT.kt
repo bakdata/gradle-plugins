@@ -36,8 +36,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junitpioneer.jupiter.TempDirectory
-import org.junitpioneer.jupiter.TempDirectory.TempDir
+import org.junit.jupiter.api.io.TempDir
 import ru.lanwen.wiremock.ext.WiremockResolver
 import ru.lanwen.wiremock.ext.WiremockResolver.Wiremock
 import java.io.File
@@ -45,7 +44,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 
-@ExtendWith(TempDirectory::class, WiremockResolver::class)
+@ExtendWith(WiremockResolver::class)
 internal class SonatypePluginIT {
     private fun taskWithPathAndOutcome(path: String, outcome: TaskOutcome):
             Condition<BuildTask> = Condition({ it.path == path && it.outcome == outcome }, "Task $path=$outcome")
