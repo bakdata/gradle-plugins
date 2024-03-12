@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.4.0](https://github.com/bakdata/gradle-plugins/tree/1.4.0) (2024-03-12)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.3.2...1.4.0)
+
+**Merged pull requests:**
+
+- Upgrade to Gradle 8.4 [\#50](https://github.com/bakdata/gradle-plugins/pull/50) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.3.2](https://github.com/bakdata/gradle-plugins/tree/1.3.2) (2024-03-11)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.3.1...1.3.2)
 
