@@ -4,6 +4,12 @@ pluginManagement {
     }
 }
 
+buildscript {
+    configurations.all {
+        exclude group: 'au.com.console', module: 'kassava'
+    }
+}
+
 rootProject.name = 'gradle-plugins'
 
 include 'sonar', 'sonatype', 'release'
