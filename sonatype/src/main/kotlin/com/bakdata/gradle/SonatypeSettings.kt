@@ -24,11 +24,9 @@
 
 package com.bakdata.gradle
 
-import au.com.console.kassava.kotlinToString
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPomDeveloperSpec
-import kotlin.reflect.full.memberProperties
 
 open class SonatypeSettings(var project: Project) {
      var disallowLocalRelease: Boolean = true
@@ -58,6 +56,4 @@ open class SonatypeSettings(var project: Project) {
      fun developers(developerSpec: Action<in MavenPomDeveloperSpec>) {
           this.developers = developerSpec
      }
-
-     override fun toString() = kotlinToString(properties = SonatypeSettings::class.memberProperties.toTypedArray())
 }
