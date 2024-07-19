@@ -8,6 +8,12 @@ plugins {
     id("com.gradle.plugin-publish") version "1.2.1" apply false
 }
 
+buildscript {
+    configurations.all {
+        exclude(group = "au.com.console", module = "kassava")
+    }
+}
+
 allprojects {
     repositories {
         maven(url = "https://plugins.gradle.org/m2/")
