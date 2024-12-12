@@ -1,17 +1,11 @@
 plugins {
     // release
-    id("com.bakdata.release") version "1.4.0"
+    id("com.bakdata.release") version "1.4.1"
     // eat your own dog food - apply the plugins to this plugin project
-    id("com.bakdata.sonar") version "1.4.0"
-    id("com.bakdata.sonatype") version "1.4.0"
-    id("org.gradle.kotlin.kotlin-dsl") version "4.1.2" apply false
+    id("com.bakdata.sonar") version "1.4.1"
+    id("com.bakdata.sonatype") version "1.4.1"
+    id("org.gradle.kotlin.kotlin-dsl") version "5.1.1" apply false
     id("com.gradle.plugin-publish") version "1.2.1" apply false
-}
-
-buildscript {
-    configurations.all {
-        exclude(group = "au.com.console", module = "kassava")
-    }
 }
 
 allprojects {
