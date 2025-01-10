@@ -192,7 +192,7 @@ internal class SonarPluginIT {
             softly.assertThat(result.tasks)
                 .haveExactly(1, taskWithPathAndOutcome(":compileTestJava", TaskOutcome.SUCCESS))
                 .haveExactly(1, taskWithPathAndOutcome(":test", TaskOutcome.SUCCESS))
-                .haveExactly(0, taskWithPathAndOutcome(":jacocoTestReport", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":jacocoTestReport", TaskOutcome.SUCCESS))
                 .haveExactly(1, taskWithPathAndOutcome(":sonarqube", TaskOutcome.SUCCESS))
         }
     }
