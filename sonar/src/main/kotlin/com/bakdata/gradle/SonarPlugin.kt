@@ -81,7 +81,7 @@ class SonarPlugin : Plugin<Project> {
                     subprojects {
                         executionData(tasks.withType<JacocoReport>().map { it.executionData })
 
-                        afterEvaluate {
+                        components.matching { it.name == "java" }.configureEach {
                             sourceDirectories.from(files(project.the<SourceSetContainer>()["main"].allSource.srcDirs))
                             classDirectories.from(files(project.the<SourceSetContainer>()["main"].output))
                         }
