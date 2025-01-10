@@ -76,7 +76,7 @@ class SonarPlugin : Plugin<Project> {
                 }
             }
 
-            if (!subprojects.isEmpty()) {
+            if (subprojects.isNotEmpty()) {
                 tasks.register<JacocoReport>("jacocoRootReport") {
                     subprojects {
                         executionData(tasks.withType<JacocoReport>().map { it.executionData })

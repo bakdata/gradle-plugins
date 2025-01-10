@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2019 bakdata GmbH
+ * Copyright (c) 2025 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -127,6 +127,73 @@ internal class SonarPluginIT {
             softly.assertThat(result.tasks)
                     .haveExactly(0, taskWithPathAndOutcome(":jacocoTestReport", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":sonarqube", TaskOutcome.SUCCESS))
+        }
+    }
+
+    @Test
+    fun testMultiModuleProjectWithRootJavaProject(@TempDir testProjectDir: Path) {
+        Files.writeString(
+            testProjectDir.resolve("build.gradle.kts"), """
+            plugins {
+                id("com.bakdata.sonar")
+            }
+            allprojects {
+                apply(plugin = "java")
+                repositories {
+                    mavenCentral()
+                }
+                dependencies {
+                    "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
+                    "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
+                }
+                tasks.withType<Test> {
+                    useJUnitPlatform()
+                }
+            }
+        """.trimIndent()
+        )
+
+        val children = listOf("child")
+        Files.writeString(
+            testProjectDir.resolve("settings.gradle"),
+            """include ${children.joinToString(",") { "'$it'" }}"""
+        )
+        children.forEach { child ->
+            Files.createDirectories(testProjectDir.resolve("$child/src/test/java/"))
+            Files.copy(
+                SonarPluginIT::class.java.getResourceAsStream("/DemoTest.java"),
+                testProjectDir.resolve("$child/src/test/java/DemoTest.java")
+            )
+        }
+        Files.createDirectories(testProjectDir.resolve("src/test/java/"))
+        Files.copy(
+            SonarPluginIT::class.java.getResourceAsStream("/DemoTest.java"),
+            testProjectDir.resolve("src/test/java/DemoTest.java")
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir.toFile())
+            .withArguments(
+                "sonarqube",
+                "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}",
+                "--stacktrace",
+                "--info"
+            )
+            .withProjectPluginClassPath()
+            .build()
+
+        SoftAssertions.assertSoftly { softly ->
+            children.forEach { child ->
+                softly.assertThat(result.tasks)
+                    .haveExactly(1, taskWithPathAndOutcome(":$child:compileTestJava", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":$child:test", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":$child:jacocoTestReport", TaskOutcome.SUCCESS))
+            }
+            softly.assertThat(result.tasks)
+                .haveExactly(1, taskWithPathAndOutcome(":compileTestJava", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":test", TaskOutcome.SUCCESS))
+                .haveExactly(0, taskWithPathAndOutcome(":jacocoTestReport", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":sonarqube", TaskOutcome.SUCCESS))
         }
     }
 }
