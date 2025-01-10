@@ -3,7 +3,7 @@ plugins {
     id("com.bakdata.release") version "1.4.0"
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.sonar") version "1.4.0"
-    id("com.bakdata.sonatype") version "1.4.0"
+    id("com.bakdata.sonatype") version "1.4.1"
     id("org.gradle.kotlin.kotlin-dsl") version "4.1.2" apply false
     id("com.gradle.plugin-publish") version "1.2.1" apply false
 }
