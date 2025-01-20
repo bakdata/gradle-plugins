@@ -96,8 +96,8 @@ internal class JibImageConfigPluginIT {
             .withProjectDir(testProjectDir.toFile())
             .withArguments(
                 "showJibImage",
-                "-Djib.to.image.repository=gcr.io/bakdata",
-                "-Djib.to.image.tag=a-tag"
+                "-DjibImage.repository=gcr.io/bakdata",
+                "-DjibImage.tag=a-tag"
             )
             .withProjectPluginClassPath()
             .build()
