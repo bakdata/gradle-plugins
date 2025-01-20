@@ -54,6 +54,11 @@ internal class JibPluginIT {
             }
         """.trimIndent()
         )
+        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
+        Files.copy(
+            JibPluginIT::class.java.getResourceAsStream("/DemoApp.java"),
+            testProjectDir.resolve("src/main/java/DemoApp.java")
+        )
 
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.toFile())
@@ -64,6 +69,130 @@ internal class JibPluginIT {
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(result.tasks)
                 .haveExactly(1, taskWithPathAndOutcome(":jib", TaskOutcome.SUCCESS))
+        }
+    }
+
+    @Test
+    fun testConfigureDefault(@TempDir testProjectDir: Path) {
+        Files.writeString(
+            testProjectDir.resolve("settings.gradle"),
+            """rootProject.name = 'jib-test-project'"""
+        )
+        Files.writeString(
+            testProjectDir.resolve("build.gradle.kts"), """
+            plugins {
+                java
+                id("com.bakdata.jib")
+            }
+
+            tasks.create("showJibBaseImageTag") {
+                afterEvaluate {
+                    print(jib.from.image)
+                }
+            }
+        """.trimIndent()
+        )
+        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
+        Files.copy(
+            JibPluginIT::class.java.getResourceAsStream("/DemoApp.java"),
+            testProjectDir.resolve("src/main/java/DemoApp.java")
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir.toFile())
+            .withArguments("showJibBaseImageTag")
+            .withProjectPluginClassPath()
+            .build()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(result.output)
+                .contains("jib-test-project")
+        }
+    }
+
+    @Test
+    fun testConfigureProperties(@TempDir testProjectDir: Path) {
+        Files.writeString(
+            testProjectDir.resolve("settings.gradle"),
+            """rootProject.name = 'jib-test-project'"""
+        )
+        Files.writeString(
+            testProjectDir.resolve("build.gradle.kts"), """
+            plugins {
+                java
+                id("com.bakdata.jib")
+            }
+
+            tasks.create("showJibBaseImageTag") {
+                afterEvaluate {
+                    print(jib.from.image)
+                }
+            }
+        """.trimIndent()
+        )
+        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
+        Files.copy(
+            JibPluginIT::class.java.getResourceAsStream("/DemoApp.java"),
+            testProjectDir.resolve("src/main/java/DemoApp.java")
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir.toFile())
+            .withArguments(
+                "showJibBaseImageTag",
+                "-Pjib.to.image.repository=gcr.io/bakdata",
+                "-Pjib.to.image.tag=a-tag"
+            )
+            .withProjectPluginClassPath()
+            .build()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(result.output)
+                .contains("gcr.io/bakdata/jib-test-project:a-tag")
+        }
+    }
+
+    @Test
+    fun testConfigure(@TempDir testProjectDir: Path) {
+        Files.writeString(
+            testProjectDir.resolve("settings.gradle"),
+            """rootProject.name = 'jib-test-project'"""
+        )
+        Files.writeString(
+            testProjectDir.resolve("build.gradle.kts"), """
+            plugins {
+                java
+                id("com.bakdata.jib")
+            }
+
+            bakdataJib {
+                imageRepository.set("gcr.io/bakdata")
+                imageName.set("jib-image")
+                imageTag.set("a-tag")
+            }
+
+            tasks.create("showJibBaseImageTag") {
+                afterEvaluate {
+                    print(jib.from.image)
+                }
+            }
+        """.trimIndent()
+        )
+        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
+        Files.copy(
+            JibPluginIT::class.java.getResourceAsStream("/DemoApp.java"),
+            testProjectDir.resolve("src/main/java/DemoApp.java")
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir.toFile())
+            .withArguments("showJibBaseImageTag")
+            .withProjectPluginClassPath()
+            .build()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(result.output)
+                .contains("gcr.io/bakdata/jib-image:a-tag")
         }
     }
 }
