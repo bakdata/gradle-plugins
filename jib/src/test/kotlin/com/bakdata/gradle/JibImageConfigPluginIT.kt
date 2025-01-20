@@ -122,9 +122,9 @@ internal class JibImageConfigPluginIT {
             }
 
             jibImage {
-                imageRepository.set("gcr.io/bakdata")
-                imageName.set("jib-image")
-                imageTag.set("a-tag")
+                repository.set("gcr.io/bakdata")
+                name.set("jib-image")
+                tag.set("a-tag")
             }
 
             tasks.create("showJibImage") {

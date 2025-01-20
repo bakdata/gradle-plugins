@@ -35,8 +35,8 @@ open class JibImageConfigExtension(project: Project) {
         internal const val EXTENSION_NAME = "jibImage"
     }
 
-    val imageRepository =
+    val repository =
         project.objects.property<String>().convention(System.getProperty("jibImage.repository")?.toString())
-    val imageName = project.objects.property<String>().convention(project.name)
-    val imageTag = project.objects.property<String>().convention(System.getProperty("jibImage.tag")?.toString())
+    val name = project.objects.property<String>().convention(project.name)
+    val tag = project.objects.property<String>().convention(System.getProperty("jibImage.tag")?.toString())
 }
