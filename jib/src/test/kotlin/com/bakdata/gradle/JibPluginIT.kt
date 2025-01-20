@@ -52,6 +52,10 @@ internal class JibPluginIT {
                 java
                 id("com.bakdata.jib")
             }
+
+            bakdataJib {
+                imageRepository.set("localhost:5000")
+            }
         """.trimIndent()
         )
         Files.createDirectories(testProjectDir.resolve("src/main/java/"))
@@ -140,8 +144,8 @@ internal class JibPluginIT {
             .withProjectDir(testProjectDir.toFile())
             .withArguments(
                 "showJibImage",
-                "-Pjib.to.image.repository=gcr.io/bakdata",
-                "-Pjib.to.image.tag=a-tag"
+                "-Djib.to.image.repository=gcr.io/bakdata",
+                "-Djib.to.image.tag=a-tag"
             )
             .withProjectPluginClassPath()
             .build()
