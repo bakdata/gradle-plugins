@@ -32,7 +32,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import java.util.*
 
-class JibImageConfigPlugin : Plugin<Project> {
+class JibPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         with(project) {

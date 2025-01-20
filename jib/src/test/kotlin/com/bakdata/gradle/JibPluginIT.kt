@@ -32,7 +32,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 
-internal class JibImageConfigPluginIT {
+internal class JibPluginIT {
     private fun GradleRunner.withProjectPluginClassPath(): GradleRunner {
         val classpath = System.getProperty("java.class.path")
         return withPluginClasspath(classpath.split(":").map { File(it) })
