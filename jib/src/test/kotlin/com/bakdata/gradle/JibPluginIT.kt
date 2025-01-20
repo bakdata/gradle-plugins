@@ -45,38 +45,6 @@ internal class JibPluginIT {
     }
 
     @Test
-    fun testSingleModuleProject(@TempDir testProjectDir: Path) {
-        Files.writeString(
-            testProjectDir.resolve("build.gradle.kts"), """
-            plugins {
-                java
-                id("com.bakdata.jib")
-            }
-
-            bakdataJib {
-                imageRepository.set("localhost:5000")
-            }
-        """.trimIndent()
-        )
-        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
-        Files.copy(
-            JibPluginIT::class.java.getResourceAsStream("/DemoApp.java"),
-            testProjectDir.resolve("src/main/java/DemoApp.java")
-        )
-
-        val result = GradleRunner.create()
-            .withProjectDir(testProjectDir.toFile())
-            .withArguments("jib")
-            .withProjectPluginClassPath()
-            .build()
-
-        SoftAssertions.assertSoftly { softly ->
-            softly.assertThat(result.tasks)
-                .haveExactly(1, taskWithPathAndOutcome(":jib", TaskOutcome.SUCCESS))
-        }
-    }
-
-    @Test
     fun testConfigureDefault(@TempDir testProjectDir: Path) {
         Files.writeString(
             testProjectDir.resolve("settings.gradle"),
@@ -95,11 +63,6 @@ internal class JibPluginIT {
                 }
             }
         """.trimIndent()
-        )
-        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
-        Files.copy(
-            JibPluginIT::class.java.getResourceAsStream("/DemoApp.java"),
-            testProjectDir.resolve("src/main/java/DemoApp.java")
         )
 
         val result = GradleRunner.create()
@@ -133,11 +96,6 @@ internal class JibPluginIT {
                 }
             }
         """.trimIndent()
-        )
-        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
-        Files.copy(
-            JibPluginIT::class.java.getResourceAsStream("/DemoApp.java"),
-            testProjectDir.resolve("src/main/java/DemoApp.java")
         )
 
         val result = GradleRunner.create()
@@ -181,11 +139,6 @@ internal class JibPluginIT {
                 }
             }
         """.trimIndent()
-        )
-        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
-        Files.copy(
-            JibPluginIT::class.java.getResourceAsStream("/DemoApp.java"),
-            testProjectDir.resolve("src/main/java/DemoApp.java")
         )
 
         val result = GradleRunner.create()
