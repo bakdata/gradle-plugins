@@ -1,17 +1,12 @@
-plugins {
-    // release
-    id("com.bakdata.release") version "1.4.0"
-    // eat your own dog food - apply the plugins to this plugin project
-    id("com.bakdata.sonar") version "1.4.0"
-    id("com.bakdata.sonatype") version "1.4.1"
-    id("org.gradle.kotlin.kotlin-dsl") version "4.1.2" apply false
-    id("com.gradle.plugin-publish") version "1.2.1" apply false
-}
+import java.util.*
 
-buildscript {
-    configurations.all {
-        exclude(group = "au.com.console", module = "kassava")
-    }
+plugins {
+    // eat your own dog food - apply the plugins to this plugin project
+    id("com.bakdata.release") version "1.4.2"
+    id("com.bakdata.sonar") version "1.4.2"
+    id("com.bakdata.sonatype") version "1.4.2"
+    id("org.gradle.kotlin.kotlin-dsl") version "4.1.2" apply false
+    id("com.gradle.plugin-publish") version "1.3.0" apply false
 }
 
 allprojects {
@@ -65,9 +60,9 @@ subprojects {
             website.set("https://github.com/bakdata/gradle-plugins")
             vcsUrl.set("https://github.com/bakdata/gradle-plugins")
             plugins {
-                create("${project.name.capitalize()}Plugin") {
+                create("${project.name.replaceFirstChar(::capitalize)}Plugin") {
                     id = "com.bakdata.${project.name}"
-                    implementationClass = "com.bakdata.gradle.${project.name.capitalize()}Plugin"
+                    implementationClass = "com.bakdata.gradle.${project.name.replaceFirstChar(::capitalize)}Plugin"
                     description = project.description
                     displayName = "Bakdata $name plugin"
                     tags = listOf("bakdata", name)
@@ -77,9 +72,11 @@ subprojects {
     }
 
     dependencies {
-        val junitVersion = "5.10.2"
+        val junitVersion: String by project
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-        "testImplementation"("org.assertj", "assertj-core", "3.25.3")
+        "testImplementation"("org.assertj", "assertj-core", "3.27.2")
     }
 }
+
+fun capitalize(it: Char) = if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2024 bakdata GmbH
+ * Copyright (c) 2025 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,7 +74,7 @@ internal class SonatypePluginTest {
                     .haveExactly(1, taskWithName("signSonatypePublication"))
                     .haveExactly(1, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
-                    .haveExactly(1, taskWithName("closeAndReleaseStagingRepository"))
+                .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
         }
     }
 
@@ -105,7 +105,7 @@ internal class SonatypePluginTest {
                         .haveExactly(1, taskWithName("signSonatypePublication"))
                         .haveExactly(1, taskWithName("publish"))
                         .haveExactly(1, taskWithName("publishToNexus"))
-                        .haveExactly(0, taskWithName("closeAndReleaseStagingRepository"))
+                    .haveExactly(0, taskWithName("closeAndReleaseStagingRepositories"))
             }
         }
 
@@ -114,7 +114,7 @@ internal class SonatypePluginTest {
                     .haveExactly(0, taskWithName("signSonatypePublication"))
                     .haveExactly(0, taskWithName("publish"))
                     .haveExactly(0, taskWithName("publishToNexus"))
-                    .haveExactly(1, taskWithName("closeAndReleaseStagingRepository"))
+                .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
         }
     }
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2024 bakdata GmbH
+ * Copyright (c) 2025 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -90,7 +90,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToNexus", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
+            .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -98,7 +98,7 @@ internal class SonatypePluginIT {
             softly.assertThat(result.tasks)
                     .haveExactly(1, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepository", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepositories", TaskOutcome.SUCCESS))
         }
 
         val projectName = testProjectDir.fileName.toString()
@@ -193,7 +193,7 @@ internal class SonatypePluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("publishToNexus", "closeAndReleaseStagingRepository", "--stacktrace", "--info")
+            .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -206,7 +206,7 @@ internal class SonatypePluginIT {
             softly.assertThat(result.tasks)
                     .haveExactly(0, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
                     .haveExactly(0, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepository", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepositories", TaskOutcome.SUCCESS))
         }
 
         val expectedUploads = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar", ".module")
