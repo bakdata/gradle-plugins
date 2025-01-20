@@ -34,7 +34,7 @@ import org.gradle.api.internal.project.DefaultProject
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
-internal class JibImageConfigPluginTest {
+internal class JibPluginTest {
     fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
 
     fun Project.evaluate() {
