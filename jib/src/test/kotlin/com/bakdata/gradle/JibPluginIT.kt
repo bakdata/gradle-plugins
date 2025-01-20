@@ -85,9 +85,9 @@ internal class JibPluginIT {
                 id("com.bakdata.jib")
             }
 
-            tasks.create("showJibBaseImageTag") {
+            tasks.create("showJibImage") {
                 afterEvaluate {
-                    print(jib.from.image)
+                    print(jib.to.image)
                 }
             }
         """.trimIndent()
@@ -100,7 +100,7 @@ internal class JibPluginIT {
 
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.toFile())
-            .withArguments("showJibBaseImageTag")
+            .withArguments("showJibImage")
             .withProjectPluginClassPath()
             .build()
 
@@ -123,9 +123,9 @@ internal class JibPluginIT {
                 id("com.bakdata.jib")
             }
 
-            tasks.create("showJibBaseImageTag") {
+            tasks.create("showJibImage") {
                 afterEvaluate {
-                    print(jib.from.image)
+                    print(jib.to.image)
                 }
             }
         """.trimIndent()
@@ -139,7 +139,7 @@ internal class JibPluginIT {
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.toFile())
             .withArguments(
-                "showJibBaseImageTag",
+                "showJibImage",
                 "-Pjib.to.image.repository=gcr.io/bakdata",
                 "-Pjib.to.image.tag=a-tag"
             )
@@ -171,9 +171,9 @@ internal class JibPluginIT {
                 imageTag.set("a-tag")
             }
 
-            tasks.create("showJibBaseImageTag") {
+            tasks.create("showJibImage") {
                 afterEvaluate {
-                    print(jib.from.image)
+                    print(jib.to.image)
                 }
             }
         """.trimIndent()
@@ -186,7 +186,7 @@ internal class JibPluginIT {
 
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.toFile())
-            .withArguments("showJibBaseImageTag")
+            .withArguments("showJibImage")
             .withProjectPluginClassPath()
             .build()
 
