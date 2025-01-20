@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2024 bakdata GmbH
+ * Copyright (c) 2025 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -131,6 +131,62 @@ internal class SonarPluginTest {
             softly.assertThat(parent.collectTasks())
                     .haveExactly(0, taskWithName("jacocoTestReport"))
                     .haveExactly(1, taskWithName("sonarqube"))
+        }
+    }
+
+    @Test
+    fun testMultiModuleProjectWithJavaRootProjectWithJavaLast() {
+        val parent = ProjectBuilder.builder().withName("parent").build()
+        val child = ProjectBuilder.builder().withName("child").withParent(parent).build()
+        val children = listOf(child)
+
+        Assertions.assertThatCode {
+            parent.pluginManager.apply("com.bakdata.sonar")
+            parent.pluginManager.apply("java")
+            children.forEach { it.pluginManager.apply("java") }
+            parent.evaluate()
+        }.doesNotThrowAnyException()
+
+        SoftAssertions.assertSoftly { softly ->
+            children.forEach { child ->
+                softly.assertThat(child.tasks)
+                    .haveExactly(1, taskWithName("jacocoTestReport"))
+                    .haveExactly(0, taskWithName("sonarqube"))
+            }
+        }
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(parent.collectTasks())
+                .haveExactly(1, taskWithName("jacocoTestReport"))
+                .haveExactly(1, taskWithName("sonarqube"))
+        }
+    }
+
+    @Test
+    fun testMultiModuleProjectWithJavaRootProjectWithJavaFirst() {
+        val parent = ProjectBuilder.builder().withName("parent").build()
+        val child = ProjectBuilder.builder().withName("child").withParent(parent).build()
+        val children = listOf(child)
+
+        Assertions.assertThatCode {
+            parent.pluginManager.apply("java")
+            children.forEach { it.pluginManager.apply("java") }
+            parent.pluginManager.apply("com.bakdata.sonar")
+            parent.evaluate()
+        }.doesNotThrowAnyException()
+
+        SoftAssertions.assertSoftly { softly ->
+            children.forEach { child ->
+                softly.assertThat(child.tasks)
+                    .haveExactly(1, taskWithName("jacocoTestReport"))
+                    .haveExactly(0, taskWithName("sonarqube"))
+            }
+        }
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(parent.collectTasks())
+                .haveExactly(1, taskWithName("jacocoTestReport"))
+                .haveExactly(1, taskWithName("sonarqube"))
         }
     }
 

@@ -1,8 +1,17 @@
 # Change Log
 
-## [1.4.1](https://github.com/bakdata/gradle-plugins/tree/1.4.1) (2024-07-19)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.1...1.4.1)
+## [1.4.2](https://github.com/bakdata/gradle-plugins/tree/1.4.2) (2025-01-10)
 
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.2...1.4.2)
+
+## [1.4.2](https://github.com/bakdata/gradle-plugins/tree/1.4.2) (2025-01-10)
+
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.1...1.4.2)
+
+**Merged pull requests:**
+
+- Fix subproject setup for sonar
+  plugin [\#54](https://github.com/bakdata/gradle-plugins/pull/54) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.4.1](https://github.com/bakdata/gradle-plugins/tree/1.4.1) (2024-07-19)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.0...1.4.1)

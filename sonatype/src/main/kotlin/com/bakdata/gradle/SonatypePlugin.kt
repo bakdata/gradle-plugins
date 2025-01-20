@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2024 bakdata GmbH
+ * Copyright (c) 2025 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -205,7 +205,7 @@ class SonatypePlugin : Plugin<Project> {
                 if (hasTask(":release") && System.getenv("CI") == null) {
                     throw GradleException("Release is only supported through CI (e.g., Travis)")
                 }
-                if (hasTask(":closeAndReleaseStagingRepository") && System.getenv("CI") == null) {
+                if (hasTask(":closeAndReleaseStagingRepositories") && System.getenv("CI") == null) {
                     throw GradleException("Closing a release is only supported through CI (e.g., Travis)")
                 }
             }

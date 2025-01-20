@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2024 bakdata GmbH
+ * Copyright (c) 2025 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -69,22 +69,23 @@ class SonarPlugin : Plugin<Project> {
                     }
 
                     tasks.withType<JacocoReport> {
-                        reports.xml.getRequired().set(true)
+                        reports.xml.required.set(true)
                     }
 
                     rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>(), tasks.withType<Test>()) }
                 }
             }
 
-            if (!subprojects.isEmpty()) {
+            if (subprojects.isNotEmpty()) {
                 tasks.register<JacocoReport>("jacocoRootReport") {
                     subprojects {
                         executionData(tasks.withType<JacocoReport>().map { it.executionData })
+
+                        components.matching { it.name == "java" }.configureEach {
+                            sourceDirectories.from(files(project.the<SourceSetContainer>()["main"].allSource.srcDirs))
+                            classDirectories.from(files(project.the<SourceSetContainer>()["main"].output))
+                        }
                     }
-                    sourceDirectories.from(files(subprojects.map {
-                        it.the<SourceSetContainer>()["main"].allSource.srcDirs
-                    }))
-                    classDirectories.from(files(subprojects.map { it.the<SourceSetContainer>()["main"].output }))
                     reports {
                         html.required.set(true)
                         xml.required.set(true)
