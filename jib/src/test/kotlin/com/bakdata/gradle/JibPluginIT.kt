@@ -24,11 +24,8 @@
 
 package com.bakdata.gradle
 
-import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
-import org.gradle.testkit.runner.BuildTask
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -36,9 +33,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 internal class JibPluginIT {
-    private fun taskWithPathAndOutcome(path: String, outcome: TaskOutcome):
-            Condition<BuildTask> = Condition({ it.path == path && it.outcome == outcome }, "Task $path=$outcome")
-
     private fun GradleRunner.withProjectPluginClassPath(): GradleRunner {
         val classpath = System.getProperty("java.class.path")
         return withPluginClasspath(classpath.split(":").map { File(it) })

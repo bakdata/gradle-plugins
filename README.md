@@ -10,9 +10,7 @@ A collection of small Gradle plugins, mostly focused on deployment.
 - **Sonar** Some defaults for easy integration of sonar on multi-module projects
 - **Sonatype** is used for uploading to sonatype repos and ultimately publish to Maven Central
 - **Release** adds configurable push behavior for version bumping
-- **Jib** configures jib
-
-[//]: # (TODO)
+- **Jib** configures Jib repository, tag and image name
 
 ## Development
 
