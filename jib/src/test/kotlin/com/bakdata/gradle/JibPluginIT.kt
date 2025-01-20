@@ -49,6 +49,7 @@ internal class JibPluginIT {
         Files.writeString(
             testProjectDir.resolve("build.gradle.kts"), """
             plugins {
+                java
                 id("com.bakdata.jib")
             }
         """.trimIndent()

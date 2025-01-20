@@ -46,6 +46,7 @@ internal class JibPluginTest {
         val project = ProjectBuilder.builder().build()
 
         Assertions.assertThatCode {
+            project.pluginManager.apply("java")
             project.pluginManager.apply("com.bakdata.jib")
             project.evaluate()
         }.doesNotThrowAnyException()
