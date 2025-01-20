@@ -46,8 +46,8 @@ class JibPlugin : Plugin<Project> {
                 )
 
             afterEvaluate {
-                val repository = extension.imageRepository.map { "$it/" }.orElse("")
-                val tag = extension.imageTag.map { ":$it" }.orElse("")
+                val repository = extension.imageRepository.orNull?.let { "$it/" } ?: ""
+                val tag = extension.imageTag.orNull?.let { ":$it" } ?: ""
                 // The imageString should not contain any uppercase letters
                 // https://docs.docker.com/engine/reference/commandline/tag/#extended-description
                 val imageString = "${repository}${extension.imageName.get()}${tag}".lowercase(Locale.getDefault())
