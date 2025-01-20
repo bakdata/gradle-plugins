@@ -30,9 +30,9 @@ import org.gradle.kotlin.dsl.property
 /**
  * This extension sets the (target) image repository address, image name (defaults to project name) and default tag.
  */
-open class BakdataJibExtension(project: Project) {
+open class JibImageConfigExtension(project: Project) {
     companion object {
-        internal const val EXTENSION_NAME = "bakdataJib"
+        internal const val EXTENSION_NAME = "jibImage"
     }
 
     val imageRepository =

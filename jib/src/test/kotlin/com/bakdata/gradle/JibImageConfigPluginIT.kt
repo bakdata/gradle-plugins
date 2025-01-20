@@ -32,7 +32,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 
-internal class JibPluginIT {
+internal class JibImageConfigPluginIT {
     private fun GradleRunner.withProjectPluginClassPath(): GradleRunner {
         val classpath = System.getProperty("java.class.path")
         return withPluginClasspath(classpath.split(":").map { File(it) })
@@ -121,7 +121,7 @@ internal class JibPluginIT {
                 id("com.bakdata.jib")
             }
 
-            bakdataJib {
+            jibImage {
                 imageRepository.set("gcr.io/bakdata")
                 imageName.set("jib-image")
                 imageTag.set("a-tag")

@@ -32,7 +32,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import java.util.*
 
-class JibPlugin : Plugin<Project> {
+class JibImageConfigPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         with(project) {
@@ -40,8 +40,8 @@ class JibPlugin : Plugin<Project> {
 
             val extension =
                 extensions.create(
-                    BakdataJibExtension.EXTENSION_NAME,
-                    BakdataJibExtension::class,
+                    JibImageConfigExtension.EXTENSION_NAME,
+                    JibImageConfigExtension::class,
                     project,
                 )
 
