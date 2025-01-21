@@ -1,7 +1,11 @@
 # Change Log
 
-## [1.5.1](https://github.com/bakdata/gradle-plugins/tree/1.5.1) (2025-01-20)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.1...1.5.1)
+## [1.5.2](https://github.com/bakdata/gradle-plugins/tree/1.5.2) (2025-01-21)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.2...1.5.2)
+
+
+## [1.5.2](https://github.com/bakdata/gradle-plugins/tree/1.5.2) (2025-01-21)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.1...1.5.2)
 
 
 ## [1.5.1](https://github.com/bakdata/gradle-plugins/tree/1.5.1) (2025-01-20)
