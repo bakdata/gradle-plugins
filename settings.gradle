@@ -6,4 +6,4 @@ pluginManagement {
 
 rootProject.name = 'gradle-plugins'
 
-include 'sonar', 'sonatype', 'release'
+include 'sonar', 'sonatype', 'release', 'jib'

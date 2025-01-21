@@ -1,8 +1,26 @@
 # Change Log
 
-## [1.4.2](https://github.com/bakdata/gradle-plugins/tree/1.4.2) (2025-01-10)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.2...1.4.2)
+## [1.5.2](https://github.com/bakdata/gradle-plugins/tree/1.5.2) (2025-01-21)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.2...1.5.2)
 
+
+## [1.5.2](https://github.com/bakdata/gradle-plugins/tree/1.5.2) (2025-01-21)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.1...1.5.2)
+
+
+## [1.5.1](https://github.com/bakdata/gradle-plugins/tree/1.5.1) (2025-01-20)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.0...1.5.1)
+
+**Merged pull requests:**
+
+- Fix Jib plugin publication [\#57](https://github.com/bakdata/gradle-plugins/pull/57) ([@philipp94831](https://github.com/philipp94831))
+
+## [1.5.0](https://github.com/bakdata/gradle-plugins/tree/1.5.0) (2025-01-20)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.2...1.5.0)
+
+**Merged pull requests:**
+
+- Create Jib plugin [\#56](https://github.com/bakdata/gradle-plugins/pull/56) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.4.2](https://github.com/bakdata/gradle-plugins/tree/1.4.2) (2025-01-10)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.1...1.4.2)
