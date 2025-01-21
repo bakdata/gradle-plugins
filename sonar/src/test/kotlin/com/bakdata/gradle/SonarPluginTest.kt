@@ -57,7 +57,7 @@ internal class SonarPluginTest {
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(project.collectTasks())
                     .haveExactly(1, taskWithName("jacocoTestReport"))
-                    .haveExactly(1, taskWithName("sonarqube"))
+                .haveExactly(1, taskWithName("sonar"))
         }
     }
 
@@ -74,7 +74,7 @@ internal class SonarPluginTest {
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(project.collectTasks())
                     .haveExactly(1, taskWithName("jacocoTestReport"))
-                    .haveExactly(1, taskWithName("sonarqube"))
+                .haveExactly(1, taskWithName("sonar"))
         }
     }
 
@@ -95,14 +95,14 @@ internal class SonarPluginTest {
             children.forEach { child ->
                 softly.assertThat(child.tasks)
                         .haveExactly(1, taskWithName("jacocoTestReport"))
-                        .haveExactly(0, taskWithName("sonarqube"))
+                    .haveExactly(0, taskWithName("sonar"))
             }
         }
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(parent.collectTasks())
                     .haveExactly(0, taskWithName("jacocoTestReport"))
-                    .haveExactly(1, taskWithName("sonarqube"))
+                .haveExactly(1, taskWithName("sonar"))
         }
     }
 
@@ -123,14 +123,14 @@ internal class SonarPluginTest {
             children.forEach { child ->
                 softly.assertThat(child.tasks)
                         .haveExactly(1, taskWithName("jacocoTestReport"))
-                        .haveExactly(0, taskWithName("sonarqube"))
+                    .haveExactly(0, taskWithName("sonar"))
             }
         }
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(parent.collectTasks())
                     .haveExactly(0, taskWithName("jacocoTestReport"))
-                    .haveExactly(1, taskWithName("sonarqube"))
+                .haveExactly(1, taskWithName("sonar"))
         }
     }
 
@@ -151,14 +151,14 @@ internal class SonarPluginTest {
             children.forEach { child ->
                 softly.assertThat(child.tasks)
                     .haveExactly(1, taskWithName("jacocoTestReport"))
-                    .haveExactly(0, taskWithName("sonarqube"))
+                    .haveExactly(0, taskWithName("sonar"))
             }
         }
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(parent.collectTasks())
                 .haveExactly(1, taskWithName("jacocoTestReport"))
-                .haveExactly(1, taskWithName("sonarqube"))
+                .haveExactly(1, taskWithName("sonar"))
         }
     }
 
@@ -179,14 +179,14 @@ internal class SonarPluginTest {
             children.forEach { child ->
                 softly.assertThat(child.tasks)
                     .haveExactly(1, taskWithName("jacocoTestReport"))
-                    .haveExactly(0, taskWithName("sonarqube"))
+                    .haveExactly(0, taskWithName("sonar"))
             }
         }
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(parent.collectTasks())
                 .haveExactly(1, taskWithName("jacocoTestReport"))
-                .haveExactly(1, taskWithName("sonarqube"))
+                .haveExactly(1, taskWithName("sonar"))
         }
     }
 

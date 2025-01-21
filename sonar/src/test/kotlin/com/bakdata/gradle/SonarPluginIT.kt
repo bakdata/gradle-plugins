@@ -68,7 +68,7 @@ internal class SonarPluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}")
+            .withArguments("sonar", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}")
                 .withProjectPluginClassPath()
                 .build()
 
@@ -77,7 +77,7 @@ internal class SonarPluginIT {
                     .haveExactly(1, taskWithPathAndOutcome(":compileTestJava", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":test", TaskOutcome.SUCCESS))
                     .haveExactly(1, taskWithPathAndOutcome(":jacocoTestReport", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":sonarqube", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":sonar", TaskOutcome.SUCCESS))
         }
     }
 
@@ -113,7 +113,12 @@ internal class SonarPluginIT {
 
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("sonarqube", "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}", "--stacktrace", "--info")
+            .withArguments(
+                "sonar",
+                "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}",
+                "--stacktrace",
+                "--info"
+            )
                 .withProjectPluginClassPath()
                 .build()
 
@@ -126,7 +131,7 @@ internal class SonarPluginIT {
             }
             softly.assertThat(result.tasks)
                     .haveExactly(0, taskWithPathAndOutcome(":jacocoTestReport", TaskOutcome.SUCCESS))
-                    .haveExactly(1, taskWithPathAndOutcome(":sonarqube", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":sonar", TaskOutcome.SUCCESS))
         }
     }
 
@@ -174,7 +179,7 @@ internal class SonarPluginIT {
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.toFile())
             .withArguments(
-                "sonarqube",
+                "sonar",
                 "-Dsonar.scanner.dumpToFile=${testProjectDir.resolve("dump")}",
                 "--stacktrace",
                 "--info"
@@ -193,7 +198,7 @@ internal class SonarPluginIT {
                 .haveExactly(1, taskWithPathAndOutcome(":compileTestJava", TaskOutcome.SUCCESS))
                 .haveExactly(1, taskWithPathAndOutcome(":test", TaskOutcome.SUCCESS))
                 .haveExactly(1, taskWithPathAndOutcome(":jacocoTestReport", TaskOutcome.SUCCESS))
-                .haveExactly(1, taskWithPathAndOutcome(":sonarqube", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":sonar", TaskOutcome.SUCCESS))
         }
     }
 }

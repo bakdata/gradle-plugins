@@ -72,7 +72,12 @@ class SonarPlugin : Plugin<Project> {
                         reports.xml.required.set(true)
                     }
 
-                    rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>(), tasks.withType<Test>()) }
+                    rootProject.tasks.named("sonar") {
+                        dependsOn(
+                            tasks.withType<JacocoReport>(),
+                            tasks.withType<Test>()
+                        )
+                    }
                 }
             }
 
