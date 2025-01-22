@@ -1,8 +1,15 @@
 # Change Log
 
-## [1.6.0](https://github.com/bakdata/gradle-plugins/tree/1.6.0) (2025-01-22)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.6.0...1.6.0)
+## [1.6.1](https://github.com/bakdata/gradle-plugins/tree/1.6.1) (2025-01-22)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.6.1...1.6.1)
 
+
+## [1.6.1](https://github.com/bakdata/gradle-plugins/tree/1.6.1) (2025-01-22)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.6.0...1.6.1)
+
+**Merged pull requests:**
+
+- Upgrade to Gradle 8.12 [\#53](https://github.com/bakdata/gradle-plugins/pull/53) ([@raminqaf](https://github.com/raminqaf))
 
 ## [1.6.0](https://github.com/bakdata/gradle-plugins/tree/1.6.0) (2025-01-22)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.2...1.6.0)
