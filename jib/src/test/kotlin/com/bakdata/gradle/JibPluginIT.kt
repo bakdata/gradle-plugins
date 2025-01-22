@@ -35,7 +35,7 @@ import java.nio.file.Path
 internal class JibPluginIT {
     private fun GradleRunner.withProjectPluginClassPath(): GradleRunner {
         val classpath = System.getProperty("java.class.path")
-        return withPluginClasspath(classpath.split(":").map { File(it) })
+        return withPluginClasspath(classpath.split(File.pathSeparator).map { File(it) })
     }
 
     @Test
