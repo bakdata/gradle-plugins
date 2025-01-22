@@ -1,8 +1,15 @@
 # Change Log
 
-## [1.5.2](https://github.com/bakdata/gradle-plugins/tree/1.5.2) (2025-01-21)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.2...1.5.2)
+## [1.6.0](https://github.com/bakdata/gradle-plugins/tree/1.6.0) (2025-01-22)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.6.0...1.6.0)
 
+
+## [1.6.0](https://github.com/bakdata/gradle-plugins/tree/1.6.0) (2025-01-22)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.2...1.6.0)
+
+**Merged pull requests:**
+
+- Upgrade dependencies and plugins [\#55](https://github.com/bakdata/gradle-plugins/pull/55) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.5.2](https://github.com/bakdata/gradle-plugins/tree/1.5.2) (2025-01-21)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.1...1.5.2)
