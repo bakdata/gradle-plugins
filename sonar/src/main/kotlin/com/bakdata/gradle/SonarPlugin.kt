@@ -29,7 +29,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
@@ -82,22 +81,6 @@ class SonarPlugin : Plugin<Project> {
             }
 
             if (subprojects.isNotEmpty()) {
-                tasks.register<JacocoReport>("jacocoRootReport") {
-                    subprojects {
-                        executionData(tasks.withType<JacocoReport>().map { it.executionData })
-
-                        components.matching { it.name == "java" }.configureEach {
-                            sourceDirectories.from(files(project.the<SourceSetContainer>()["main"].allSource.srcDirs))
-                            classDirectories.from(files(project.the<SourceSetContainer>()["main"].output))
-                        }
-                    }
-                    reports {
-                        html.required.set(true)
-                        xml.required.set(true)
-                        csv.required.set(false)
-                    }
-                }
-
                 // using a newer feature of sonarqube to use the xml reports which also makes it language-agnostic
                 configure<org.sonarqube.gradle.SonarExtension> {
                     properties {
