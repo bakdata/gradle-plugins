@@ -65,14 +65,19 @@ class SonarPlugin : Plugin<Project> {
 
                     project.configure<JacocoPluginExtension> {
                         // smaller versions won't work with kotlin properly
-                        toolVersion = "0.8.11"
+                        toolVersion = "0.8.12"
                     }
 
                     tasks.withType<JacocoReport> {
                         reports.xml.required.set(true)
                     }
 
-                    rootProject.tasks.named("sonarqube") { dependsOn(tasks.withType<JacocoReport>(), tasks.withType<Test>()) }
+                    rootProject.tasks.named("sonar") {
+                        dependsOn(
+                            tasks.withType<JacocoReport>(),
+                            tasks.withType<Test>()
+                        )
+                    }
                 }
             }
 
