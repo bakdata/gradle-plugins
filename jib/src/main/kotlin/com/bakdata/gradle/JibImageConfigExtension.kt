@@ -25,6 +25,7 @@
 package com.bakdata.gradle
 
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
 
 /**
@@ -36,7 +37,8 @@ open class JibImageConfigExtension(project: Project) {
     }
 
     val repository =
-        project.objects.property<String>().convention(System.getProperty("jibImage.repository")?.toString())
+        project.objects.property<String>().convention(System.getProperty("jibImage.repository"))
     val name = project.objects.property<String>().convention(project.name)
-    val tag = project.objects.property<String>().convention(System.getProperty("jibImage.tag")?.toString())
+    val tags = project.objects.listProperty<String>()
+        .convention(System.getProperty("jibImage.tags")?.split(',')?.filter(String::isNotEmpty) ?: emptyList())
 }
