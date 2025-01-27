@@ -132,6 +132,12 @@ internal class JibPluginIT {
                     print(jib.to.image)
                 }
             }
+
+            tasks.create("showJibTags") {
+                afterEvaluate {
+                    print(jib.to.tags) // this task somehow appends the additional tags to jib.to.image
+                }
+            }
         """.trimIndent()
         )
 
