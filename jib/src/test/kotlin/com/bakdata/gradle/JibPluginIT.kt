@@ -132,37 +132,18 @@ internal class JibPluginIT {
                     print(jib.to.image)
                 }
             }
-
-            tasks.create("showJibTags") {
-                afterEvaluate {
-                    print(jib.to.tags)
-                }
-            }
         """.trimIndent()
         )
 
-        val imageResult = GradleRunner.create()
+        val result = GradleRunner.create()
             .withProjectDir(testProjectDir.toFile())
             .withArguments("showJibImage")
             .withProjectPluginClassPath()
             .build()
 
         SoftAssertions.assertSoftly { softly ->
-            softly.assertThat(imageResult.output)
-                .contains("gcr.io/bakdata/jib-image:a-tag")
-                .doesNotContain("another-tag")
-        }
-
-        val tagResult = GradleRunner.create()
-            .withProjectDir(testProjectDir.toFile())
-            .withArguments("showJibTags")
-            .withProjectPluginClassPath()
-            .build()
-
-        SoftAssertions.assertSoftly { softly ->
-            softly.assertThat(tagResult.output)
-                .contains("another-tag")
-                .doesNotContain("a-tag")
+            softly.assertThat(result.output)
+                .contains("gcr.io/bakdata/jib-image:a-tag[another-tag]")
         }
     }
 }
