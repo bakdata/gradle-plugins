@@ -97,7 +97,7 @@ internal class JibPluginIT {
             .withArguments(
                 "showJibImage",
                 "-DjibImage.repository=gcr.io/bakdata",
-                "-DjibImage.tag=a-tag"
+                "-DjibImage.tags=a-tag"
             )
             .withProjectPluginClassPath()
             .build()
@@ -124,12 +124,18 @@ internal class JibPluginIT {
             jibImage {
                 repository.set("gcr.io/bakdata")
                 name.set("jib-image")
-                tag.set("a-tag")
+                tags.set(listOf("a-tag", "another-tag"))
             }
 
             tasks.create("showJibImage") {
                 afterEvaluate {
                     print(jib.to.image)
+                }
+            }
+
+            tasks.create("showJibTags") {
+                afterEvaluate {
+                    print(jib.to.tags) // this task somehow appends the additional tags to jib.to.image
                 }
             }
         """.trimIndent()
@@ -143,7 +149,7 @@ internal class JibPluginIT {
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(result.output)
-                .contains("gcr.io/bakdata/jib-image:a-tag")
+                .contains("gcr.io/bakdata/jib-image:a-tag[another-tag]")
         }
     }
 }
