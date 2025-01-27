@@ -76,7 +76,7 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             allprojects {
-                components.matching { it.name == "java" }.configureEach {
+                project.plugins.matching { it is JavaPlugin }.all {
                     if (extensions.findByType<PublishingExtension>() == null) {
                         log.info("Found java component in $project. Adding publishing tasks.")
                         addPublishTasks(project)
