@@ -1,8 +1,15 @@
 # Change Log
 
-## [1.7.0](https://github.com/bakdata/gradle-plugins/tree/1.7.0) (2025-01-27)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.7.0...1.7.0)
+## [1.7.1](https://github.com/bakdata/gradle-plugins/tree/1.7.1) (2025-01-28)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.7.1...1.7.1)
 
+
+## [1.7.1](https://github.com/bakdata/gradle-plugins/tree/1.7.1) (2025-01-28)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.7.0...1.7.1)
+
+**Merged pull requests:**
+
+- Fix sonatype plugin with java\-library [\#59](https://github.com/bakdata/gradle-plugins/pull/59) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.7.0](https://github.com/bakdata/gradle-plugins/tree/1.7.0) (2025-01-27)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.6.1...1.7.0)
