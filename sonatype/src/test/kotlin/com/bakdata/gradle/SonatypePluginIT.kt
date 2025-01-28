@@ -110,6 +110,73 @@ internal class SonatypePluginIT {
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
+    @Test
+    fun testSingleModuleProjectWithJavaLibrary(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
+        Files.writeString(
+            testProjectDir.resolve("build.gradle.kts"), """
+            plugins {
+                `java-library`
+                id("com.bakdata.sonatype")
+            }
+            group = "$TEST_GROUP"
+            version = "$TEST_VERSION"
+            configure<com.bakdata.gradle.SonatypeSettings> {
+                disallowLocalRelease = false
+                osshrUsername = "dummy user"
+                osshrPassword = "dummy pw"
+                description = "dummy description"
+                signingKeyId = "72217EAF"
+                signingPassword = "test_password"
+                signingSecretKeyRingFile = "${
+                File(
+                    SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()
+                ).absolutePath
+            }"
+                developers {
+                    developer {
+                        name.set("dummy name")
+                        id.set("dummy id")
+                    }
+                }
+                nexusUrl = "${wiremock.baseUrl()}"
+                allowInsecureProtocol = true
+            }
+        """.trimIndent()
+        )
+
+        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
+        Files.copy(
+            SonatypePluginIT::class.java.getResourceAsStream("/Demo.java"),
+            testProjectDir.resolve("src/main/java/Demo.java")
+        )
+
+        mockNexusProtocol(wiremock)
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir.toFile())
+            .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
+            .withProjectPluginClassPath()
+            .build()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(result.tasks)
+                .haveExactly(1, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
+                .haveExactly(
+                    1,
+                    taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS)
+                )
+                .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepositories", TaskOutcome.SUCCESS))
+        }
+
+        val projectName = testProjectDir.fileName.toString()
+        val expectedUploads = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar", ".module")
+            .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
+            .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
+            .plus("$projectName/maven-metadata.xml")
+            .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+        assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
+    }
+
     private fun getUploadedFilesInGroup(wiremock: WireMockServer): List<String> {
         val baseUrl = "/staging/deployByRepositoryId/$STAGING_ID/${TEST_GROUP.replace('.', '/')}/"
         return wiremock.allServeEvents

@@ -63,17 +63,19 @@ internal class SonatypePluginTest {
             project.apply(plugin = "java")
 
             File(project.projectDir, "src/main/java/").mkdirs()
-            Files.copy(SonatypePluginTest::class.java.getResourceAsStream("/Demo.java"),
-                    File(project.projectDir, "src/main/java/Demo.java").toPath())
+            Files.copy(
+                SonatypePluginTest::class.java.getResourceAsStream("/Demo.java"),
+                File(project.projectDir, "src/main/java/Demo.java").toPath()
+            )
 
             project.evaluate()
         }.doesNotThrowAnyException()
 
         assertSoftly { softly ->
             softly.assertThat(project.tasks)
-                    .haveExactly(1, taskWithName("signSonatypePublication"))
-                    .haveExactly(1, taskWithName("publish"))
-                    .haveExactly(1, taskWithName("publishToNexus"))
+                .haveExactly(1, taskWithName("signSonatypePublication"))
+                .haveExactly(1, taskWithName("publish"))
+                .haveExactly(1, taskWithName("publishToNexus"))
                 .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
         }
     }
@@ -91,8 +93,10 @@ internal class SonatypePluginTest {
             children.forEach {
                 it.apply(plugin = "java")
                 File(it.projectDir, "src/main/java/").mkdirs()
-                Files.copy(SonatypePluginTest::class.java.getResourceAsStream("/Demo.java"),
-                        File(it.projectDir, "src/main/java/Demo.java").toPath())
+                Files.copy(
+                    SonatypePluginTest::class.java.getResourceAsStream("/Demo.java"),
+                    File(it.projectDir, "src/main/java/Demo.java").toPath()
+                )
             }
 
             parent.evaluate()
@@ -102,18 +106,18 @@ internal class SonatypePluginTest {
         assertSoftly { softly ->
             children.forEach { child ->
                 softly.assertThat(child.tasks)
-                        .haveExactly(1, taskWithName("signSonatypePublication"))
-                        .haveExactly(1, taskWithName("publish"))
-                        .haveExactly(1, taskWithName("publishToNexus"))
+                    .haveExactly(1, taskWithName("signSonatypePublication"))
+                    .haveExactly(1, taskWithName("publish"))
+                    .haveExactly(1, taskWithName("publishToNexus"))
                     .haveExactly(0, taskWithName("closeAndReleaseStagingRepositories"))
             }
         }
 
         assertSoftly { softly ->
             softly.assertThat(parent.collectTasks())
-                    .haveExactly(0, taskWithName("signSonatypePublication"))
-                    .haveExactly(0, taskWithName("publish"))
-                    .haveExactly(0, taskWithName("publishToNexus"))
+                .haveExactly(0, taskWithName("signSonatypePublication"))
+                .haveExactly(0, taskWithName("publish"))
+                .haveExactly(0, taskWithName("publishToNexus"))
                 .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
         }
     }
