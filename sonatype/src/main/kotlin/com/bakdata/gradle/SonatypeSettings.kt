@@ -52,7 +52,7 @@ open class SonatypeSettings(var project: Project) {
      var connectTimeout: Long = 300
      var clientTimeout: Long = 300
      var allowInsecureProtocol: Boolean = false
-     var createPublication: Boolean = true
+     var createPublication: Boolean? = null
 
      fun developers(developerSpec: Action<in MavenPomDeveloperSpec>) {
           this.developers = developerSpec

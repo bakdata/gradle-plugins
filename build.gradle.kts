@@ -40,6 +40,8 @@ configure<com.bakdata.gradle.SonatypeSettings> {
             id.set("raminqaf")
         }
     }
+
+    createPublication = false
 }
 
 subprojects {
@@ -56,11 +58,6 @@ subprojects {
     // config for gradle plugin portal doesn't support snapshot, so we add config only if release version
     if (!version.toString().endsWith("-SNAPSHOT")) {
         apply(plugin = "com.gradle.plugin-publish")
-    }
-
-    configure<com.bakdata.gradle.SonatypeSettings> {
-        // created by gradle plugin development plugin
-        createPublication = false
     }
 
     val pluginName = "${project.name.replaceFirstChar(::capitalize)}Plugin"
