@@ -97,6 +97,7 @@ class SonatypePlugin : Plugin<Project> {
 
         // lazy execution, so that settings configurations are actually used
         afterEvaluate {
+            println("Now will create: ${project.getOverriddenSetting(SonatypeSettings::createPublication)!!}")
             // first try to set all settings, even if not given (yet)
             project.configure<NexusPublishExtension> {
                 packageGroup.set("com.bakdata")
@@ -232,9 +233,12 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            configure<PublishingExtension> {
-                publications.create<MavenPublication>("sonatype") {
-                    from(components["java"])
+            println("Will create: ${project.getOverriddenSetting(SonatypeSettings::createPublication)!!}")
+            if (project.getOverriddenSetting(SonatypeSettings::createPublication)!!) {
+                configure<PublishingExtension> {
+                    publications.create<MavenPublication>("sonatype") {
+                        from(components["java"])
+                    }
                 }
             }
 

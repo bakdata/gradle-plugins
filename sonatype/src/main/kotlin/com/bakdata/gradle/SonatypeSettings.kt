@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2024 bakdata GmbH
+ * Copyright (c) 2025 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +52,7 @@ open class SonatypeSettings(var project: Project) {
      var connectTimeout: Long = 300
      var clientTimeout: Long = 300
      var allowInsecureProtocol: Boolean = false
+     var createPublication: Boolean = true
 
      fun developers(developerSpec: Action<in MavenPomDeveloperSpec>) {
           this.developers = developerSpec
