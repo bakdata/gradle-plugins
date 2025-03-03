@@ -4,7 +4,7 @@ plugins {
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.release") version "1.7.1"
     id("com.bakdata.sonar") version "1.7.1"
-    id("com.bakdata.sonatype") version "1.7.2-SNAPSHOT"
+    id("com.bakdata.sonatype") version "1.8.1-SNAPSHOT"
     id("org.gradle.kotlin.kotlin-dsl") version "5.1.2" apply false
     id("com.gradle.plugin-publish") version "1.3.0" apply false
 }
@@ -58,10 +58,10 @@ subprojects {
         apply(plugin = "com.gradle.plugin-publish")
     }
 
-//    configure<com.bakdata.gradle.SonatypeSettings> {
-//        // created by gradle plugin development plugin
-//        createPublication = false
-//    }
+    configure<com.bakdata.gradle.SonatypeSettings> {
+        // created by gradle plugin development plugin
+        createPublication = false
+    }
 
     val pluginName = "${project.name.replaceFirstChar(::capitalize)}Plugin"
     configure<GradlePluginDevelopmentExtension> {
