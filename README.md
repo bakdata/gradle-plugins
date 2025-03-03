@@ -11,6 +11,7 @@ A collection of small Gradle plugins, mostly focused on deployment.
 - **Sonatype** is used for uploading to sonatype repos and ultimately publish to Maven Central
 - **Release** adds configurable push behavior for version bumping
 - **Jib** configures Jib repository, tag and image name
+- **Mockito** configures Mockito as a Java agent for tests
 
 ## Development
 
@@ -29,6 +30,7 @@ buildscript {
     classpath("com.bakdata.gradle:sonatype:0.0.1-SNAPSHOT")
     classpath("com.bakdata.gradle:release:0.0.1-SNAPSHOT")
     classpath("com.bakdata.gradle:jib:0.0.1-SNAPSHOT")
+    classpath("com.bakdata.gradle:mockito:0.0.1-SNAPSHOT")
   }
 }
 
@@ -36,4 +38,5 @@ apply(plugin = "com.bakdata.sonar")
 apply(plugin = "com.bakdata.sonatype")
 apply(plugin = "com.bakdata.release")
 apply(plugin = "com.bakdata.jib")
+apply(plugin = "com.bakdata.mockito")
 ```
