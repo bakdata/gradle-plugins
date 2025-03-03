@@ -1,8 +1,15 @@
 # Change Log
 
-## [1.8.0](https://github.com/bakdata/gradle-plugins/tree/1.8.0) (2025-03-03)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.8.0...1.8.0)
+## [1.8.1](https://github.com/bakdata/gradle-plugins/tree/1.8.1) (2025-03-03)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.8.1...1.8.1)
 
+
+## [1.8.1](https://github.com/bakdata/gradle-plugins/tree/1.8.1) (2025-03-03)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.8.0...1.8.1)
+
+**Merged pull requests:**
+
+- Fix plugin publication [\#62](https://github.com/bakdata/gradle-plugins/pull/62) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.8.0](https://github.com/bakdata/gradle-plugins/tree/1.8.0) (2025-03-03)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.7.1...1.8.0)
