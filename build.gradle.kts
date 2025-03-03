@@ -58,10 +58,10 @@ subprojects {
         apply(plugin = "com.gradle.plugin-publish")
     }
 
-    configure<com.bakdata.gradle.SonatypeSettings> {
-        // created by gradle plugin development plugin
-        createPublication = false
-    }
+//    configure<com.bakdata.gradle.SonatypeSettings> {
+//        // created by gradle plugin development plugin
+//        createPublication = false
+//    }
 
     val pluginName = "${project.name.replaceFirstChar(::capitalize)}Plugin"
     configure<GradlePluginDevelopmentExtension> {
