@@ -52,7 +52,7 @@ internal class MockitoPluginIT {
                 java
                 id("com.bakdata.mockito")
             }
-            configure<JavaPluginExtension> {
+            java {
                 toolchain {
                     languageVersion = JavaLanguageVersion.of(21)
                 }

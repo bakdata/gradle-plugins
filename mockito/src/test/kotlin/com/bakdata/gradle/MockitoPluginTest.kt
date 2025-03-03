@@ -52,6 +52,16 @@ internal class MockitoPluginTest {
 
         SoftAssertions.assertSoftly { softly ->
             val test = project.tasks.getByName("test", org.gradle.api.tasks.testing.Test::class)
+            val configureMockitoAgent = project.tasks.named("configureMockitoAgent")
+            softly.assertThat(test.dependsOn)
+                .contains(configureMockitoAgent)
+            softly.assertThat(test.jvmArgs)
+                .noneSatisfy {
+                    softly.assertThat(it)
+                        .contains("-javaagent:")
+                        .contains("mockito-core-5.15.2.jar")
+                }
+            configureMockitoAgent.get() // force configuration of test
             softly.assertThat(test.jvmArgs)
                 .anySatisfy {
                     softly.assertThat(it)
@@ -75,6 +85,16 @@ internal class MockitoPluginTest {
 
         SoftAssertions.assertSoftly { softly ->
             val test = project.tasks.getByName("test", org.gradle.api.tasks.testing.Test::class)
+            val configureMockitoAgent = project.tasks.named("configureMockitoAgent")
+            softly.assertThat(test.dependsOn)
+                .contains(configureMockitoAgent)
+            softly.assertThat(test.jvmArgs)
+                .noneSatisfy {
+                    softly.assertThat(it)
+                        .contains("-javaagent:")
+                        .contains("mockito-core-5.15.2.jar")
+                }
+            configureMockitoAgent.get() // force configuration of test
             softly.assertThat(test.jvmArgs)
                 .anySatisfy {
                     softly.assertThat(it)

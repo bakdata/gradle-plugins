@@ -37,7 +37,8 @@ class MockitoPlugin : Plugin<Project> {
         project.configurations.matching { it.name == "testRuntimeClasspath" }.all {
             val testRuntimeClasspath = this
             val tests = project.tasks.withType(Test::class.java)
-            tests.configureEach {
+            val configureMockitoAgent = project.tasks.register("configureMockitoAgent") {
+                dependsOn(testRuntimeClasspath)
                 val resolvedConfiguration = testRuntimeClasspath.resolvedConfiguration
                 val resolvedArtifacts = resolvedConfiguration.resolvedArtifacts
                 resolvedArtifacts.find { it.moduleVersion.id.module.toString() == "org.mockito:mockito-core" }
@@ -47,6 +48,9 @@ class MockitoPlugin : Plugin<Project> {
                             it.jvmArgs("-javaagent:${mockito.file}")
                         }
                     }
+            }
+            tests.configureEach {
+                dependsOn(configureMockitoAgent)
             }
         }
     }
