@@ -41,7 +41,7 @@ configure<com.bakdata.gradle.SonatypeSettings> {
         }
     }
 
-    createPublication = false
+//    createPublication = false
 }
 
 subprojects {
