@@ -26,6 +26,7 @@ package com.bakdata.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.testing.Test
 
@@ -41,7 +42,7 @@ class MockitoPlugin : Plugin<Project> {
                 dependsOn(testRuntimeClasspath)
                 val resolvedConfiguration = testRuntimeClasspath.resolvedConfiguration
                 val resolvedArtifacts = resolvedConfiguration.resolvedArtifacts
-                resolvedArtifacts.find { it.moduleVersion.id.module.toString() == "org.mockito:mockito-core" }
+                resolvedArtifacts.find { isMockitoCoreWithAgent(it) }
                     ?.let { mockito ->
                         tests.forEach {
                             log.info("Configuring Mockito java agent for task ${it.name}")
@@ -53,5 +54,19 @@ class MockitoPlugin : Plugin<Project> {
                 dependsOn(configureMockitoAgent)
             }
         }
+    }
+
+    private fun isMockitoCoreWithAgent(artifact: ResolvedArtifact): Boolean {
+        val versionIdentifier = artifact.moduleVersion.id
+        if (versionIdentifier.module.toString() != "org.mockito:mockito-core") {
+            return false
+        }
+        val versions = versionIdentifier.version.splitToSequence(".").map { it.toInt() }.toList()
+        val majorVersion = versions[0]
+        if (majorVersion < 5) {
+            return false
+        }
+        val minorVersion = versions[1]
+        return majorVersion != 5 || minorVersion >= 14
     }
 }

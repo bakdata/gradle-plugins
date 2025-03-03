@@ -103,4 +103,31 @@ internal class MockitoPluginTest {
                 }
         }
     }
+
+    @Test
+    fun shouldNotAddJavaAgentWithMockito5_13() {
+        val project = ProjectBuilder.builder().build()
+
+        assertThatCode {
+            project.pluginManager.apply("java")
+            project.pluginManager.apply("com.bakdata.mockito")
+            project.repositories.mavenCentral()
+            project.dependencies.add("testImplementation", "org.mockito:mockito-core:5.13.0")
+            project.evaluate()
+        }.doesNotThrowAnyException()
+
+        SoftAssertions.assertSoftly { softly ->
+            val test = project.tasks.getByName("test", org.gradle.api.tasks.testing.Test::class)
+            val configureMockitoAgent = project.tasks.named("configureMockitoAgent")
+            softly.assertThat(test.dependsOn)
+                .contains(configureMockitoAgent)
+            configureMockitoAgent.get() // force configuration of test
+            softly.assertThat(test.jvmArgs)
+                .noneSatisfy {
+                    softly.assertThat(it)
+                        .contains("-javaagent:")
+                        .contains("mockito-core-5.13.0.jar")
+                }
+        }
+    }
 }
