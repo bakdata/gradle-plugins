@@ -11,6 +11,7 @@ A collection of small Gradle plugins, mostly focused on deployment.
 - **Sonatype** is used for uploading to sonatype repos and ultimately publish to Maven Central
 - **Release** adds configurable push behavior for version bumping
 - **Jib** configures Jib repository, tag and image name
+- **Mockito** configures Mockito as a Java agent for tests
 
 ## Development
 

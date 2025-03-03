@@ -4,13 +4,14 @@ on:
   push:
     tags: ["**"]
     branches: ["**"]
+  pull_request:
 
 jobs:
   build-and-publish:
     name: Java Gradle
-    uses: bakdata/ci-templates/.github/workflows/java-gradle-plugin.yaml@feature/gradle-dependency-graph
+    uses: bakdata/ci-templates/.github/workflows/java-gradle-plugin.yaml@1.63.0
     with:
-      java-version: 17
+      java-version: 21
     secrets:
       sonar-token: ${{ secrets.SONARCLOUD_TOKEN }}
       sonar-organization: ${{ secrets.SONARCLOUD_ORGANIZATION }}
