@@ -61,10 +61,10 @@ internal class SonarPluginIT {
                 testProjectDir.resolve("src/test/java/DemoTest.java"))
 
         val result = GradleRunner.create()
-                .withProjectDir(testProjectDir.toFile())
+            .withProjectDir(testProjectDir.toFile())
             .withArguments("sonar", "-Dsonar.scanner.internal.dumpToFile=${testProjectDir.resolve("dump")}")
             .withPluginClasspath()
-                .build()
+            .build()
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(result.tasks)
@@ -106,7 +106,7 @@ internal class SonarPluginIT {
         }
 
         val result = GradleRunner.create()
-                .withProjectDir(testProjectDir.toFile())
+            .withProjectDir(testProjectDir.toFile())
             .withArguments(
                 "sonar",
                 "-Dsonar.scanner.internal.dumpToFile=${testProjectDir.resolve("dump")}",
@@ -114,7 +114,7 @@ internal class SonarPluginIT {
                 "--info"
             )
             .withPluginClasspath()
-                .build()
+            .build()
 
         SoftAssertions.assertSoftly { softly ->
             children.forEach { child ->
