@@ -49,11 +49,6 @@ internal class SonatypePluginIT {
     private fun taskWithPathAndOutcome(path: String, outcome: TaskOutcome):
             Condition<BuildTask> = Condition({ it.path == path && it.outcome == outcome }, "Task $path=$outcome")
 
-    private fun GradleRunner.withProjectPluginClassPath() : GradleRunner {
-        val classpath = System.getProperty("java.class.path")
-        return withPluginClasspath(classpath.split(File.pathSeparator).map { File(it) })
-    }
-
     @Test
     fun testSingleModuleProject(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
@@ -91,7 +86,7 @@ internal class SonatypePluginIT {
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
             .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
-                .withProjectPluginClassPath()
+            .withPluginClasspath()
                 .build()
 
         SoftAssertions.assertSoftly { softly ->
@@ -155,7 +150,7 @@ internal class SonatypePluginIT {
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.toFile())
             .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
-            .withProjectPluginClassPath()
+            .withPluginClasspath()
             .build()
 
         SoftAssertions.assertSoftly { softly ->
@@ -261,7 +256,7 @@ internal class SonatypePluginIT {
         val result = GradleRunner.create()
                 .withProjectDir(testProjectDir.toFile())
             .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
-                .withProjectPluginClassPath()
+            .withPluginClasspath()
                 .build()
 
         SoftAssertions.assertSoftly { softly ->

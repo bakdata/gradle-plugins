@@ -56,9 +56,9 @@ internal class SonatypePluginTest {
         }
     }
 
-    fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
+    private fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
 
-    fun publicationWithName(name: String): Condition<Publication> =
+    private fun publicationWithName(name: String): Condition<Publication> =
         Condition({ it.name == name }, "Publication with name $name")
 
     @Test
@@ -84,6 +84,8 @@ internal class SonatypePluginTest {
                 .haveExactly(1, taskWithName("publish"))
                 .haveExactly(1, taskWithName("publishToNexus"))
                 .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
+            softly.assertThat(project.getPublications())
+                .haveExactly(1, publicationWithName("sonatype"))
         }
     }
 
@@ -117,6 +119,8 @@ internal class SonatypePluginTest {
                     .haveExactly(1, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
                     .haveExactly(0, taskWithName("closeAndReleaseStagingRepositories"))
+                softly.assertThat(child.getPublications())
+                    .haveExactly(1, publicationWithName("sonatype"))
             }
         }
 
@@ -126,6 +130,8 @@ internal class SonatypePluginTest {
                 .haveExactly(0, taskWithName("publish"))
                 .haveExactly(0, taskWithName("publishToNexus"))
                 .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
+            softly.assertThat(parent.getPublications())
+                .haveExactly(0, publicationWithName("sonatype"))
         }
     }
 
@@ -157,7 +163,7 @@ internal class SonatypePluginTest {
 
         assertSoftly { softly ->
             children.forEach { child ->
-                softly.assertThat(child.extensions.findByType<PublishingExtension>()!!.publications.toList())
+                softly.assertThat(child.getPublications())
                     .haveExactly(0, publicationWithName("sonatype"))
             }
         }
@@ -190,9 +196,9 @@ internal class SonatypePluginTest {
         }.doesNotThrowAnyException()
 
         assertSoftly { softly ->
-            softly.assertThat(child1.extensions.findByType<PublishingExtension>()!!.publications.toList())
+            softly.assertThat(child1.getPublications())
                 .haveExactly(0, publicationWithName("sonatype"))
-            softly.assertThat(child2.extensions.findByType<PublishingExtension>()!!.publications.toList())
+            softly.assertThat(child2.getPublications())
                 .haveExactly(1, publicationWithName("sonatype"))
         }
     }
@@ -214,6 +220,9 @@ internal class SonatypePluginTest {
         // FIXME bug since Gradle 7.3 https://github.com/gradle/gradle/issues/20301
         if (e.message.equals("Could not create task ':init'.")) tasks.toList() else throw e
     }
+
+    private fun Project.getPublications(): List<Publication> =
+        extensions.findByType<PublishingExtension>()?.publications?.toList() ?: listOf()
 
 }
 
