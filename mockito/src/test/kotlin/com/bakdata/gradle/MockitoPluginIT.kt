@@ -31,18 +31,12 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 
 internal class MockitoPluginIT {
     private fun taskWithPathAndOutcome(path: String, outcome: TaskOutcome):
             Condition<BuildTask> = Condition({ it.path == path && it.outcome == outcome }, "Task $path=$outcome")
-
-    private fun GradleRunner.withProjectPluginClassPath(): GradleRunner {
-        val classpath = System.getProperty("java.class.path")
-        return withPluginClasspath(classpath.split(File.pathSeparator).map { File(it) })
-    }
 
     @Test
     fun shouldRegisterAgent(@TempDir testProjectDir: Path) {
@@ -82,7 +76,7 @@ internal class MockitoPluginIT {
                 "test",
                 "--info"
             )
-            .withProjectPluginClassPath()
+            .withPluginClasspath()
             .build()
 
         SoftAssertions.assertSoftly { softly ->

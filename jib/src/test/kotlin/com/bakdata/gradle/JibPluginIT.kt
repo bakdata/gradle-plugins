@@ -28,15 +28,10 @@ import org.assertj.core.api.SoftAssertions
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 
 internal class JibPluginIT {
-    private fun GradleRunner.withProjectPluginClassPath(): GradleRunner {
-        val classpath = System.getProperty("java.class.path")
-        return withPluginClasspath(classpath.split(File.pathSeparator).map { File(it) })
-    }
 
     @Test
     fun testConfigureDefault(@TempDir testProjectDir: Path) {
@@ -62,7 +57,7 @@ internal class JibPluginIT {
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.toFile())
             .withArguments("showJibImage")
-            .withProjectPluginClassPath()
+            .withPluginClasspath()
             .build()
 
         SoftAssertions.assertSoftly { softly ->
@@ -99,7 +94,7 @@ internal class JibPluginIT {
                 "-DjibImage.repository=gcr.io/bakdata",
                 "-DjibImage.tags=a-tag"
             )
-            .withProjectPluginClassPath()
+            .withPluginClasspath()
             .build()
 
         SoftAssertions.assertSoftly { softly ->
@@ -144,7 +139,7 @@ internal class JibPluginIT {
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.toFile())
             .withArguments("showJibImage")
-            .withProjectPluginClassPath()
+            .withPluginClasspath()
             .build()
 
         SoftAssertions.assertSoftly { softly ->
