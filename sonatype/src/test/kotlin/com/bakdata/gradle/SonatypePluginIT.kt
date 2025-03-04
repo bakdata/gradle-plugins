@@ -28,6 +28,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.http.RequestMethod
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
+import groovy.json.StringEscapeUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
@@ -48,6 +49,8 @@ import java.nio.file.Path
 internal class SonatypePluginIT {
     private fun taskWithPathAndOutcome(path: String, outcome: TaskOutcome):
             Condition<BuildTask> = Condition({ it.path == path && it.outcome == outcome }, "Task $path=$outcome")
+    private fun taskWithPath(path: String):
+            Condition<BuildTask> = Condition({ it.path == path }, "Task $path")
 
     @Test
     fun testSingleModuleProject(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
@@ -64,7 +67,7 @@ internal class SonatypePluginIT {
                 osshrPassword = "dummy pw"
                 signingKeyId = "72217EAF"
                 signingPassword = "test_password"
-                signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
+                signingSecretKeyRingFile = "${getSecringFile()}"
                 nexusUrl = "${wiremock.baseUrl()}"
                 allowInsecureProtocol = true
             }
@@ -123,11 +126,7 @@ internal class SonatypePluginIT {
                 osshrPassword = "dummy pw"
                 signingKeyId = "72217EAF"
                 signingPassword = "test_password"
-                signingSecretKeyRingFile = "${
-                File(
-                    SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()
-                ).absolutePath
-            }"
+                signingSecretKeyRingFile = "${getSecringFile()}"
                 nexusUrl = "${wiremock.baseUrl()}"
                 allowInsecureProtocol = true
             }
@@ -164,6 +163,83 @@ internal class SonatypePluginIT {
                     1,
                     taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS)
                 )
+                .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepositories", TaskOutcome.SUCCESS))
+        }
+
+        val projectName = testProjectDir.fileName.toString()
+        val expectedUploads = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar", ".module")
+            .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
+            .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
+            .plus("$projectName/maven-metadata.xml")
+            .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+        assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
+    }
+
+    @Test
+    fun testSingleModuleProjectWithCustomPublication(
+        @TempDir testProjectDir: Path,
+        @Wiremock wiremock: WireMockServer
+    ) {
+        Files.writeString(
+            testProjectDir.resolve("build.gradle.kts"), """
+            plugins {
+                id("com.bakdata.sonatype")
+            }
+            apply(plugin = "java")
+            group = "$TEST_GROUP"
+            version = "$TEST_VERSION"
+            configure<com.bakdata.gradle.SonatypeSettings> {
+                disallowLocalRelease = false
+                osshrUsername = "dummy user"
+                osshrPassword = "dummy pw"
+                signingKeyId = "72217EAF"
+                signingPassword = "test_password"
+                signingSecretKeyRingFile = "${getSecringFile()}"
+                nexusUrl = "${wiremock.baseUrl()}"
+                allowInsecureProtocol = true
+            }
+            configure<com.bakdata.gradle.PublicationSettings> {
+                description = "dummy description"
+                developers {
+                    developer {
+                        name.set("dummy name")
+                        id.set("dummy id")
+                    }
+                }
+                createPublication = false
+            }
+
+            configure<PublishingExtension> {
+                publications.create<MavenPublication>("custom") {
+                    from(components["java"])
+                }
+            }
+        """.trimIndent()
+        )
+
+        Files.createDirectories(testProjectDir.resolve("src/main/java/"))
+        Files.copy(
+            SonatypePluginIT::class.java.getResourceAsStream("/Demo.java"),
+            testProjectDir.resolve("src/main/java/Demo.java")
+        )
+
+        mockNexusProtocol(wiremock)
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir.toFile())
+            .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
+            .withPluginClasspath()
+            .build()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(result.tasks)
+                .haveExactly(1, taskWithPathAndOutcome(":signCustomPublication", TaskOutcome.SUCCESS))
+                .haveExactly(
+                    1,
+                    taskWithPathAndOutcome(":publishCustomPublicationToNexusRepository", TaskOutcome.SUCCESS)
+                )
+                .haveExactly(0, taskWithPath(":signSonatypePublication"))
+                .haveExactly(0, taskWithPath(":publishSonatypePublicationToNexusRepository"))
                 .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepositories", TaskOutcome.SUCCESS))
         }
 
@@ -227,7 +303,7 @@ internal class SonatypePluginIT {
                 osshrPassword = "dummy pw"
                 signingKeyId = "72217EAF"
                 signingPassword = "test_password"
-                signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
+                signingSecretKeyRingFile = "${getSecringFile()}"
                 nexusUrl = "${wiremock.baseUrl()}"
                 allowInsecureProtocol = true
             }
@@ -284,6 +360,13 @@ internal class SonatypePluginIT {
                 .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
+
+    private fun getSecringFile(): String? =
+        StringEscapeUtils.escapeJava(
+            File(
+                SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()
+            ).absolutePath.toString()
+        )
 
     companion object {
         private const val TEST_GROUP: String = "com.bakdata"

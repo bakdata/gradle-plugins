@@ -244,10 +244,13 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            if (project.getPublicationSettings().createPublication) {
-                configure<PublishingExtension> {
-                    publications.create<MavenPublication>("sonatype") {
-                        from(components["java"])
+            // lazy execution, so that settings configurations are actually used
+            afterEvaluate {
+                if (project.getPublicationSettings().createPublication) {
+                    configure<PublishingExtension> {
+                        publications.create<MavenPublication>("sonatype") {
+                            from(components["java"])
+                        }
                     }
                 }
             }
