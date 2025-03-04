@@ -19,6 +19,16 @@ allprojects {
     tasks.withType<Test> {
         maxParallelForks = 4
     }
+}
+
+subprojects {
+    apply(plugin = "java")
+
+    configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(11)
+        }
+    }
 
     publication {
         developers {
@@ -40,17 +50,8 @@ allprojects {
             }
         }
 
+        //will be created by Gradle Plugin Development Plugin
         createPublication = false
-    }
-}
-
-subprojects {
-    apply(plugin = "java")
-
-    configure<JavaPluginExtension> {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(11)
-        }
     }
 
     apply(plugin = "java-gradle-plugin")
