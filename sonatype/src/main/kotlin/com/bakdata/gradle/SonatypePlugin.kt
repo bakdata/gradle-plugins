@@ -122,6 +122,7 @@ class SonatypePlugin : Plugin<Project> {
             val onlyLocalPublish = this.allTasks
                 .filterIsInstance<AbstractPublishToMaven>()
                 .all { it is PublishToMavenLocal }
+            println("Publishing only to local: $onlyLocalPublish")
 
             this.allTasks.filterIsInstance<Sign>().forEach {
                 // disable sign for publishToLocalMaven
