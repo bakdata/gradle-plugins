@@ -119,10 +119,10 @@ class SonatypePlugin : Plugin<Project> {
         gradle.taskGraph.whenReady {
             val missingProps = mutableSetOf<KProperty1<out Any, Any?>>()
 
-            val onlyLocalPublish = this.allTasks
+            val publishTasks = this.allTasks
                 .filterIsInstance<AbstractPublishToMaven>()
+            val onlyLocalPublish = publishTasks.isNotEmpty() && publishTasks
                 .all { it is PublishToMavenLocal }
-            println("Publishing only to local: $onlyLocalPublish")
 
             this.allTasks.filterIsInstance<Sign>().forEach {
                 // disable sign for publishToLocalMaven
