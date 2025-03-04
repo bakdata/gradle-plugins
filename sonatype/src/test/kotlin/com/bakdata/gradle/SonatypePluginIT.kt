@@ -62,18 +62,20 @@ internal class SonatypePluginIT {
                 disallowLocalRelease = false
                 osshrUsername = "dummy user"
                 osshrPassword = "dummy pw"
-                description = "dummy description"
                 signingKeyId = "72217EAF"
                 signingPassword = "test_password"
                 signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
+                nexusUrl = "${wiremock.baseUrl()}"
+                allowInsecureProtocol = true
+            }
+            configure<com.bakdata.gradle.PublicationSettings> {
+                description = "dummy description"
                 developers {
                     developer {
                         name.set("dummy name")
                         id.set("dummy id")
                     }
                 }
-                nexusUrl = "${wiremock.baseUrl()}"
-                allowInsecureProtocol = true
             }
         """.trimIndent())
 
@@ -119,7 +121,6 @@ internal class SonatypePluginIT {
                 disallowLocalRelease = false
                 osshrUsername = "dummy user"
                 osshrPassword = "dummy pw"
-                description = "dummy description"
                 signingKeyId = "72217EAF"
                 signingPassword = "test_password"
                 signingSecretKeyRingFile = "${
@@ -127,14 +128,17 @@ internal class SonatypePluginIT {
                     SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()
                 ).absolutePath
             }"
+                nexusUrl = "${wiremock.baseUrl()}"
+                allowInsecureProtocol = true
+            }
+            configure<com.bakdata.gradle.PublicationSettings> {
+                description = "dummy description"
                 developers {
                     developer {
                         name.set("dummy name")
                         id.set("dummy id")
                     }
                 }
-                nexusUrl = "${wiremock.baseUrl()}"
-                allowInsecureProtocol = true
             }
         """.trimIndent()
         )
@@ -221,16 +225,9 @@ internal class SonatypePluginIT {
                 disallowLocalRelease = false
                 osshrUsername = "dummy user"
                 osshrPassword = "dummy pw"
-                description = "dummy description"
                 signingKeyId = "72217EAF"
                 signingPassword = "test_password"
                 signingSecretKeyRingFile = "${File(SonatypePluginIT::class.java.getResource("/test_secring.gpg").toURI()).absolutePath}"
-                developers {
-                    developer {
-                        name.set("dummy name")
-                        id.set("dummy id")
-                    }
-                }
                 nexusUrl = "${wiremock.baseUrl()}"
                 allowInsecureProtocol = true
             }
@@ -239,6 +236,15 @@ internal class SonatypePluginIT {
                 apply(plugin = "java")
                 version = "$TEST_VERSION"
                 group = "${TEST_GROUP}"
+                configure<com.bakdata.gradle.PublicationSettings> {
+                    description = "dummy description"
+                    developers {
+                        developer {
+                            name.set("dummy name")
+                            id.set("dummy id")
+                        }
+                    }
+                }
             }
         """.trimIndent())
 

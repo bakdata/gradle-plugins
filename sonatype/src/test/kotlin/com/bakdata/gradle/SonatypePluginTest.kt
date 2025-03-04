@@ -136,40 +136,6 @@ internal class SonatypePluginTest {
     }
 
     @Test
-    fun testDisablePublicationCreationForAllChildren() {
-        val parent = ProjectBuilder.builder().withName("parent").build()
-        val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
-        val child2 = ProjectBuilder.builder().withName("child2").withParent(parent).build()
-        val children = listOf(child1, child2)
-
-        Assertions.assertThatCode {
-            parent.apply(plugin = "com.bakdata.sonatype")
-            parent.configure<SonatypeSettings> {
-                createPublication = false
-            }
-
-            children.forEach {
-                it.apply(plugin = "java")
-                File(it.projectDir, "src/main/java/").mkdirs()
-                Files.copy(
-                    SonatypePluginTest::class.java.getResourceAsStream("/Demo.java"),
-                    File(it.projectDir, "src/main/java/Demo.java").toPath()
-                )
-            }
-
-            parent.evaluate()
-            children.forEach { it.evaluate() }
-        }.doesNotThrowAnyException()
-
-        assertSoftly { softly ->
-            children.forEach { child ->
-                softly.assertThat(child.getPublications())
-                    .haveExactly(0, publicationWithName("sonatype"))
-            }
-        }
-    }
-
-    @Test
     fun testDisablePublicationCreationForChild() {
         val parent = ProjectBuilder.builder().withName("parent").build()
         val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
@@ -179,7 +145,7 @@ internal class SonatypePluginTest {
         Assertions.assertThatCode {
             parent.apply(plugin = "com.bakdata.sonatype")
 
-            child1.configure<SonatypeSettings> {
+            child1.configure<PublicationSettings> {
                 createPublication = false
             }
             children.forEach {
