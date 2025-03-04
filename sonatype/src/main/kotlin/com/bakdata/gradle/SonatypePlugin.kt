@@ -117,7 +117,7 @@ class SonatypePlugin : Plugin<Project> {
         // verify that settings are really present when needed
         // note that we test the affected settings to allow users of the plugin to provide the values natively (e.g., directly on the used plugins)
         gradle.taskGraph.whenReady {
-            val missingProps = mutableSetOf<KProperty1<SonatypeSettings, Any?>>()
+            val missingProps = mutableSetOf<KProperty1<out Any, Any?>>()
 
             val onlyLocalPublish = this.allTasks
                 .filterIsInstance<AbstractPublishToMaven>()
@@ -184,10 +184,7 @@ class SonatypePlugin : Plugin<Project> {
                 generateMavenPom.project.configure<PublishingExtension> {
                     publications.withType<MavenPublication> {
                         pom {
-                            val pomMissingProps = addRequiredInformationToPom(generateMavenPom.project)
-                            if (pomMissingProps.isNotEmpty()) {
-                                throw GradleException("Missing the following configurations ${pomMissingProps.map { "publication.${it.name}" }} for ${project.name}")
-                            }
+                            missingProps.addAll(addRequiredInformationToPom(generateMavenPom.project))
                         }
                     }
                 }

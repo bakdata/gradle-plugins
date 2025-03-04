@@ -89,10 +89,10 @@ internal class SonatypePluginIT {
         mockNexusProtocol(wiremock)
 
         val result = GradleRunner.create()
-                .withProjectDir(testProjectDir.toFile())
+            .withProjectDir(testProjectDir.toFile())
             .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
             .withPluginClasspath()
-                .build()
+            .build()
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(result.tasks)
@@ -336,10 +336,10 @@ internal class SonatypePluginIT {
         mockNexusProtocol(wiremock)
 
         val result = GradleRunner.create()
-                .withProjectDir(testProjectDir.toFile())
+            .withProjectDir(testProjectDir.toFile())
             .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
             .withPluginClasspath()
-                .build()
+            .build()
 
         SoftAssertions.assertSoftly { softly ->
             children.forEach { child ->
