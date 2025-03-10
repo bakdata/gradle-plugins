@@ -4,7 +4,7 @@ plugins {
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.release") version "1.7.1"
     id("com.bakdata.sonar") version "1.7.1"
-    id("com.bakdata.sonatype") version "1.7.1"
+    id("com.bakdata.sonatype") version "1.8.2-SNAPSHOT"
     id("org.gradle.kotlin.kotlin-dsl") version "5.1.2" apply false
     id("com.gradle.plugin-publish") version "1.3.0" apply false
 }
@@ -21,27 +21,6 @@ allprojects {
     }
 }
 
-configure<com.bakdata.gradle.SonatypeSettings> {
-    developers {
-        developer {
-            name.set("Arvid Heise")
-            id.set("AHeise")
-        }
-        developer {
-            name.set("Philipp Schirmer")
-            id.set("philipp94831")
-        }
-        developer {
-            name.set("Torben Meyer")
-            id.set("torbsto")
-        }
-        developer {
-            name.set("Ramin Gharib")
-            id.set("raminqaf")
-        }
-    }
-}
-
 subprojects {
     apply(plugin = "java")
 
@@ -51,6 +30,30 @@ subprojects {
         }
     }
 
+    publication {
+        developers {
+            developer {
+                name.set("Arvid Heise")
+                id.set("AHeise")
+            }
+            developer {
+                name.set("Philipp Schirmer")
+                id.set("philipp94831")
+            }
+            developer {
+                name.set("Torben Meyer")
+                id.set("torbsto")
+            }
+            developer {
+                name.set("Ramin Gharib")
+                id.set("raminqaf")
+            }
+        }
+
+        //will be created by Gradle Plugin Development Plugin
+        createPublication = false
+    }
+
     apply(plugin = "java-gradle-plugin")
 
     // config for gradle plugin portal doesn't support snapshot, so we add config only if release version
@@ -58,18 +61,25 @@ subprojects {
         apply(plugin = "com.gradle.plugin-publish")
     }
 
+    val pluginName = "${project.name.replaceFirstChar(::capitalize)}Plugin"
+    configure<GradlePluginDevelopmentExtension> {
+        website.set("https://github.com/bakdata/gradle-plugins")
+        vcsUrl.set("https://github.com/bakdata/gradle-plugins")
+        plugins {
+            create(pluginName) {
+                id = "com.bakdata.${project.name}"
+                implementationClass = "com.bakdata.gradle.${project.name.replaceFirstChar(::capitalize)}Plugin"
+                displayName = "Bakdata $name plugin"
+                tags = listOf("bakdata", name)
+            }
+        }
+    }
     // description is only ready after evaluation
     afterEvaluate {
         configure<GradlePluginDevelopmentExtension> {
-            website.set("https://github.com/bakdata/gradle-plugins")
-            vcsUrl.set("https://github.com/bakdata/gradle-plugins")
             plugins {
-                create("${project.name.replaceFirstChar(::capitalize)}Plugin") {
-                    id = "com.bakdata.${project.name}"
-                    implementationClass = "com.bakdata.gradle.${project.name.replaceFirstChar(::capitalize)}Plugin"
+                getByName(pluginName) {
                     description = project.description
-                    displayName = "Bakdata $name plugin"
-                    tags = listOf("bakdata", name)
                 }
             }
         }
