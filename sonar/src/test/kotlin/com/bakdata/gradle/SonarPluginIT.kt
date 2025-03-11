@@ -31,18 +31,12 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 
 internal class SonarPluginIT {
     private fun taskWithPathAndOutcome(path: String, outcome: TaskOutcome):
             Condition<BuildTask> = Condition({ it.path == path && it.outcome == outcome }, "Task $path=$outcome")
-
-    private fun GradleRunner.withProjectPluginClassPath(): GradleRunner {
-        val classpath = System.getProperty("java.class.path")
-        return withPluginClasspath(classpath.split(File.pathSeparator).map { File(it) })
-    }
 
     @Test
     fun testSingleModuleProject(@TempDir testProjectDir: Path) {
@@ -67,10 +61,10 @@ internal class SonarPluginIT {
                 testProjectDir.resolve("src/test/java/DemoTest.java"))
 
         val result = GradleRunner.create()
-                .withProjectDir(testProjectDir.toFile())
+            .withProjectDir(testProjectDir.toFile())
             .withArguments("sonar", "-Dsonar.scanner.internal.dumpToFile=${testProjectDir.resolve("dump")}")
-                .withProjectPluginClassPath()
-                .build()
+            .withPluginClasspath()
+            .build()
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(result.tasks)
@@ -112,15 +106,15 @@ internal class SonarPluginIT {
         }
 
         val result = GradleRunner.create()
-                .withProjectDir(testProjectDir.toFile())
+            .withProjectDir(testProjectDir.toFile())
             .withArguments(
                 "sonar",
                 "-Dsonar.scanner.internal.dumpToFile=${testProjectDir.resolve("dump")}",
                 "--stacktrace",
                 "--info"
             )
-                .withProjectPluginClassPath()
-                .build()
+            .withPluginClasspath()
+            .build()
 
         SoftAssertions.assertSoftly { softly ->
             children.forEach { child ->
@@ -184,7 +178,7 @@ internal class SonarPluginIT {
                 "--stacktrace",
                 "--info"
             )
-            .withProjectPluginClassPath()
+            .withPluginClasspath()
             .build()
 
         SoftAssertions.assertSoftly { softly ->

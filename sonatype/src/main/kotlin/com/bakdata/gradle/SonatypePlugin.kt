@@ -55,8 +55,9 @@ class SonatypePlugin : Plugin<Project> {
         }
 
         with(rootProject) {
+            extensions.create<SonatypeSettings>("sonatype", this)
             allprojects {
-                extensions.create<SonatypeSettings>("sonatype", this)
+                extensions.create<PublicationSettings>("publication", this)
             }
 
             // note that we need to use adjustConfiguration before applying the plugin (publish-plugin),
@@ -76,12 +77,8 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             allprojects {
-                project.plugins.matching { it is JavaPlugin }.all {
-                    if (extensions.findByType<PublishingExtension>() == null) {
-                        log.info("Found java component in $project. Adding publishing tasks.")
-                        addPublishTasks(project)
-                    }
-                }
+                log.info("Adding publishing tasks to $project.")
+                addPublishTasks(project)
             }
 
             disallowPublishTasks()
@@ -90,8 +87,9 @@ class SonatypePlugin : Plugin<Project> {
 
     private fun Project.adjustConfiguration() {
         allprojects {
+            val settings = getSettings()
             signExtras.forEach { (key, property) ->
-                extra[key] = getOverriddenSetting(property)
+                extra[key] = property.get(settings)
             }
         }
 
@@ -103,10 +101,11 @@ class SonatypePlugin : Plugin<Project> {
 
                 repositories["nexus"].apply {
                     stagingProfileId.set("746f6fd1d91a4")
-                    username.set(getOverriddenSetting(SonatypeSettings::osshrUsername))
-                    password.set(getOverriddenSetting(SonatypeSettings::osshrPassword))
-                    getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(uri(it)) }
-                    allowInsecureProtocol.set(getOverriddenSetting(SonatypeSettings::allowInsecureProtocol))
+                    val settings = getSettings()
+                    username.set(settings.osshrUsername)
+                    password.set(settings.osshrPassword)
+                    settings.nexusUrl?.let { nexusUrl.set(uri(it)) }
+                    allowInsecureProtocol.set(settings.allowInsecureProtocol)
                 }
             }
         }
@@ -114,22 +113,25 @@ class SonatypePlugin : Plugin<Project> {
         // verify that settings are really present when needed
         // note that we test the affected settings to allow users of the plugin to provide the values natively (e.g., directly on the used plugins)
         gradle.taskGraph.whenReady {
-            val missingProps = mutableSetOf<KProperty1<SonatypeSettings, Any?>>()
+            val missingProps = mutableSetOf<KProperty1<out Any, Any?>>()
 
-            val onlyLocalPublish = this.allTasks
+            val publishTasks = this.allTasks
                 .filterIsInstance<AbstractPublishToMaven>()
+            val onlyLocalPublish = publishTasks.isNotEmpty() && publishTasks
                 .all { it is PublishToMavenLocal }
 
-            this.allTasks.filter { it is Sign }.forEach {
+            this.allTasks.filterIsInstance<Sign>().forEach {
                 // disable sign for publishToLocalMaven
                 it.onlyIf { !onlyLocalPublish }
 
+                val settings = getSettings()
                 signExtras.forEach { (key, property) ->
                     if (it.project.extra[key] == null) {
-                        if (getOverriddenSetting(property) == null) {
+                        val value = property.get(settings)
+                        if (value == null) {
                             missingProps += property
                         } else {
-                            it.project.extra[key] = getOverriddenSetting(property)
+                            it.project.extra[key] = value
                         }
                     }
                 }
@@ -144,41 +146,42 @@ class SonatypePlugin : Plugin<Project> {
                         if (!password.isPresent) {
                             missingProps.add(SonatypeSettings::osshrPassword)
                         }
-                        getOverriddenSetting(SonatypeSettings::nexusUrl)?.let { nexusUrl.set(uri(it)) }
+                        getSettings().nexusUrl?.let { nexusUrl.set(uri(it)) }
                     }
                 }
 
                 allprojects {
                     extensions.findByType<NexusPublishExtension>()?.let { nexus ->
-                        getOverriddenSetting(SonatypeSettings::nexusUrl)?.let {
+                        val settings = getSettings()
+                        settings.nexusUrl?.let {
                             nexus.repositories["nexus"].nexusUrl.value(uri(it))
                         }
 
-                        getOverriddenSetting(SonatypeSettings::snapshotUrl)?.let {
+                        settings.snapshotUrl?.let {
                             nexus.repositories["nexus"].snapshotRepositoryUrl.value(uri(it))
                         }
 
-                        getOverriddenSetting(SonatypeSettings::clientTimeout)?.let {
+                        settings.clientTimeout.let {
                             nexus.clientTimeout.value(Duration.ofSeconds(it))
                         }
 
-                        getOverriddenSetting(SonatypeSettings::connectTimeout)?.let {
+                        settings.connectTimeout.let {
                             nexus.connectTimeout.value(Duration.ofSeconds(it))
                         }
 
-                        getOverriddenSetting(SonatypeSettings::allowInsecureProtocol)?.let {
+                        settings.allowInsecureProtocol.let {
                             nexus.repositories["nexus"].allowInsecureProtocol.value(it)
                         }
                     }
                 }
             }
 
-            this.allTasks.filter { it is GenerateMavenPom }.forEach {
-                log.info("Adding pom information for ${it.project}")
-                it.project.configure<PublishingExtension> {
+            this.allTasks.filterIsInstance<GenerateMavenPom>().forEach { generateMavenPom ->
+                log.info("Adding pom information for ${generateMavenPom.project}")
+                generateMavenPom.project.configure<PublishingExtension> {
                     publications.withType<MavenPublication> {
                         pom {
-                            missingProps.addAll(addRequiredInformationToPom(it.project))
+                            missingProps.addAll(addRequiredInformationToPom(generateMavenPom.project))
                         }
                     }
                 }
@@ -192,12 +195,15 @@ class SonatypePlugin : Plugin<Project> {
         }
     }
 
-    private tailrec fun <T> Project.getOverriddenSetting(property: KProperty1<SonatypeSettings, T?>): T? =
-        property.get(extensions.getByType(SonatypeSettings::class)) ?: project.parent?.getOverriddenSetting(property)
+    private tailrec fun Project.getSettings(): SonatypeSettings =
+        extensions.findByType<SonatypeSettings>() ?: project.parent!!.getSettings()
+
+    private fun Project.getPublicationSettings(): PublicationSettings =
+        extensions.getByType<PublicationSettings>()
 
     private fun Project.disallowPublishTasks() {
         gradle.taskGraph.whenReady {
-            if (getOverriddenSetting(SonatypeSettings::disallowLocalRelease)!!) {
+            if (getSettings().disallowLocalRelease) {
                 log.info("disallowing publish tasks")
                 if (hasTask(":publishToNexus") && System.getenv("CI") == null) {
                     throw GradleException("Publishing artifacts is only supported through CI (e.g., Travis)")
@@ -230,11 +236,16 @@ class SonatypePlugin : Plugin<Project> {
                         from(javadocTask)
                     }
                 }
-            }
 
-            configure<PublishingExtension> {
-                publications.create<MavenPublication>("sonatype") {
-                    from(components["java"])
+                // lazy execution, so that settings configurations are actually used
+                afterEvaluate {
+                    if (project.getPublicationSettings().createPublication) {
+                        configure<PublishingExtension> {
+                            publications.create<MavenPublication>("sonatype") {
+                                from(components["java"])
+                            }
+                        }
+                    }
                 }
             }
 
@@ -242,19 +253,22 @@ class SonatypePlugin : Plugin<Project> {
                 sign(the<PublishingExtension>().publications)
             }
 
+            tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
+
             tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
         }
     }
 
-    private fun MavenPublication.addRequiredInformationToPom(project: Project): List<KMutableProperty1<SonatypeSettings, out Any?>> {
-        val repoUrl = project.getOverriddenSetting(SonatypeSettings::repoUrl)
-        val projectDescription = project.getOverriddenSetting(SonatypeSettings::description)
-        val developers = project.getOverriddenSetting(SonatypeSettings::developers)
+    private fun MavenPublication.addRequiredInformationToPom(project: Project): List<KMutableProperty1<PublicationSettings, out Any?>> {
+        val publicationSettings = project.getPublicationSettings()
+        val repoUrl = publicationSettings.repoUrl
+        val projectDescription = publicationSettings.description
+        val developers = publicationSettings.developers
 
-        val emptySettings = mapOf<Any?, KMutableProperty1<SonatypeSettings, *>>(
-            repoUrl to SonatypeSettings::repoUrl,
-            projectDescription to SonatypeSettings::description,
-            developers to (SonatypeSettings::developers)
+        val emptySettings = mapOf<Any?, KMutableProperty1<PublicationSettings, *>>(
+            repoUrl to PublicationSettings::repoUrl,
+            projectDescription to PublicationSettings::description,
+            developers to (PublicationSettings::developers)
         )
             .filter { (key, _) -> key == null }
             .map { it.value }

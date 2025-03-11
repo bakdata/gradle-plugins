@@ -31,7 +31,11 @@ import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
+import org.gradle.api.publish.Publication
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -52,7 +56,10 @@ internal class SonatypePluginTest {
         }
     }
 
-    fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
+    private fun taskWithName(name: String): Condition<Task> = Condition({ it.name == name }, "Task with name $name")
+
+    private fun publicationWithName(name: String): Condition<Publication> =
+        Condition({ it.name == name }, "Publication with name $name")
 
     @Test
     fun testSingleModuleProject() {
@@ -77,6 +84,8 @@ internal class SonatypePluginTest {
                 .haveExactly(1, taskWithName("publish"))
                 .haveExactly(1, taskWithName("publishToNexus"))
                 .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
+            softly.assertThat(project.getPublications())
+                .haveExactly(1, publicationWithName("sonatype"))
         }
     }
 
@@ -110,15 +119,53 @@ internal class SonatypePluginTest {
                     .haveExactly(1, taskWithName("publish"))
                     .haveExactly(1, taskWithName("publishToNexus"))
                     .haveExactly(0, taskWithName("closeAndReleaseStagingRepositories"))
+                softly.assertThat(child.getPublications())
+                    .haveExactly(1, publicationWithName("sonatype"))
             }
         }
 
         assertSoftly { softly ->
             softly.assertThat(parent.collectTasks())
                 .haveExactly(0, taskWithName("signSonatypePublication"))
-                .haveExactly(0, taskWithName("publish"))
-                .haveExactly(0, taskWithName("publishToNexus"))
+                .haveExactly(1, taskWithName("publish"))
+                .haveExactly(1, taskWithName("publishToNexus"))
                 .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
+            softly.assertThat(parent.getPublications())
+                .haveExactly(0, publicationWithName("sonatype"))
+        }
+    }
+
+    @Test
+    fun testDisablePublicationCreationForChild() {
+        val parent = ProjectBuilder.builder().withName("parent").build()
+        val child1 = ProjectBuilder.builder().withName("child1").withParent(parent).build()
+        val child2 = ProjectBuilder.builder().withName("child2").withParent(parent).build()
+        val children = listOf(child1, child2)
+
+        Assertions.assertThatCode {
+            parent.apply(plugin = "com.bakdata.sonatype")
+
+            child1.configure<PublicationSettings> {
+                createPublication = false
+            }
+            children.forEach {
+                it.apply(plugin = "java")
+                File(it.projectDir, "src/main/java/").mkdirs()
+                Files.copy(
+                    SonatypePluginTest::class.java.getResourceAsStream("/Demo.java"),
+                    File(it.projectDir, "src/main/java/Demo.java").toPath()
+                )
+            }
+
+            parent.evaluate()
+            children.forEach { it.evaluate() }
+        }.doesNotThrowAnyException()
+
+        assertSoftly { softly ->
+            softly.assertThat(child1.getPublications())
+                .haveExactly(0, publicationWithName("sonatype"))
+            softly.assertThat(child2.getPublications())
+                .haveExactly(1, publicationWithName("sonatype"))
         }
     }
 
@@ -139,6 +186,9 @@ internal class SonatypePluginTest {
         // FIXME bug since Gradle 7.3 https://github.com/gradle/gradle/issues/20301
         if (e.message.equals("Could not create task ':init'.")) tasks.toList() else throw e
     }
+
+    private fun Project.getPublications(): List<Publication> =
+        extensions.findByType<PublishingExtension>()?.publications?.toList() ?: listOf()
 
 }
 
