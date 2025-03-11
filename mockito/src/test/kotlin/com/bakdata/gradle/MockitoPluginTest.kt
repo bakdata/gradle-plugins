@@ -55,18 +55,24 @@ internal class MockitoPluginTest {
             val configureMockitoAgent = project.tasks.named("configureMockitoAgent")
             softly.assertThat(test.dependsOn)
                 .contains(configureMockitoAgent)
-            softly.assertThat(test.jvmArgs)
+            softly.assertThat(test.jvmArgumentProviders)
                 .noneSatisfy {
-                    softly.assertThat(it)
-                        .contains("-javaagent:")
-                        .contains("mockito-core-5.15.2.jar")
+                    softly.assertThat(it.asArguments())
+                        .anySatisfy {
+                            softly.assertThat(it)
+                                .contains("-javaagent:")
+                                .contains("mockito-core-5.15.2.jar")
+                        }
                 }
             configureMockitoAgent.get() // force configuration of test
-            softly.assertThat(test.jvmArgs)
+            softly.assertThat(test.jvmArgumentProviders)
                 .anySatisfy {
-                    softly.assertThat(it)
-                        .contains("-javaagent:")
-                        .contains("mockito-core-5.15.2.jar")
+                    softly.assertThat(it.asArguments())
+                        .anySatisfy {
+                            softly.assertThat(it)
+                                .contains("-javaagent:")
+                                .contains("mockito-core-5.15.2.jar")
+                        }
                 }
         }
     }
@@ -88,18 +94,24 @@ internal class MockitoPluginTest {
             val configureMockitoAgent = project.tasks.named("configureMockitoAgent")
             softly.assertThat(test.dependsOn)
                 .contains(configureMockitoAgent)
-            softly.assertThat(test.jvmArgs)
+            softly.assertThat(test.jvmArgumentProviders)
                 .noneSatisfy {
-                    softly.assertThat(it)
-                        .contains("-javaagent:")
-                        .contains("mockito-core-5.15.2.jar")
+                    softly.assertThat(it.asArguments())
+                        .anySatisfy {
+                            softly.assertThat(it)
+                                .contains("-javaagent:")
+                                .contains("mockito-core-5.15.2.jar")
+                        }
                 }
             configureMockitoAgent.get() // force configuration of test
-            softly.assertThat(test.jvmArgs)
+            softly.assertThat(test.jvmArgumentProviders)
                 .anySatisfy {
-                    softly.assertThat(it)
-                        .contains("-javaagent:")
-                        .contains("mockito-core-5.15.2.jar")
+                    softly.assertThat(it.asArguments())
+                        .anySatisfy {
+                            softly.assertThat(it)
+                                .contains("-javaagent:")
+                                .contains("mockito-core-5.15.2.jar")
+                        }
                 }
         }
     }
