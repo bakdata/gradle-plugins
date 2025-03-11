@@ -30,6 +30,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.logging.Logging
+import org.gradle.api.plugins.JavaPlatformPlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
@@ -237,16 +238,11 @@ class SonatypePlugin : Plugin<Project> {
                     }
                 }
 
-                // lazy execution, so that settings configurations are actually used
-                afterEvaluate {
-                    if (project.getPublicationSettings().createPublication) {
-                        configure<PublishingExtension> {
-                            publications.create<MavenPublication>("sonatype") {
-                                from(components["java"])
-                            }
-                        }
-                    }
-                }
+                createPublication("java")
+            }
+
+            project.plugins.matching { it is JavaPlatformPlugin }.all {
+                createPublication("javaPlatform")
             }
 
             configure<SigningExtension> {
@@ -256,6 +252,19 @@ class SonatypePlugin : Plugin<Project> {
             tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
 
             tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
+        }
+    }
+
+    private fun Project.createPublication(component: String) {
+        // lazy execution, so that settings configurations are actually used
+        afterEvaluate {
+            if (getPublicationSettings().createPublication) {
+                configure<PublishingExtension> {
+                    publications.create<MavenPublication>("sonatype") {
+                        from(components[component])
+                    }
+                }
+            }
         }
     }
 
