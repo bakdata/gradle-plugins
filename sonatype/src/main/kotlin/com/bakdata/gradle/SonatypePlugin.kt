@@ -77,10 +77,8 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             allprojects {
-                if (extensions.findByType<PublishingExtension>() == null) {
-                    log.info("Found component in $project. Adding publishing tasks.")
-                    addPublishTasks(project)
-                }
+                log.info("Adding publishing tasks to $project.")
+                addPublishTasks(project)
             }
 
             disallowPublishTasks()
