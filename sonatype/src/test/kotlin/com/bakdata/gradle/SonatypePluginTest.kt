@@ -127,8 +127,8 @@ internal class SonatypePluginTest {
         assertSoftly { softly ->
             softly.assertThat(parent.collectTasks())
                 .haveExactly(0, taskWithName("signSonatypePublication"))
-                .haveExactly(0, taskWithName("publish"))
-                .haveExactly(0, taskWithName("publishToNexus"))
+                .haveExactly(1, taskWithName("publish"))
+                .haveExactly(1, taskWithName("publishToNexus"))
                 .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
             softly.assertThat(parent.getPublications())
                 .haveExactly(0, publicationWithName("sonatype"))
