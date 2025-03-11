@@ -1,8 +1,16 @@
 # Change Log
 
-## [1.8.1](https://github.com/bakdata/gradle-plugins/tree/1.8.1) (2025-03-03)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.8.1...1.8.1)
+## [1.9.0](https://github.com/bakdata/gradle-plugins/tree/1.9.0) (2025-03-11)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.9.0...1.9.0)
 
+
+## [1.9.0](https://github.com/bakdata/gradle-plugins/tree/1.9.0) (2025-03-11)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.8.1...1.9.0)
+
+**Merged pull requests:**
+
+- Automatically configure publication for platform plugin [\#65](https://github.com/bakdata/gradle-plugins/pull/65) ([@philipp94831](https://github.com/philipp94831))
+- Configure publication settings per project [\#64](https://github.com/bakdata/gradle-plugins/pull/64) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.8.1](https://github.com/bakdata/gradle-plugins/tree/1.8.1) (2025-03-03)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.8.0...1.8.1)
