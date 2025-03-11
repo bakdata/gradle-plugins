@@ -77,11 +77,9 @@ class SonatypePlugin : Plugin<Project> {
             }
 
             allprojects {
-                project.plugins.matching { it is JavaPlugin }.all {
-                    if (extensions.findByType<PublishingExtension>() == null) {
-                        log.info("Found java component in $project. Adding publishing tasks.")
-                        addPublishTasks(project)
-                    }
+                if (extensions.findByType<PublishingExtension>() == null) {
+                    log.info("Found component in $project. Adding publishing tasks.")
+                    addPublishTasks(project)
                 }
             }
 
@@ -240,14 +238,14 @@ class SonatypePlugin : Plugin<Project> {
                         from(javadocTask)
                     }
                 }
-            }
 
-            // lazy execution, so that settings configurations are actually used
-            afterEvaluate {
-                if (project.getPublicationSettings().createPublication) {
-                    configure<PublishingExtension> {
-                        publications.create<MavenPublication>("sonatype") {
-                            from(components["java"])
+                // lazy execution, so that settings configurations are actually used
+                afterEvaluate {
+                    if (project.getPublicationSettings().createPublication) {
+                        configure<PublishingExtension> {
+                            publications.create<MavenPublication>("sonatype") {
+                                from(components["java"])
+                            }
                         }
                     }
                 }
