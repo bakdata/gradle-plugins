@@ -27,8 +27,12 @@ package com.bakdata.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.logging.Logging
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.newInstance
+import org.gradle.process.CommandLineArgumentProvider
 
 class MockitoPlugin : Plugin<Project> {
     private val log = Logging.getLogger(MockitoPlugin::class.java)
@@ -46,7 +50,11 @@ class MockitoPlugin : Plugin<Project> {
                     ?.let { mockito ->
                         tests.forEach {
                             log.info("Configuring Mockito java agent for task ${it.name}")
-                            it.jvmArgs("-javaagent:${mockito.file}")
+                            it.jvmArgumentProviders.add(
+                                project.objects.newInstance<JavaAgentArgumentProvider>().apply {
+                                    classpath.from(mockito.file)
+                                }
+                            )
                         }
                     }
             }
@@ -68,5 +76,14 @@ class MockitoPlugin : Plugin<Project> {
         }
         val minorVersion = versions[1]
         return majorVersion != 5 || minorVersion >= 14
+    }
+
+    abstract class JavaAgentArgumentProvider : CommandLineArgumentProvider {
+
+        @get:Classpath
+        abstract val classpath: ConfigurableFileCollection
+
+        override fun asArguments() = listOf("-javaagent:${classpath.singleFile.absolutePath}")
+
     }
 }
