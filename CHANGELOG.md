@@ -1,8 +1,20 @@
 # Change Log
 
-## [1.9.0](https://github.com/bakdata/gradle-plugins/tree/1.9.0) (2025-03-11)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.9.0...1.9.0)
+## [1.9.1](https://github.com/bakdata/gradle-plugins/tree/1.9.1) (2025-03-21)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.9.1...1.9.1)
 
+
+## [1.9.1](https://github.com/bakdata/gradle-plugins/tree/1.9.1) (2025-03-21)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.9.0...1.9.1)
+
+**Closed issues:**
+
+- Upgrade to Gradle 7.6 and Kotlin 1.7 [\#26](https://github.com/bakdata/gradle-plugins/issues/26)
+
+**Merged pull requests:**
+
+- Use JvmArgumentProvider for Mockito agent configuration [\#63](https://github.com/bakdata/gradle-plugins/pull/63) ([@philipp94831](https://github.com/philipp94831))
+- Publish plugin marker to sonatype [\#61](https://github.com/bakdata/gradle-plugins/pull/61) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.9.0](https://github.com/bakdata/gradle-plugins/tree/1.9.0) (2025-03-11)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.8.1...1.9.0)
