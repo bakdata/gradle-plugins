@@ -47,7 +47,16 @@ class JibPlugin : Plugin<Project> {
 
             afterEvaluate {
                 val repository = extension.repository.orNull?.let { "$it/" } ?: ""
-                val allTags = extension.tags.getOrElse(emptyList())
+                val allTagsWithoutSuffix = extension.tags.getOrElse(emptyList())
+
+                val baseTags = extension.tags.getOrElse(emptyList())
+                val suffixedTags = if (extension.tagSuffix.isPresent) {
+                    baseTags.map { "%s-%s".format(it, extension.tagSuffix.get()) }
+                } else {
+                    emptyList()
+                }
+                val allTags = baseTags + suffixedTags
+
                 val tag = allTags.firstOrNull()?.let { ":$it" } ?: ""
                 // The imageString should not contain any uppercase letters
                 // https://docs.docker.com/engine/reference/commandline/tag/#extended-description
@@ -55,7 +64,7 @@ class JibPlugin : Plugin<Project> {
                 configure<JibExtension> {
                     to {
                         image = imageString
-                        tags = if (allTags.isEmpty()) emptySet() else HashSet(allTags.subList(1, allTags.size))
+                        tags = if (allTags.isEmpty()) emptySet() else LinkedHashSet(allTags.subList(1, allTags.size))
                     }
                 }
             }

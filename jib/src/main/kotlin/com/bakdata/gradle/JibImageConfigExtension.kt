@@ -41,4 +41,5 @@ open class JibImageConfigExtension(project: Project) {
     val name = project.objects.property<String>().convention(project.name)
     val tags = project.objects.listProperty<String>()
         .convention(System.getProperty("jibImage.tags")?.split(',')?.filter(String::isNotEmpty) ?: emptyList())
+    val tagSuffix = project.objects.property<String>()
 }

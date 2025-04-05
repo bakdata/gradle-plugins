@@ -120,6 +120,7 @@ internal class JibPluginIT {
                 repository.set("gcr.io/bakdata")
                 name.set("jib-image")
                 tags.set(listOf("a-tag", "another-tag"))
+                tagSuffix.set("extern")
             }
 
             tasks.create("showJibImage") {
@@ -144,7 +145,7 @@ internal class JibPluginIT {
 
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(result.output)
-                .contains("gcr.io/bakdata/jib-image:a-tag[another-tag]")
+                .contains("gcr.io/bakdata/jib-image:a-tag[another-tag, a-tag-extern, another-tag-extern]")
         }
     }
 }
