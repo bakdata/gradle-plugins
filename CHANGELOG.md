@@ -1,8 +1,15 @@
 # Change Log
 
-## [1.9.1](https://github.com/bakdata/gradle-plugins/tree/1.9.1) (2025-03-21)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.9.1...1.9.1)
+## [1.10.0](https://github.com/bakdata/gradle-plugins/tree/1.10.0) (2025-06-19)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.10.0...1.10.0)
 
+
+## [1.10.0](https://github.com/bakdata/gradle-plugins/tree/1.10.0) (2025-06-19)
+[View commits](https://github.com/bakdata/gradle-plugins/compare/1.9.1...1.10.0)
+
+**Merged pull requests:**
+
+- Configure Central Portal for publication [\#68](https://github.com/bakdata/gradle-plugins/pull/68) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.9.1](https://github.com/bakdata/gradle-plugins/tree/1.9.1) (2025-03-21)
 [View commits](https://github.com/bakdata/gradle-plugins/compare/1.9.0...1.9.1)
