@@ -93,4 +93,10 @@ subprojects {
     }
 }
 
+//TODO: remove after plugin bump
+sonatype {
+    nexusUrl = "https://ossrh-staging-api.central.sonatype.com/service/local/"
+    snapshotUrl = "https://central.sonatype.com/repository/maven-snapshots/"
+}
+
 fun capitalize(it: Char) = if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
