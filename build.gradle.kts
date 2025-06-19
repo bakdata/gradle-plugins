@@ -4,7 +4,7 @@ plugins {
     // eat your own dog food - apply the plugins to this plugin project
     id("com.bakdata.release") version "1.7.1"
     id("com.bakdata.sonar") version "1.7.1"
-    id("com.bakdata.sonatype") version "1.9.0"
+    id("com.bakdata.sonatype") version "1.10.0"
     id("org.gradle.kotlin.kotlin-dsl") version "5.1.2" apply false
     id("com.gradle.plugin-publish") version "1.3.0" apply false
 }
@@ -91,12 +91,6 @@ subprojects {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:$junitVersion")
         "testImplementation"("org.assertj", "assertj-core", "3.27.2")
     }
-}
-
-//TODO: remove after plugin bump
-sonatype {
-    nexusUrl = "https://ossrh-staging-api.central.sonatype.com/service/local/"
-    snapshotUrl = "https://central.sonatype.com/repository/maven-snapshots/"
 }
 
 fun capitalize(it: Char) = if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
