@@ -28,7 +28,9 @@ import com.bakdata.gradle.ReleasePlugin.Companion.DISABLE_PUSH_TO_REMOTE
 import com.bakdata.gradle.ReleasePlugin.Companion.REQUIRE_BRANCH
 import net.researchgate.release.ReleaseExtension
 import net.researchgate.release.ReleasePlugin
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatCode
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
 import org.gradle.api.Project
