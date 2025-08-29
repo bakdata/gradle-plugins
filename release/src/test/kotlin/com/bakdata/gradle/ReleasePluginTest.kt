@@ -25,15 +25,10 @@
 package com.bakdata.gradle
 
 import com.bakdata.gradle.ReleasePlugin.Companion.DISABLE_PUSH_TO_REMOTE
-import com.bakdata.gradle.ReleasePlugin.Companion.FUTURE_VERSION_TAG
-import com.bakdata.gradle.ReleasePlugin.Companion.GITHUB_REPOSITORY
 import com.bakdata.gradle.ReleasePlugin.Companion.REQUIRE_BRANCH
-import com.bakdata.gradle.ReleasePlugin.Companion.SINCE_TAG
 import net.researchgate.release.ReleaseExtension
 import net.researchgate.release.ReleasePlugin
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatCode
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions.*
 import org.assertj.core.api.Condition
 import org.assertj.core.api.SoftAssertions
 import org.gradle.api.Project
@@ -41,8 +36,6 @@ import org.gradle.api.internal.project.DefaultProject
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.testfixtures.ProjectBuilder
-import org.hildan.github.changelog.plugin.GitHubChangelogExtension
-import org.hildan.github.changelog.plugin.GitHubChangelogPlugin
 import org.junit.jupiter.api.Test
 import java.util.function.Consumer
 
@@ -64,17 +57,10 @@ internal class ReleasePluginTest {
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(project.plugins)
                 .haveExactly(1, Condition({ it is ReleasePlugin }, "Has release plugin"))
-                .haveExactly(1, Condition({ it is GitHubChangelogPlugin }, "Has changelog plugin"))
             softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git)
                 .satisfies(Consumer { // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
                     softly.assertThat(it?.pushToRemote?.get()).isEqualTo("origin")
                     softly.assertThat(it?.requireBranch?.get()).isEqualTo("main")
-                })
-            softly.assertThat(project.extensions.findByType<GitHubChangelogExtension>())
-                .satisfies(Consumer { // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
-                    softly.assertThat(it?.githubRepository).isNull()
-                    softly.assertThat(it?.futureVersionTag).isNull()
-                    softly.assertThat(it?.sinceTag).isNull()
                 })
         }
     }
@@ -124,54 +110,6 @@ internal class ReleasePluginTest {
         SoftAssertions.assertSoftly { softly ->
             softly.assertThat(project.extensions.findByType<ReleaseExtension>()?.git?.requireBranch?.get())
                 .isEqualTo("my-branch")
-        }
-    }
-
-    @Test
-    fun testRepository() {
-        val project = ProjectBuilder.builder().build()
-
-        assertThatCode {
-            project.extra.set(GITHUB_REPOSITORY, "my-repo")
-            project.pluginManager.apply("com.bakdata.release")
-            project.evaluate()
-        }.doesNotThrowAnyException()
-
-        SoftAssertions.assertSoftly { softly ->
-            softly.assertThat(project.extensions.findByType<GitHubChangelogExtension>()?.githubRepository)
-                .isEqualTo("my-repo")
-        }
-    }
-
-    @Test
-    fun testFutureVersionTag() {
-        val project = ProjectBuilder.builder().build()
-
-        assertThatCode {
-            project.extra.set(FUTURE_VERSION_TAG, "my-tag")
-            project.pluginManager.apply("com.bakdata.release")
-            project.evaluate()
-        }.doesNotThrowAnyException()
-
-        SoftAssertions.assertSoftly { softly ->
-            softly.assertThat(project.extensions.findByType<GitHubChangelogExtension>()?.futureVersionTag)
-                .isEqualTo("my-tag")
-        }
-    }
-
-    @Test
-    fun testSinceTag() {
-        val project = ProjectBuilder.builder().build()
-
-        assertThatCode {
-            project.extra.set(SINCE_TAG, "my-tag")
-            project.pluginManager.apply("com.bakdata.release")
-            project.evaluate()
-        }.doesNotThrowAnyException()
-
-        SoftAssertions.assertSoftly { softly ->
-            softly.assertThat(project.extensions.findByType<GitHubChangelogExtension>()?.sinceTag)
-                .isEqualTo("my-tag")
         }
     }
 
