@@ -30,16 +30,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.hildan.github.changelog.plugin.GitHubChangelogExtension
 
 class ReleasePlugin : Plugin<Project> {
 
     companion object {
         const val DISABLE_PUSH_TO_REMOTE = "release.disablePushToRemote"
         const val REQUIRE_BRANCH = "release.requireBranch"
-        const val GITHUB_REPOSITORY = "changelog.githubRepository"
-        const val FUTURE_VERSION_TAG = "changelog.futureVersionTag"
-        const val SINCE_TAG = "changelog.sinceTag"
     }
 
     override fun apply(rootProject: Project) {
@@ -60,20 +56,6 @@ class ReleasePlugin : Plugin<Project> {
                     branch?.also {
                         requireBranch.set(it)
                     }
-                }
-            }
-
-            apply(plugin = "org.hildan.github.changelog")
-
-            configure<GitHubChangelogExtension> {
-                project.findProperty(GITHUB_REPOSITORY)?.toString()?.also {
-                    githubRepository = it
-                }
-                project.findProperty(FUTURE_VERSION_TAG)?.toString()?.also {
-                    futureVersionTag = it
-                }
-                project.findProperty(SINCE_TAG)?.toString()?.also {
-                    sinceTag = it
                 }
             }
         }
