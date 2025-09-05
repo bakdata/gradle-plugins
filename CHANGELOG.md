@@ -1,354 +1,434 @@
-# Change Log
+# Changelog
 
-## [1.11.0](https://github.com/bakdata/gradle-plugins/tree/1.11.0) (2025-08-29)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.11.0...1.11.0)
+All notable changes to this project will be documented in this file.
 
+## [1.11.1](https://github.com/bakdata/gradle-plugins/tree/1.11.1) - 2025-09-05
+### What's changed
 
-## [1.11.0](https://github.com/bakdata/gradle-plugins/tree/1.11.0) (2025-08-29)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.10.0...1.11.0)
+* Upgrade Sonar plugin by @philipp94831 in [#73](https://github.com/bakdata/gradle-plugins/pull/73)
 
-**Merged pull requests:**
 
-- Remove changelog plugin [\#72](https://github.com/bakdata/gradle-plugins/pull/72) ([@philipp94831](https://github.com/philipp94831))
-- Configure Central Portal for publication [\#70](https://github.com/bakdata/gradle-plugins/pull/70) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.11.0...1.11.1
 
-## [1.10.0](https://github.com/bakdata/gradle-plugins/tree/1.10.0) (2025-06-19)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.9.1...1.10.0)
+## [1.11.0](https://github.com/bakdata/gradle-plugins/tree/1.11.0) - 2025-08-29
+### What's changed
 
-**Merged pull requests:**
+* Configure Central Portal for publication by @philipp94831 in [#70](https://github.com/bakdata/gradle-plugins/pull/70)
 
-- Configure Central Portal for publication [\#68](https://github.com/bakdata/gradle-plugins/pull/68) ([@philipp94831](https://github.com/philipp94831))
+* Remove changelog plugin by @philipp94831 in [#72](https://github.com/bakdata/gradle-plugins/pull/72)
 
-## [1.9.1](https://github.com/bakdata/gradle-plugins/tree/1.9.1) (2025-03-21)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.9.0...1.9.1)
 
-**Closed issues:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.10.0...1.11.0
 
-- Upgrade to Gradle 7.6 and Kotlin 1.7 [\#26](https://github.com/bakdata/gradle-plugins/issues/26)
+## [1.10.0](https://github.com/bakdata/gradle-plugins/tree/1.10.0) - 2025-06-19
+### What's changed
 
-**Merged pull requests:**
+* Configure Central Portal for publication by @philipp94831 in [#68](https://github.com/bakdata/gradle-plugins/pull/68)
 
-- Use JvmArgumentProvider for Mockito agent configuration [\#63](https://github.com/bakdata/gradle-plugins/pull/63) ([@philipp94831](https://github.com/philipp94831))
-- Publish plugin marker to sonatype [\#61](https://github.com/bakdata/gradle-plugins/pull/61) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.9.0](https://github.com/bakdata/gradle-plugins/tree/1.9.0) (2025-03-11)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.8.1...1.9.0)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.9.1...1.10.0
 
-**Merged pull requests:**
+## [1.9.1](https://github.com/bakdata/gradle-plugins/tree/1.9.1) - 2025-03-21
+### What's changed
 
-- Automatically configure publication for platform plugin [\#65](https://github.com/bakdata/gradle-plugins/pull/65) ([@philipp94831](https://github.com/philipp94831))
-- Configure publication settings per project [\#64](https://github.com/bakdata/gradle-plugins/pull/64) ([@philipp94831](https://github.com/philipp94831))
+* Publish plugin marker to sonatype by @philipp94831 in [#61](https://github.com/bakdata/gradle-plugins/pull/61)
 
-## [1.8.1](https://github.com/bakdata/gradle-plugins/tree/1.8.1) (2025-03-03)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.8.0...1.8.1)
+* Use JvmArgumentProvider for Mockito agent configuration by @philipp94831 in [#63](https://github.com/bakdata/gradle-plugins/pull/63)
 
-**Merged pull requests:**
 
-- Fix plugin publication [\#62](https://github.com/bakdata/gradle-plugins/pull/62) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.9.0...1.9.1
 
-## [1.8.0](https://github.com/bakdata/gradle-plugins/tree/1.8.0) (2025-03-03)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.7.1...1.8.0)
+## [1.9.0](https://github.com/bakdata/gradle-plugins/tree/1.9.0) - 2025-03-11
+### What's changed
 
-**Merged pull requests:**
+* Configure publication settings per project by @philipp94831 in [#64](https://github.com/bakdata/gradle-plugins/pull/64)
 
-- Create Mockito plugin [\#60](https://github.com/bakdata/gradle-plugins/pull/60) ([@philipp94831](https://github.com/philipp94831))
+* Automatically configure publication for platform plugin by @philipp94831 in [#65](https://github.com/bakdata/gradle-plugins/pull/65)
 
-## [1.7.1](https://github.com/bakdata/gradle-plugins/tree/1.7.1) (2025-01-28)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.7.0...1.7.1)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.8.1...1.9.0
 
-- Fix sonatype plugin with java\-library [\#59](https://github.com/bakdata/gradle-plugins/pull/59) ([@philipp94831](https://github.com/philipp94831))
+## [1.8.1](https://github.com/bakdata/gradle-plugins/tree/1.8.1) - 2025-03-03
+### What's changed
 
-## [1.7.0](https://github.com/bakdata/gradle-plugins/tree/1.7.0) (2025-01-27)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.6.1...1.7.0)
+* Fix plugin publication by @philipp94831 in [#62](https://github.com/bakdata/gradle-plugins/pull/62)
 
-**Merged pull requests:**
 
-- Support multiple jib tags [\#58](https://github.com/bakdata/gradle-plugins/pull/58) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.8.0...1.8.1
 
-## [1.6.1](https://github.com/bakdata/gradle-plugins/tree/1.6.1) (2025-01-22)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.6.0...1.6.1)
+## [1.8.0](https://github.com/bakdata/gradle-plugins/tree/1.8.0) - 2025-03-03
+### What's changed
 
-**Merged pull requests:**
+* Create Mockito plugin by @philipp94831 in [#60](https://github.com/bakdata/gradle-plugins/pull/60)
 
-- Upgrade to Gradle 8.12 [\#53](https://github.com/bakdata/gradle-plugins/pull/53) ([@raminqaf](https://github.com/raminqaf))
 
-## [1.6.0](https://github.com/bakdata/gradle-plugins/tree/1.6.0) (2025-01-22)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.2...1.6.0)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.7.1...1.8.0
 
-**Merged pull requests:**
+## [1.7.1](https://github.com/bakdata/gradle-plugins/tree/1.7.1) - 2025-01-28
+### What's changed
 
-- Upgrade dependencies and plugins [\#55](https://github.com/bakdata/gradle-plugins/pull/55) ([@philipp94831](https://github.com/philipp94831))
+* Fix sonatype plugin with java-library by @philipp94831 in [#59](https://github.com/bakdata/gradle-plugins/pull/59)
 
-## [1.5.2](https://github.com/bakdata/gradle-plugins/tree/1.5.2) (2025-01-21)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.1...1.5.2)
 
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.7.0...1.7.1
 
-## [1.5.1](https://github.com/bakdata/gradle-plugins/tree/1.5.1) (2025-01-20)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.5.0...1.5.1)
+## [1.7.0](https://github.com/bakdata/gradle-plugins/tree/1.7.0) - 2025-01-27
+### What's changed
 
-**Merged pull requests:**
+* Support multiple jib tags by @philipp94831 in [#58](https://github.com/bakdata/gradle-plugins/pull/58)
 
-- Fix Jib plugin publication [\#57](https://github.com/bakdata/gradle-plugins/pull/57) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.5.0](https://github.com/bakdata/gradle-plugins/tree/1.5.0) (2025-01-20)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.2...1.5.0)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.6.1...1.7.0
 
-**Merged pull requests:**
+## [1.6.1](https://github.com/bakdata/gradle-plugins/tree/1.6.1) - 2025-01-22
+### What's changed
 
-- Create Jib plugin [\#56](https://github.com/bakdata/gradle-plugins/pull/56) ([@philipp94831](https://github.com/philipp94831))
+* Upgrade to Gradle 8.12 by @raminqaf in [#53](https://github.com/bakdata/gradle-plugins/pull/53)
 
-## [1.4.2](https://github.com/bakdata/gradle-plugins/tree/1.4.2) (2025-01-10)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.1...1.4.2)
 
-**Merged pull requests:**
+### New Contributors
+* @raminqaf made their first contribution in [#53](https://github.com/bakdata/gradle-plugins/pull/53)
 
-- Fix subproject setup for sonar plugin [\#54](https://github.com/bakdata/gradle-plugins/pull/54) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.6.0...1.6.1
 
-## [1.4.1](https://github.com/bakdata/gradle-plugins/tree/1.4.1) (2024-07-19)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.4.0...1.4.1)
+## [1.6.0](https://github.com/bakdata/gradle-plugins/tree/1.6.0) - 2025-01-22
+### What's changed
 
-**Merged pull requests:**
+* Upgrade dependencies and plugins by @philipp94831 in [#55](https://github.com/bakdata/gradle-plugins/pull/55)
 
-- Remove kassava dependency [\#52](https://github.com/bakdata/gradle-plugins/pull/52) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.4.0](https://github.com/bakdata/gradle-plugins/tree/1.4.0) (2024-03-12)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.3.2...1.4.0)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.5.2...1.6.0
 
-**Merged pull requests:**
+## [1.5.1](https://github.com/bakdata/gradle-plugins/tree/1.5.1) - 2025-01-20
+### What's changed
 
-- Upgrade to Gradle 8.4 [\#50](https://github.com/bakdata/gradle-plugins/pull/50) ([@philipp94831](https://github.com/philipp94831))
+* Fix Jib plugin publication by @philipp94831 in [#57](https://github.com/bakdata/gradle-plugins/pull/57)
 
-## [1.3.2](https://github.com/bakdata/gradle-plugins/tree/1.3.2) (2024-03-11)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.3.1...1.3.2)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.5.0...1.5.1
 
-- Fix sign dependencies with multiple publications [\#51](https://github.com/bakdata/gradle-plugins/pull/51) ([@philipp94831](https://github.com/philipp94831))
+## [1.5.0](https://github.com/bakdata/gradle-plugins/tree/1.5.0) - 2025-01-20
+### What's changed
 
-## [1.3.1](https://github.com/bakdata/gradle-plugins/tree/1.3.1) (2024-03-11)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.3.0...1.3.1)
+* Create Jib plugin by @philipp94831 in [#56](https://github.com/bakdata/gradle-plugins/pull/56)
 
-**Merged pull requests:**
 
-- Listen for Java and Dokka plugin setup [\#46](https://github.com/bakdata/gradle-plugins/pull/46) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.4.2...1.5.0
 
-## [1.3.0](https://github.com/bakdata/gradle-plugins/tree/1.3.0) (2024-03-04)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.2.2...1.3.0)
+## [1.4.2](https://github.com/bakdata/gradle-plugins/tree/1.4.2) - 2025-01-10
+### What's changed
 
-**Closed issues:**
+* Fix subproject setup for sonar plugin by @philipp94831 in [#54](https://github.com/bakdata/gradle-plugins/pull/54)
 
-- Create a release plugin [\#28](https://github.com/bakdata/gradle-plugins/issues/28)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.4.1...1.4.2
 
-- Configure changelog plugin [\#49](https://github.com/bakdata/gradle-plugins/pull/49) ([@philipp94831](https://github.com/philipp94831))
-- Create release plugin [\#48](https://github.com/bakdata/gradle-plugins/pull/48) ([@philipp94831](https://github.com/philipp94831))
-- Setup Gradle plugins for correct snapshot publication [\#47](https://github.com/bakdata/gradle-plugins/pull/47) ([@philipp94831](https://github.com/philipp94831))
+## [1.4.1](https://github.com/bakdata/gradle-plugins/tree/1.4.1) - 2024-07-19
+### What's changed
 
-## [1.2.2](https://github.com/bakdata/gradle-plugins/tree/1.2.2) (2024-02-28)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.2.1...1.2.2)
+* Remove kassava dependency by @philipp94831 in [#52](https://github.com/bakdata/gradle-plugins/pull/52)
 
-**Merged pull requests:**
 
-- Register javadoc and sources after evaluating project [\#45](https://github.com/bakdata/gradle-plugins/pull/45) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.4.0...1.4.1
 
-## [1.2.1](https://github.com/bakdata/gradle-plugins/tree/1.2.1) (2024-02-27)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.2.0...1.2.1)
+## [1.4.0](https://github.com/bakdata/gradle-plugins/tree/1.4.0) - 2024-03-12
+### What's changed
 
-**Merged pull requests:**
+* Upgrade to Gradle 8.4 by @philipp94831 in [#50](https://github.com/bakdata/gradle-plugins/pull/50)
 
-- Fix plugin release [\#44](https://github.com/bakdata/gradle-plugins/pull/44) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.2.0](https://github.com/bakdata/gradle-plugins/tree/1.2.0) (2024-02-27)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.18...1.2.0)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.3.2...1.4.0
 
-**Merged pull requests:**
+## [1.3.2](https://github.com/bakdata/gradle-plugins/tree/1.3.2) - 2024-03-11
+### What's changed
 
-- Upgrade to Gradle 7.2 [\#43](https://github.com/bakdata/gradle-plugins/pull/43) ([@philipp94831](https://github.com/philipp94831))
-- Use Gradle Nexus Publish Plugin [\#42](https://github.com/bakdata/gradle-plugins/pull/42) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade to Gradle 6.9 [\#40](https://github.com/bakdata/gradle-plugins/pull/40) ([@philipp94831](https://github.com/philipp94831))
+* Fix sign dependencies with multiple publications by @philipp94831 in [#51](https://github.com/bakdata/gradle-plugins/pull/51)
 
-## [1.1.18](https://github.com/bakdata/gradle-plugins/tree/1.1.18) (2024-02-23)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.17...1.1.18)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.3.1...1.3.2
 
-- Use new Sonatype host by default [\#41](https://github.com/bakdata/gradle-plugins/pull/41) ([@philipp94831](https://github.com/philipp94831))
+## [1.3.1](https://github.com/bakdata/gradle-plugins/tree/1.3.1) - 2024-03-11
+### What's changed
 
-## [1.1.17](https://github.com/bakdata/gradle-plugins/tree/1.1.17) (2024-02-22)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.16...1.1.17)
+* Listen for Java and Dokka plugin setup by @philipp94831 in [#46](https://github.com/bakdata/gradle-plugins/pull/46)
 
-**Merged pull requests:**
 
-- Replace deprecated JacocoMerge task [\#39](https://github.com/bakdata/gradle-plugins/pull/39) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.3.0...1.3.1
 
-## [1.1.16](https://github.com/bakdata/gradle-plugins/tree/1.1.16) (2024-02-21)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.15...1.1.16)
+## [1.3.0](https://github.com/bakdata/gradle-plugins/tree/1.3.0) - 2024-03-04
+### What's changed
 
-**Merged pull requests:**
+* Setup Gradle plugins for correct snapshot publication by @philipp94831 in [#47](https://github.com/bakdata/gradle-plugins/pull/47)
 
-- Upgrade SonarPlugin for Gradle 8 compatibility [\#38](https://github.com/bakdata/gradle-plugins/pull/38) ([@philipp94831](https://github.com/philipp94831))
+* Create release plugin by @philipp94831 in [#48](https://github.com/bakdata/gradle-plugins/pull/48)
 
-## [1.1.15](https://github.com/bakdata/gradle-plugins/tree/1.1.15) (2024-02-21)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.14...1.1.15)
+* Configure changelog plugin by @philipp94831 in [#49](https://github.com/bakdata/gradle-plugins/pull/49)
 
-**Merged pull requests:**
 
-- Upgrade Sonarqube plugin for Gradle 8 compatibility [\#37](https://github.com/bakdata/gradle-plugins/pull/37) ([@philipp94831](https://github.com/philipp94831))
-- Update plugins [\#36](https://github.com/bakdata/gradle-plugins/pull/36) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.2.2...1.3.0
 
-## [1.1.14](https://github.com/bakdata/gradle-plugins/tree/1.1.14) (2024-02-15)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.13...1.1.14)
+## [1.2.2](https://github.com/bakdata/gradle-plugins/tree/1.2.2) - 2024-02-28
+### What's changed
 
-**Merged pull requests:**
+* Register javadoc and sources after evaluating project by @philipp94831 in [#45](https://github.com/bakdata/gradle-plugins/pull/45)
 
-- Fix plugin publication [\#35](https://github.com/bakdata/gradle-plugins/pull/35) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.1.13](https://github.com/bakdata/gradle-plugins/tree/1.1.13) (2024-02-15)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.12...1.1.13)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.2.1...1.2.2
 
-**Merged pull requests:**
+## [1.2.1](https://github.com/bakdata/gradle-plugins/tree/1.2.1) - 2024-02-27
+### What's changed
 
-- Bump workflow version to fix Java Gradle plugin publish [\#34](https://github.com/bakdata/gradle-plugins/pull/34) ([@yannick-roeder](https://github.com/yannick-roeder))
+* Fix plugin release by @philipp94831 in [#44](https://github.com/bakdata/gradle-plugins/pull/44)
 
-## [1.1.12](https://github.com/bakdata/gradle-plugins/tree/1.1.12) (2024-02-14)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.11...1.1.12)
 
-**Closed issues:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.2.0...1.2.1
 
-- Migrate azure release pipeline [\#29](https://github.com/bakdata/gradle-plugins/issues/29)
+## [1.2.0](https://github.com/bakdata/gradle-plugins/tree/1.2.0) - 2024-02-27
+### What's changed
 
-**Merged pull requests:**
+* Upgrade to Gradle 6.9 by @philipp94831 in [#40](https://github.com/bakdata/gradle-plugins/pull/40)
 
-- Fix task order when releasing to Nexus [\#33](https://github.com/bakdata/gradle-plugins/pull/33) ([@philipp94831](https://github.com/philipp94831))
-- Migrate azure pipeline to GH\-action [\#30](https://github.com/bakdata/gradle-plugins/pull/30) ([@MichaelKora](https://github.com/MichaelKora))
+* Use Gradle Nexus Publish Plugin by @philipp94831 in [#42](https://github.com/bakdata/gradle-plugins/pull/42)
 
-## [1.1.11](https://github.com/bakdata/gradle-plugins/tree/1.1.11) (2024-01-29)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.10...1.1.11)
+* Upgrade to Gradle 7.2 by @philipp94831 in [#43](https://github.com/bakdata/gradle-plugins/pull/43)
 
-**Merged pull requests:**
 
-- Update Jacoco for Java 21 compatibility [\#32](https://github.com/bakdata/gradle-plugins/pull/32) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.18...1.2.0
 
-## [1.1.10](https://github.com/bakdata/gradle-plugins/tree/1.1.10) (2024-01-29)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.9...1.1.10)
+## [1.1.18](https://github.com/bakdata/gradle-plugins/tree/1.1.18) - 2024-02-23
+### What's changed
 
-**Merged pull requests:**
+* Use new Sonatype host by default by @philipp94831 in [#41](https://github.com/bakdata/gradle-plugins/pull/41)
 
-- Update SonarQube Plugin [\#25](https://github.com/bakdata/gradle-plugins/pull/25) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.1.9](https://github.com/bakdata/gradle-plugins/tree/1.1.9) (2024-01-10)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.8...1.1.9)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.17...1.1.18
 
+## [1.1.17](https://github.com/bakdata/gradle-plugins/tree/1.1.17) - 2024-02-22
+### What's changed
 
-## [1.1.8](https://github.com/bakdata/gradle-plugins/tree/1.1.8) (2024-01-10)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.7...1.1.8)
+* Replace deprecated JacocoMerge task by @philipp94831 in [#39](https://github.com/bakdata/gradle-plugins/pull/39)
 
-**Closed issues:**
 
-- docs? [\#22](https://github.com/bakdata/gradle-plugins/issues/22)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.16...1.1.17
 
-**Merged pull requests:**
+## [1.1.16](https://github.com/bakdata/gradle-plugins/tree/1.1.16) - 2024-02-21
+### What's changed
 
-- Configure staging profile ID for Nexus release [\#31](https://github.com/bakdata/gradle-plugins/pull/31) ([@philipp94831](https://github.com/philipp94831))
+* Upgrade SonarPlugin for Gradle 8 compatibility by @philipp94831 in [#38](https://github.com/bakdata/gradle-plugins/pull/38)
 
-## [1.1.7](https://github.com/bakdata/gradle-plugins/tree/1.1.7) (2021-09-02)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.6...1.1.7)
 
-**Closed issues:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.15...1.1.16
 
-- Update plugins [\#23](https://github.com/bakdata/gradle-plugins/issues/23)
+## [1.1.15](https://github.com/bakdata/gradle-plugins/tree/1.1.15) - 2024-02-21
+### What's changed
 
-**Merged pull requests:**
+* Update plugins by @philipp94831 in [#36](https://github.com/bakdata/gradle-plugins/pull/36)
 
-- Update plugins for Gradle 7 compatibility [\#24](https://github.com/bakdata/gradle-plugins/pull/24) ([@philipp94831](https://github.com/philipp94831))
+* Upgrade Sonarqube plugin for Gradle 8 compatibility by @philipp94831 in [#37](https://github.com/bakdata/gradle-plugins/pull/37)
 
-## [1.1.6](https://github.com/bakdata/gradle-plugins/tree/1.1.6) (2021-02-08)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.5...1.1.6)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.14...1.1.15
 
-- Use new variable group name [\#21](https://github.com/bakdata/gradle-plugins/pull/21) ([@philipp94831](https://github.com/philipp94831))
+## [1.1.14](https://github.com/bakdata/gradle-plugins/tree/1.1.14) - 2024-02-15
+### What's changed
 
-## [1.1.5](https://github.com/bakdata/gradle-plugins/tree/1.1.5) (2021-02-04)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.4...1.1.5)
+* Fix plugin publication by @philipp94831 in [#35](https://github.com/bakdata/gradle-plugins/pull/35)
 
-**Closed issues:**
 
-- Allow configuration of timeout when publishing to nexus [\#19](https://github.com/bakdata/gradle-plugins/issues/19)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.13...1.1.14
 
-**Merged pull requests:**
+## [1.1.13](https://github.com/bakdata/gradle-plugins/tree/1.1.13) - 2024-02-15
+### What's changed
 
-- Allow configurable timeouts and simplify local maven publishing [\#20](https://github.com/bakdata/gradle-plugins/pull/20) ([@torbsto](https://github.com/torbsto))
+* Bump workflow version to fix Java Gradle plugin publish by @yannick-roeder in [#34](https://github.com/bakdata/gradle-plugins/pull/34)
 
-## [1.1.4](https://github.com/bakdata/gradle-plugins/tree/1.1.4) (2019-02-28)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.2...1.1.4)
 
-**Merged pull requests:**
+### New Contributors
+* @yannick-roeder made their first contribution in [#34](https://github.com/bakdata/gradle-plugins/pull/34)
 
-- Fixed empty plugins \(no compilation of Kotlin code\) [\#18](https://github.com/bakdata/gradle-plugins/pull/18) ([@AHeise](https://github.com/AHeise))
-- Bumped nexus\-publish\-plugin to 0.2.0 to solve parallel release issue \#16 [\#17](https://github.com/bakdata/gradle-plugins/pull/17) ([@AHeise](https://github.com/AHeise))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.12...1.1.13
 
-**Fixed bugs:**
+## [1.1.12](https://github.com/bakdata/gradle-plugins/tree/1.1.12) - 2024-02-14
+### What's changed
 
-- Cannot upload release to sonatype in parallel [\#16](https://github.com/bakdata/gradle-plugins/issues/16)
+* Migrate azure pipeline to GH-action by @MichaelKora in [#30](https://github.com/bakdata/gradle-plugins/pull/30)
 
-## [1.1.2](https://github.com/bakdata/gradle-plugins/tree/1.1.2) (2019-02-21)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.1...1.1.2)
+* Fix task order when releasing to Nexus by @philipp94831 in [#33](https://github.com/bakdata/gradle-plugins/pull/33)
 
-**Merged pull requests:**
 
-- Bugfix incorrect repo name in multi module [\#12](https://github.com/bakdata/gradle-plugins/pull/12) ([@AHeise](https://github.com/AHeise))
-- Correctly applying jacoco plugin to all java projects [\#14](https://github.com/bakdata/gradle-plugins/pull/14) ([@AHeise](https://github.com/AHeise))
+### New Contributors
+* @MichaelKora made their first contribution in [#30](https://github.com/bakdata/gradle-plugins/pull/30)
 
-**Fixed bugs:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.11...1.1.12
 
-- Coverage always at 0% [\#13](https://github.com/bakdata/gradle-plugins/issues/13)
+## [1.1.11](https://github.com/bakdata/gradle-plugins/tree/1.1.11) - 2024-01-29
+### What's changed
 
-## [1.1.1](https://github.com/bakdata/gradle-plugins/tree/1.1.1) (2019-02-21)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.1.0...1.1.1)
+* Update Jacoco for Java 21 compatibility by @philipp94831 in [#32](https://github.com/bakdata/gradle-plugins/pull/32)
 
-**Merged pull requests:**
 
-- Fixing the release changelog post\-deploy script [\#11](https://github.com/bakdata/gradle-plugins/pull/11) ([@AHeise](https://github.com/AHeise))
-- Sonar plugin uses the same java project detection as in sonatype [\#10](https://github.com/bakdata/gradle-plugins/pull/10) ([@AHeise](https://github.com/AHeise))
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.10...1.1.11
 
-## [1.1.0](https://github.com/bakdata/gradle-plugins/tree/1.1.0) (2019-02-20)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.0.2...1.1.0)
+## [1.1.10](https://github.com/bakdata/gradle-plugins/tree/1.1.10) - 2024-01-29
+### What's changed
 
-**Implemented enhancements:**
+* Update SonarQube Plugin by @philipp94831 in [#25](https://github.com/bakdata/gradle-plugins/pull/25)
 
-- More intelligent publishing detection [\#7](https://github.com/bakdata/gradle-plugins/issues/7)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.9...1.1.10
 
-- Fixed settings for changelog creation [\#9](https://github.com/bakdata/gradle-plugins/pull/9) ([@AHeise](https://github.com/AHeise))
-- To detect projects with publications, look for non\-empty source sets [\#8](https://github.com/bakdata/gradle-plugins/pull/8) ([@AHeise](https://github.com/AHeise))
-- Improved error handling in .travis.yml [\#6](https://github.com/bakdata/gradle-plugins/pull/6) ([@AHeise](https://github.com/AHeise))
+## [1.1.8](https://github.com/bakdata/gradle-plugins/tree/1.1.8) - 2024-01-10
+### What's changed
 
-## [1.0.2](https://github.com/bakdata/gradle-plugins/tree/1.0.2) (2019-02-20)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.0.1...1.0.2)
+* Configure staging profile ID for Nexus release by @philipp94831 in [#31](https://github.com/bakdata/gradle-plugins/pull/31)
 
-**Implemented enhancements:**
 
-- Add changelog generation [\#3](https://github.com/bakdata/gradle-plugins/issues/3)
-- Add github release [\#2](https://github.com/bakdata/gradle-plugins/issues/2)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.7...1.1.8
 
-**Merged pull requests:**
+## [1.1.7](https://github.com/bakdata/gradle-plugins/tree/1.1.7) - 2021-09-02
+### What's changed
 
-- Adding github release and changelog generation [\#5](https://github.com/bakdata/gradle-plugins/pull/5) ([@AHeise](https://github.com/AHeise))
-- Deferred evaluation of SonatypeSettings\#disallowLocalRelease after ta… [\#4](https://github.com/bakdata/gradle-plugins/pull/4) ([@AHeise](https://github.com/AHeise))
+* Update plugins for Gradle 7 compatibility by @philipp94831 in [#24](https://github.com/bakdata/gradle-plugins/pull/24)
 
-**Fixed bugs:**
 
-- DisallowLocalRelease not working [\#1](https://github.com/bakdata/gradle-plugins/issues/1)
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.6...1.1.7
 
-## [1.0.1](https://github.com/bakdata/gradle-plugins/tree/1.0.1) (2019-02-05)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/1.0.0...1.0.1)
+## [1.1.6](https://github.com/bakdata/gradle-plugins/tree/1.1.6) - 2021-02-08
+### What's changed
 
+* Use new variable group name by @philipp94831 in [#21](https://github.com/bakdata/gradle-plugins/pull/21)
 
-## [1.0.0](https://github.com/bakdata/gradle-plugins/tree/1.0.0) (2019-02-01)
-[View commits](https://github.com/bakdata/gradle-plugins/compare/ee9ed86979b3e1a31b84fc3e21094ff6ef0e6023...1.0.0)
 
+### New Contributors
+* @philipp94831 made their first contribution in [#21](https://github.com/bakdata/gradle-plugins/pull/21)
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.5...1.1.6
+
+## [1.1.5](https://github.com/bakdata/gradle-plugins/tree/1.1.5) - 2021-02-04
+### What's changed
+
+* Switched to azure
+
+* Changed build badge to azure
+
+* Adjusted azure config for plugin publishing
+
+* Alternative way for multi-module coverage
+
+* Allow configurable timeouts and simplify local maven publishing by @torbsto in [#20](https://github.com/bakdata/gradle-plugins/pull/20)
+
+
+### New Contributors
+* @torbsto made their first contribution in [#20](https://github.com/bakdata/gradle-plugins/pull/20)
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.4...1.1.5
+
+## [1.1.4](https://github.com/bakdata/gradle-plugins/tree/1.1.4) - 2019-02-28
+### What's changed
+
+* Bumped nexus-publish-plugin to 0.2.0 to solve parallel release issue #16 in [#17](https://github.com/bakdata/gradle-plugins/pull/17)
+
+* Fixed empty plugins (no compilation of Kotlin code) in [#18](https://github.com/bakdata/gradle-plugins/pull/18)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.2...1.1.4
+
+## [1.1.2](https://github.com/bakdata/gradle-plugins/tree/1.1.2) - 2019-02-21
+### What's changed
+
+* Correctly applying jacoco plugin to all java projects in [#14](https://github.com/bakdata/gradle-plugins/pull/14)
+
+* Bugfix incorrect repo name in multi module in [#12](https://github.com/bakdata/gradle-plugins/pull/12)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.1...1.1.2
+
+## [1.1.1](https://github.com/bakdata/gradle-plugins/tree/1.1.1) - 2019-02-21
+### What's changed
+
+* Sonar plugin uses the same java project detection as in sonatype in [#10](https://github.com/bakdata/gradle-plugins/pull/10)
+
+* Fixing the release changelog post-deploy script in [#11](https://github.com/bakdata/gradle-plugins/pull/11)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.1.0...1.1.1
+
+## [1.1.0](https://github.com/bakdata/gradle-plugins/tree/1.1.0) - 2019-02-20
+### What's changed
+
+* Improved error handling in .travis.yml in [#6](https://github.com/bakdata/gradle-plugins/pull/6)
+
+* To detect projects with publications, look for non-empty source sets in [#8](https://github.com/bakdata/gradle-plugins/pull/8)
+
+* Fixed settings for changelog creation in [#9](https://github.com/bakdata/gradle-plugins/pull/9)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.0.2...1.1.0
+
+## [1.0.2](https://github.com/bakdata/gradle-plugins/tree/1.0.2) - 2019-02-20
+### What's changed
+
+* Fixed publishing to gradle plugin portal upon release
+
+* Switching to 1.0.1 plugin portal version of sonatype plugin
+
+* Switching to 1.0.1 plugin portal version of sonatype plugin
+
+* Deferred evaluation of SonatypeSettings#disallowLocalRelease after ta… in [#4](https://github.com/bakdata/gradle-plugins/pull/4)
+
+* Adding github release and changelog generation in [#5](https://github.com/bakdata/gradle-plugins/pull/5)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.0.1...1.0.2
+
+## [1.0.1](https://github.com/bakdata/gradle-plugins/tree/1.0.1) - 2019-02-05
+### What's changed
+
+* Make properties optional when no tasks needs them
+
+* Reworked publishing to work better in conjunction with java plugin plugin
+
+* Fixing pom creation
+
+* Fixed sonatype.disallowLocalRelease
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.0.0...1.0.1
+
+## [1.0.0](https://github.com/bakdata/gradle-plugins/tree/1.0.0) - 2019-02-01
+### What's changed
+
+* Initial commit
+
+* Adding integration tests
+
+* Added secrets
+
+* Added secrets for publishing to gradle portal (only release versions
+
+* Improved test failure output
+
+* Fixed sonar tests on travis with sonarqube plugin
+
+* Fixed deployment of snapshots
+
+* Switched to env based private keys
+
+* Fixing coverage report
+
+* Reduced tasks from Sonatype plugin + refactoring
+
+* Simplified coverage calculation with sonarqube's jacoco-xml-report import
+
+* Applying plugins to this project itself
+
+* Added publishing to plugin portal
+
+* Fixed readme banner
+
+
+### New Contributors
+* @bakdata-bot made their first contribution
+* @ made their first contribution
+
+<!-- generated by git-cliff -->
