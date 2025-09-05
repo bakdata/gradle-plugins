@@ -2,10 +2,10 @@ import java.util.*
 
 plugins {
     // eat your own dog food - apply the plugins to this plugin project
-    id("com.bakdata.release") version "1.7.1"
-    id("com.bakdata.sonar") version "1.7.1"
-    id("com.bakdata.sonatype") version "1.10.0"
-    id("org.gradle.kotlin.kotlin-dsl") version "5.1.2" apply false
+    id("com.bakdata.release") version "1.11.0"
+    id("com.bakdata.sonar") version "1.11.0"
+    id("com.bakdata.sonatype") version "1.11.0"
+    id("org.gradle.kotlin.kotlin-dsl") version "5.2.0" apply false
     id("com.gradle.plugin-publish") version "1.3.0" apply false
 }
 
@@ -86,10 +86,9 @@ subprojects {
     }
 
     dependencies {
-        val junitVersion: String by project
-        "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-        "testImplementation"("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-        "testImplementation"("org.assertj", "assertj-core", "3.27.2")
+        "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
+        "testImplementation"("org.junit.jupiter:junit-jupiter:5.13.4")
+        "testImplementation"("org.assertj", "assertj-core", "3.27.4")
     }
 }
 

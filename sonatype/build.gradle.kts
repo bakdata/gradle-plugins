@@ -9,8 +9,6 @@ description = "Sets up nexusPublish and closeAndReleaseRepository tasks to push 
 dependencies {
     implementation("io.github.gradle-nexus", "publish-plugin", "2.0.0")
 
-    val junitVersion: String by project
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion)
     testImplementation("org.wiremock:wiremock:3.10.0")
     testImplementation("ru.lanwen.wiremock:wiremock-junit5:1.3.1")
 }
