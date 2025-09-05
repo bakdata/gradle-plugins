@@ -5,7 +5,7 @@ plugins {
     id("com.bakdata.release") version "1.11.0"
     id("com.bakdata.sonar") version "1.11.0"
     id("com.bakdata.sonatype") version "1.11.0"
-    id("org.gradle.kotlin.kotlin-dsl") version "5.1.2" apply false
+    id("org.gradle.kotlin.kotlin-dsl") version "5.2.0" apply false
     id("com.gradle.plugin-publish") version "1.3.0" apply false
 }
 
