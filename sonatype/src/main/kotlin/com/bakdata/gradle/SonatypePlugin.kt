@@ -222,8 +222,8 @@ class SonatypePlugin : Plugin<Project> {
 
     private fun addPublishTasks(project: Project) {
         with(project) {
-//            apply(plugin = "signing")
-//            apply(plugin = "org.gradle.maven-publish")
+            apply(plugin = "signing")
+            apply(plugin = "org.gradle.maven-publish")
 
 //            project.plugins.matching { it is JavaPlugin }.all {
 //                configure<JavaPluginExtension> {
