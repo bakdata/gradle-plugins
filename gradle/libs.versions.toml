@@ -1,0 +1,22 @@
+[versions]
+junit = "6.0.2"
+
+[libraries]
+jib = { group = "com.google.cloud.tools.jib", name = "com.google.cloud.tools.jib.gradle.plugin", version = "3.5.2" }
+release = { group = "net.researchgate", name = "gradle-release", version = "3.1.0" }
+sonarqube = { group = "org.sonarsource.scanner.gradle", name = "sonarqube-gradle-plugin", version = "7.2.2.6593" }
+nexus-publish = { group = "io.github.gradle-nexus", name = "publish-plugin", version = "2.0.0" }
+
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
+assertj = { group = "org.assertj", name = "assertj-core", version = "3.27.7" }
+wiremock = { group = "org.wiremock", name = "wiremock", version = "3.13.2" }
+wiremock-junit = { group = "ru.lanwen.wiremock", name = "wiremock-junit5", version = "1.3.1" }
+
+[plugins]
+release = { id = "com.bakdata.release", version = "2.0.0" }
+sonar = { id = "com.bakdata.sonar", version = "2.0.0" }
+sonatype = { id = "com.bakdata.sonatype", version = "2.0.0" }
+dokka = { id = "org.jetbrains.dokka", version = "2.0.0" }
+kotlin = { id = "org.gradle.kotlin.kotlin-dsl", version = "6.4.2" }
+plugin-publish = { id = "com.gradle.plugin-publish", version = "2.0.0" }

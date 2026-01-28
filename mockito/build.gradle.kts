@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.dokka") version "2.0.0"
+    alias(libs.plugins.dokka)
 }
 apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
