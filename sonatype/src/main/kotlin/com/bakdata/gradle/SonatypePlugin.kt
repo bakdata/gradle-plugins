@@ -231,12 +231,12 @@ class SonatypePlugin : Plugin<Project> {
                     withJavadocJar()
                 }
 
-                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
-                    val javadocTask: Task = this
-                    tasks.named<Jar>("javadocJar") {
-                        from(javadocTask)
-                    }
-                }
+//                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
+//                    val javadocTask: Task = this
+//                    tasks.named<Jar>("javadocJar") {
+//                        from(javadocTask)
+//                    }
+//                }
 
                 createPublication("java")
             }
@@ -251,7 +251,7 @@ class SonatypePlugin : Plugin<Project> {
 
             tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
 
-//            tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
+            tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
         }
     }
 
