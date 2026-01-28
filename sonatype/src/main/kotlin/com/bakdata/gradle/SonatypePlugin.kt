@@ -225,29 +225,29 @@ class SonatypePlugin : Plugin<Project> {
             apply(plugin = "signing")
             apply(plugin = "org.gradle.maven-publish")
 
-//            project.plugins.matching { it is JavaPlugin }.all {
-//                configure<JavaPluginExtension> {
-//                    withSourcesJar()
-////                    withJavadocJar()
-//                }
-//
-////                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
-////                    val javadocTask: Task = this
-////                    tasks.named<Jar>("javadocJar") {
-////                        from(javadocTask)
-////                    }
-////                }
-//
-//                createPublication("java")
-//            }
+            project.plugins.matching { it is JavaPlugin }.all {
+                configure<JavaPluginExtension> {
+                    withSourcesJar()
+                    withJavadocJar()
+                }
+
+                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
+                    val javadocTask: Task = this
+                    tasks.named<Jar>("javadocJar") {
+                        from(javadocTask)
+                    }
+                }
+
+                createPublication("java")
+            }
 
             project.plugins.matching { it is JavaPlatformPlugin }.all {
                 createPublication("javaPlatform")
             }
 
-//            configure<SigningExtension> {
-//                sign(the<PublishingExtension>().publications)
-//            }
+            configure<SigningExtension> {
+                sign(the<PublishingExtension>().publications)
+            }
 
             tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
 
