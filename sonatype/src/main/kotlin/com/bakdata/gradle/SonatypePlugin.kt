@@ -222,8 +222,8 @@ class SonatypePlugin : Plugin<Project> {
 
     private fun addPublishTasks(project: Project) {
         with(project) {
-            apply(plugin = "signing")
-            apply(plugin = "org.gradle.maven-publish")
+//            apply(plugin = "signing")
+//            apply(plugin = "org.gradle.maven-publish")
 
 //            project.plugins.matching { it is JavaPlugin }.all {
 //                configure<JavaPluginExtension> {
@@ -241,17 +241,17 @@ class SonatypePlugin : Plugin<Project> {
 //                createPublication("java")
 //            }
 
-            project.plugins.matching { it is JavaPlatformPlugin }.all {
-                createPublication("javaPlatform")
-            }
-
-            configure<SigningExtension> {
-                sign(the<PublishingExtension>().publications)
-            }
-
-            tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
-
-            tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
+//            project.plugins.matching { it is JavaPlatformPlugin }.all {
+//                createPublication("javaPlatform")
+//            }
+//
+//            configure<SigningExtension> {
+//                sign(the<PublishingExtension>().publications)
+//            }
+//
+//            tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
+//
+//            tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
         }
     }
 
