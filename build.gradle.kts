@@ -58,7 +58,7 @@ subprojects {
 
     apply(plugin = "java-gradle-plugin")
 
-    // config for gradle plugin portal doesn't support snapshot, so we add config only if release version
+    // config for Gradle plugin portal doesn't support snapshot, so we add config only if release version
     if (!version.toString().endsWith("-SNAPSHOT")) {
         apply(plugin = "com.gradle.plugin-publish")
     }
@@ -89,8 +89,8 @@ subprojects {
 
     dependencies {
         "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
-        "testImplementation"("org.junit.jupiter:junit-jupiter:5.13.4")
-        "testImplementation"("org.assertj:assertj-core:3.27.4")
+        "testImplementation"("org.junit.jupiter:junit-jupiter:6.0.2")
+        "testImplementation"("org.assertj:assertj-core:3.27.7")
     }
 }
 

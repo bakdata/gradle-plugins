@@ -57,7 +57,7 @@ internal class MockitoPluginIT {
             dependencies {
                 testRuntimeOnly("org.junit.platform:junit-platform-launcher")
                 testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
-                testImplementation("org.mockito:mockito-core:5.15.2")
+                testImplementation("org.mockito:mockito-core:5.21.0")
             }
             tasks.withType<Test> {
                 useJUnitPlatform()
