@@ -245,9 +245,9 @@ class SonatypePlugin : Plugin<Project> {
                 createPublication("javaPlatform")
             }
 
-            configure<SigningExtension> {
-                sign(the<PublishingExtension>().publications)
-            }
+//            configure<SigningExtension> {
+//                sign(the<PublishingExtension>().publications)
+//            }
 
             tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
 
