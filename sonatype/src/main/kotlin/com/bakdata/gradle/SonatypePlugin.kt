@@ -253,7 +253,9 @@ class SonatypePlugin : Plugin<Project> {
 
             tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
 
-//            tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
+            afterEvaluate {
+                tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
+            }
         }
     }
 
