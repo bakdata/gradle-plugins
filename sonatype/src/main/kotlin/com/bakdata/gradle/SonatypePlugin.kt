@@ -241,10 +241,10 @@ class SonatypePlugin : Plugin<Project> {
 //                createPublication("java")
 //            }
 
-//            project.plugins.matching { it is JavaPlatformPlugin }.all {
-//                createPublication("javaPlatform")
-//            }
-//
+            project.plugins.matching { it is JavaPlatformPlugin }.all {
+                createPublication("javaPlatform")
+            }
+
 //            configure<SigningExtension> {
 //                sign(the<PublishingExtension>().publications)
 //            }
