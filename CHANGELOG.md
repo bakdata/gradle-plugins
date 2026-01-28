@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/bakdata/gradle-plugins/tree/2.0.0) - 2026-01-28
+### What's changed
+
+* Upgrade to Gradle 9 by @philipp94831 in [#74](https://github.com/bakdata/gradle-plugins/pull/74)
+
+* Align Kotlin version with Gradle by @philipp94831 in [#76](https://github.com/bakdata/gradle-plugins/pull/76)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/1.11.1...2.0.0
+
 ## [1.11.1](https://github.com/bakdata/gradle-plugins/tree/1.11.1) - 2025-09-05
 ### What's changed
 
