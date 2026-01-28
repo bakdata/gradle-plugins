@@ -232,7 +232,7 @@ class SonatypePlugin : Plugin<Project> {
                 }
 
                 afterEvaluate {
-                    project.tasks.matching { it.name == "dokkaJavadoc" || it.name == "dokkaGenerateJavadoc" }.all {
+                    project.tasks.matching { it.name == "dokkaGenerateJavadoc" }.all {
                         val javadocTask: Task = this
                         tasks.named<Jar>("javadocJar") {
                             from(javadocTask)
