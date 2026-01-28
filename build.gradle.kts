@@ -2,9 +2,9 @@ import java.util.*
 
 plugins {
     // eat your own dog food - apply the plugins to this plugin project
-    id("com.bakdata.release") version "1.11.1"
-    id("com.bakdata.sonar") version "1.11.1"
-    id("com.bakdata.sonatype") version "1.11.1"
+    id("com.bakdata.release") version "2.0.0"
+    id("com.bakdata.sonar") version "2.0.0"
+    id("com.bakdata.sonatype") version "2.0.0"
     id("org.gradle.kotlin.kotlin-dsl") version "6.4.2" apply false
     id("com.gradle.plugin-publish") version "2.0.0" apply false
 }
@@ -56,7 +56,7 @@ subprojects {
 
     apply(plugin = "java-gradle-plugin")
 
-    // config for gradle plugin portal doesn't support snapshot, so we add config only if release version
+    // config for Gradle plugin portal doesn't support snapshot, so we add config only if release version
     if (!version.toString().endsWith("-SNAPSHOT")) {
         apply(plugin = "com.gradle.plugin-publish")
     }
@@ -87,8 +87,8 @@ subprojects {
 
     dependencies {
         "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
-        "testImplementation"("org.junit.jupiter:junit-jupiter:5.13.4")
-        "testImplementation"("org.assertj", "assertj-core", "3.27.4")
+        "testImplementation"("org.junit.jupiter:junit-jupiter:6.0.2")
+        "testImplementation"("org.assertj:assertj-core:3.27.7")
     }
 }
 
