@@ -49,8 +49,8 @@ internal class SonarPluginIT {
                 mavenCentral()
             }
             dependencies {
-                testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.0")
-                testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.0")
+                testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+                testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
             }
             tasks.withType<Test> {
                 useJUnitPlatform()
@@ -87,8 +87,8 @@ internal class SonarPluginIT {
                     mavenCentral()
                 }
                 dependencies {
-                    "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
-                    "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
+                testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+                testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
                 }
                 tasks.withType<Test> {
                     useJUnitPlatform()
@@ -142,8 +142,8 @@ internal class SonarPluginIT {
                     mavenCentral()
                 }
                 dependencies {
-                    "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
-                    "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
+                testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+                testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
                 }
                 tasks.withType<Test> {
                     useJUnitPlatform()
