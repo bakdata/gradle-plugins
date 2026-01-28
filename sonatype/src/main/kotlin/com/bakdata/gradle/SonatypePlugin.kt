@@ -228,15 +228,15 @@ class SonatypePlugin : Plugin<Project> {
             project.plugins.matching { it is JavaPlugin }.all {
                 configure<JavaPluginExtension> {
                     withSourcesJar()
-                    withJavadocJar()
+//                    withJavadocJar()
                 }
 
-                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
-                    val javadocTask: Task = this
-                    tasks.named<Jar>("javadocJar") {
-                        from(javadocTask)
-                    }
-                }
+//                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
+//                    val javadocTask: Task = this
+//                    tasks.named<Jar>("javadocJar") {
+//                        from(javadocTask)
+//                    }
+//                }
 
                 createPublication("java")
             }
