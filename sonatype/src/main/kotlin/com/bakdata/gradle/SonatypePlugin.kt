@@ -231,7 +231,7 @@ class SonatypePlugin : Plugin<Project> {
                     withJavadocJar()
                 }
 
-                project.tasks.matching { it.name == "dokkaJavadoc" || it.name == "dokkaGenerateJavadoc" }.all {
+                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
                     val javadocTask: Task = this
                     tasks.named<Jar>("javadocJar") {
                         from(javadocTask)

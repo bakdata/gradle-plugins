@@ -4,7 +4,7 @@ plugins {
     // eat your own dog food - apply the plugins to this plugin project
     alias(libs.plugins.release)
     alias(libs.plugins.sonar)
-    alias(libs.plugins.sonatype)
+//    alias(libs.plugins.sonatype)
     alias(libs.plugins.kotlin) apply false
     alias(libs.plugins.plugin.publish) apply false
 }
@@ -30,29 +30,29 @@ subprojects {
         }
     }
 
-    publication {
-        developers {
-            developer {
-                name.set("Arvid Heise")
-                id.set("AHeise")
-            }
-            developer {
-                name.set("Philipp Schirmer")
-                id.set("philipp94831")
-            }
-            developer {
-                name.set("Torben Meyer")
-                id.set("torbsto")
-            }
-            developer {
-                name.set("Ramin Gharib")
-                id.set("raminqaf")
-            }
-        }
-
-        //will be created by Gradle Plugin Development Plugin
-        createPublication = false
-    }
+//    publication {
+//        developers {
+//            developer {
+//                name.set("Arvid Heise")
+//                id.set("AHeise")
+//            }
+//            developer {
+//                name.set("Philipp Schirmer")
+//                id.set("philipp94831")
+//            }
+//            developer {
+//                name.set("Torben Meyer")
+//                id.set("torbsto")
+//            }
+//            developer {
+//                name.set("Ramin Gharib")
+//                id.set("raminqaf")
+//            }
+//        }
+//
+//        //will be created by Gradle Plugin Development Plugin
+//        createPublication = false
+//    }
 
     apply(plugin = "java-gradle-plugin")
 
