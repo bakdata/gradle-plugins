@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1](https://github.com/bakdata/gradle-plugins/tree/2.0.1) - 2026-01-28
+### What's changed
+
+* Upgrade dependencies by @philipp94831 in [#77](https://github.com/bakdata/gradle-plugins/pull/77)
+
+* Migrate to version catalog and configure Dependabot by @philipp94831 in [#78](https://github.com/bakdata/gradle-plugins/pull/78)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/2.0.0...2.0.1
+
 ## [2.0.0](https://github.com/bakdata/gradle-plugins/tree/2.0.0) - 2026-01-28
 ### What's changed
 
