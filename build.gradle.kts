@@ -7,6 +7,7 @@ plugins {
     id("com.bakdata.sonatype") version "1.11.1"
     id("org.gradle.kotlin.kotlin-dsl") version "6.4.2" apply false
     id("com.gradle.plugin-publish") version "2.0.0" apply false
+    id("org.jetbrains.dokka") version "2.1.0" apply false
 }
 
 allprojects {
@@ -23,6 +24,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "org.jetbrains.dokka")
 
     configure<JavaPluginExtension> {
         toolchain {
@@ -88,7 +90,7 @@ subprojects {
     dependencies {
         "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
         "testImplementation"("org.junit.jupiter:junit-jupiter:5.13.4")
-        "testImplementation"("org.assertj", "assertj-core", "3.27.4")
+        "testImplementation"("org.assertj:assertj-core:3.27.4")
     }
 }
 
