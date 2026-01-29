@@ -65,7 +65,7 @@ class SonarPlugin : Plugin<Project> {
 
                     project.configure<JacocoPluginExtension> {
                         // smaller versions won't work with kotlin properly
-                        toolVersion = "0.8.12"
+                        toolVersion = "0.8.14"
                     }
 
                     tasks.withType<JacocoReport> {
