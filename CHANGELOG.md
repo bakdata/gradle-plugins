@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2](https://github.com/bakdata/gradle-plugins/tree/2.0.2) - 2026-01-29
+### What's changed
+
+* Bump bakdata/ci-templates/.github/workflows/java-gradle-plugin.yaml from 1.70.0 to 1.70.2 by @dependabot[bot] in [#79](https://github.com/bakdata/gradle-plugins/pull/79)
+
+* Bump bakdata/ci-templates/.github/workflows/java-gradle-release.yaml from 1.70.0 to 1.70.2 by @dependabot[bot] in [#80](https://github.com/bakdata/gradle-plugins/pull/80)
+
+* Support Java 25 in Jacoco by @philipp94831 in [#84](https://github.com/bakdata/gradle-plugins/pull/84)
+
+
+### New Contributors
+* @dependabot[bot] made their first contribution in [#80](https://github.com/bakdata/gradle-plugins/pull/80)
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/2.0.1...2.0.2
+
 ## [2.0.1](https://github.com/bakdata/gradle-plugins/tree/2.0.1) - 2026-01-28
 ### What's changed
 
