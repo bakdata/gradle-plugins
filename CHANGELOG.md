@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/bakdata/gradle-plugins/tree/2.1.0) - 2026-01-30
+### What's changed
+
+* Update Dependabot config by @philipp94831 in [#85](https://github.com/bakdata/gradle-plugins/pull/85)
+
+* Configure repository URL automatically by @philipp94831 in [#86](https://github.com/bakdata/gradle-plugins/pull/86)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/2.0.2...2.1.0
+
 ## [2.0.2](https://github.com/bakdata/gradle-plugins/tree/2.0.2) - 2026-01-29
 ### What's changed
 
