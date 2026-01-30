@@ -29,10 +29,8 @@ import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPomDeveloperSpec
 
 open class PublicationSettings(var project: Project) {
-    var repoName: String? = null
-        get() = field ?: project.rootProject.name
     var repoUrl: String? = null
-        get() = field ?: "https://github.com/bakdata/${repoName}"
+        get() = field ?: project.findProperty("repository.url")?.toString()
     var description: String? = null
         get() = field ?: project.description
     var developers: Action<in MavenPomDeveloperSpec>? = null
