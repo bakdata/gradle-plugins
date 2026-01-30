@@ -275,7 +275,6 @@ class SonatypePlugin : Plugin<Project> {
         val developers = publicationSettings.developers
 
         val emptySettings = mapOf<Any?, KMutableProperty1<PublicationSettings, *>>(
-            repoUrl to PublicationSettings::repoUrl,
             projectDescription to PublicationSettings::description,
             developers to (PublicationSettings::developers)
         )
@@ -288,25 +287,27 @@ class SonatypePlugin : Plugin<Project> {
         pom.apply {
             description.set(projectDescription)
             name.set("${project.group}:${project.name}")
-            url.set(repoUrl)
+            if (repoUrl != null) {
+                url.set(repoUrl)
+                issueManagement {
+                    system.set("GitHub")
+                    url.set("$repoUrl/issues")
+                }
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("$repoUrl/blob/master/LICENSE") //FIXME pass correct branch
+                    }
+                }
+                scm {
+                    connection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "git")}.git")
+                    developerConnection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "ssh")}.git")
+                    url.set(repoUrl)
+                }
+            }
             organization {
                 name.set("bakdata.com")
                 url.set("https://github.com/bakdata")
-            }
-            issueManagement {
-                system.set("GitHub")
-                url.set("$repoUrl/issues")
-            }
-            licenses {
-                license {
-                    name.set("MIT License")
-                    url.set("$repoUrl/blob/master/LICENSE")
-                }
-            }
-            scm {
-                connection.set("scm:git:${repoUrl!!.replace("^https?".toRegex(), "git")}.git")
-                developerConnection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "ssh")}.git")
-                url.set(repoUrl)
             }
             developers(developers)
         }
