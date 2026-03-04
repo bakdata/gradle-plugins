@@ -31,6 +31,9 @@ import org.gradle.api.publish.maven.MavenPomDeveloperSpec
 open class PublicationSettings(var project: Project) {
     var repoUrl: String? = null
         get() = field ?: project.findProperty("repository.url")?.toString()
+    var repoDefaultBranch: String? = null
+        get() = field ?: project.findProperty("repository.defaultBranch")?.toString()
+    var license: String = "MIT License"
     var description: String? = null
         get() = field ?: project.description
     var developers: Action<in MavenPomDeveloperSpec>? = null
