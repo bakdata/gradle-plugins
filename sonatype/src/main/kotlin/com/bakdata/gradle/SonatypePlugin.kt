@@ -293,10 +293,11 @@ class SonatypePlugin : Plugin<Project> {
                     system.set("GitHub")
                     url.set("$repoUrl/issues")
                 }
+                val branch = publicationSettings.repoDefaultBranch!!
                 licenses {
                     license {
-                        name.set("MIT License")
-                        url.set("$repoUrl/blob/master/LICENSE") //FIXME pass correct branch
+                        name.set(publicationSettings.license)
+                        url.set("$repoUrl/blob/$branch/LICENSE")
                     }
                 }
                 scm {
