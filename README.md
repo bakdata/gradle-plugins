@@ -1,6 +1,7 @@
 [![Build and Publish](https://github.com/bakdata/gradle-plugins/actions/workflows/build-and-publish.yaml/badge.svg)](https://github.com/bakdata/gradle-plugins/actions/workflows/build-and-publish.yaml)
 [![Sonarcloud status](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.gradle%3Agradle-plugins&metric=alert_status)](https://sonarcloud.io/dashboard?id=bakdata-com.bakdata.gradle%3Agradle-plugins)
 [![Code coverage](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.gradle%3Agradle-plugins&metric=coverage)](https://sonarcloud.io/dashboard?id=bakdata-com.bakdata.gradle%3Agradle-plugins)
+[![Maven](https://img.shields.io/maven-central/v/com.bakdata.gradle/sonatype.svg)](https://search.maven.org/search?q=g:com.bakdata.gradle%20AND%20a:sonatype&core=gav)
 
 bakdata gradle plugins
 ======================
