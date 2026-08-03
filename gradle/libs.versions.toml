@@ -1,5 +1,5 @@
 [versions]
-junit = "6.1.0"
+junit = "6.1.2"
 
 [libraries]
 jib = { group = "com.google.cloud.tools.jib", name = "com.google.cloud.tools.jib.gradle.plugin", version = "3.5.4" }
