@@ -364,7 +364,6 @@ internal class SonatypePluginIT {
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus(children.map { child -> "$child/maven-metadata.xml" })
                 .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
-                .flatMap { file -> listOf(file, file) } //FIXME somehow elements are uploaded twice
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
@@ -493,6 +492,7 @@ internal class SonatypePluginIT {
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus("$projectName/maven-metadata.xml")
                 .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+                .flatMap { file -> listOf(file, file) } //FIXME somehow elements are uploaded twice
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
