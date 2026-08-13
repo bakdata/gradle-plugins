@@ -374,7 +374,7 @@ internal class SonatypePluginIT {
                 id("java")
                 id("com.bakdata.sonatype")
                 id("org.gradle.kotlin.kotlin-dsl") version "6.6.4"
-                id("org.jetbrains.dokka") version "2.2.0"
+                id("org.jetbrains.dokka-javadoc") version "2.2.0"
             }
             repositories {
                 mavenCentral()
