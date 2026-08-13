@@ -33,7 +33,9 @@ import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
 import org.gradle.api.publish.Publication
 import org.gradle.api.publish.PublishingExtension
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 import java.io.File

@@ -39,7 +39,16 @@ import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.extra
+import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import java.net.URI
@@ -231,14 +240,16 @@ class SonatypePlugin : Plugin<Project> {
                     withJavadocJar()
                 }
 
+                createPublication("java")
+            }
+
+            project.plugins.matching { it.javaClass.name.equals("org.jetbrains.dokka.plugability.DokkaPlugin") }.all {
                 project.tasks.matching { it.name == "dokkaJavadoc" }.all {
                     val javadocTask: Task = this
                     tasks.named<Jar>("javadocJar") {
                         from(javadocTask)
                     }
                 }
-
-                createPublication("java")
             }
 
             project.plugins.matching { it is JavaPlatformPlugin }.all {
@@ -251,7 +262,9 @@ class SonatypePlugin : Plugin<Project> {
 
             tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
 
-            tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
+            afterEvaluate {
+                tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
+            }
         }
     }
 
