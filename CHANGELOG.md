@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0](https://github.com/bakdata/gradle-plugins/tree/2.2.0) - 2026-03-05
+### What's changed
+
+* Bump gradle-wrapper from 9.3.0 to 9.3.1 by @dependabot[bot] in [#88](https://github.com/bakdata/gradle-plugins/pull/88)
+
+* Bump the ci-templates group with 2 updates by @dependabot[bot] in [#89](https://github.com/bakdata/gradle-plugins/pull/89)
+
+* Bump the plugins group with 3 updates by @dependabot[bot] in [#87](https://github.com/bakdata/gradle-plugins/pull/87)
+
+* Bump the ci-templates group with 2 updates by @dependabot[bot] in [#90](https://github.com/bakdata/gradle-plugins/pull/90)
+
+* Bump org.junit.jupiter:junit-jupiter from 6.0.2 to 6.0.3 in the test-dependencies group by @dependabot[bot] in [#92](https://github.com/bakdata/gradle-plugins/pull/92)
+
+* Bump com.google.cloud.tools.jib:com.google.cloud.tools.jib.gradle.plugin from 3.5.2 to 3.5.3 by @dependabot[bot] in [#94](https://github.com/bakdata/gradle-plugins/pull/94)
+
+* Bump the ci-templates group with 2 updates by @dependabot[bot] in [#91](https://github.com/bakdata/gradle-plugins/pull/91)
+
+* Make license configurable by @philipp94831 in [#95](https://github.com/bakdata/gradle-plugins/pull/95)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/2.1.0...2.2.0
+
+## [2.1.0](https://github.com/bakdata/gradle-plugins/tree/2.1.0) - 2026-01-30
+### What's changed
+
+* Update Dependabot config by @philipp94831 in [#85](https://github.com/bakdata/gradle-plugins/pull/85)
+
+* Configure repository URL automatically by @philipp94831 in [#86](https://github.com/bakdata/gradle-plugins/pull/86)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/2.0.2...2.1.0
+
+## [2.0.2](https://github.com/bakdata/gradle-plugins/tree/2.0.2) - 2026-01-29
+### What's changed
+
+* Bump bakdata/ci-templates/.github/workflows/java-gradle-plugin.yaml from 1.70.0 to 1.70.2 by @dependabot[bot] in [#79](https://github.com/bakdata/gradle-plugins/pull/79)
+
+* Bump bakdata/ci-templates/.github/workflows/java-gradle-release.yaml from 1.70.0 to 1.70.2 by @dependabot[bot] in [#80](https://github.com/bakdata/gradle-plugins/pull/80)
+
+* Support Java 25 in Jacoco by @philipp94831 in [#84](https://github.com/bakdata/gradle-plugins/pull/84)
+
+
+### New Contributors
+* @dependabot[bot] made their first contribution in [#80](https://github.com/bakdata/gradle-plugins/pull/80)
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/2.0.1...2.0.2
+
 ## [2.0.1](https://github.com/bakdata/gradle-plugins/tree/2.0.1) - 2026-01-28
 ### What's changed
 
