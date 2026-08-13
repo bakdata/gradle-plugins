@@ -231,12 +231,10 @@ class SonatypePlugin : Plugin<Project> {
                     withJavadocJar()
                 }
 
-                afterEvaluate {
-                    project.tasks.matching { it.name == "dokkaGenerateJavadoc" }.all {
-                        val javadocTask: Task = this
-                        tasks.named<Jar>("javadocJar") {
-                            from(javadocTask)
-                        }
+                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
+                    val javadocTask: Task = this
+                    tasks.named<Jar>("javadocJar") {
+                        from(javadocTask)
                     }
                 }
 
@@ -253,9 +251,7 @@ class SonatypePlugin : Plugin<Project> {
 
             tasks.register("sign") { dependsOn(tasks.withType<Sign>()) }
 
-            afterEvaluate {
-                tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
-            }
+            tasks.matching { it is AbstractPublishToMaven }.all { dependsOn(tasks.withType<Sign>()) }
         }
     }
 
@@ -279,7 +275,6 @@ class SonatypePlugin : Plugin<Project> {
         val developers = publicationSettings.developers
 
         val emptySettings = mapOf<Any?, KMutableProperty1<PublicationSettings, *>>(
-            repoUrl to PublicationSettings::repoUrl,
             projectDescription to PublicationSettings::description,
             developers to (PublicationSettings::developers)
         )
@@ -292,25 +287,28 @@ class SonatypePlugin : Plugin<Project> {
         pom.apply {
             description.set(projectDescription)
             name.set("${project.group}:${project.name}")
-            url.set(repoUrl)
+            if (repoUrl != null) {
+                url.set(repoUrl)
+                issueManagement {
+                    system.set("GitHub")
+                    url.set("$repoUrl/issues")
+                }
+                val branch = publicationSettings.repoDefaultBranch!!
+                licenses {
+                    license {
+                        name.set(publicationSettings.license)
+                        url.set("$repoUrl/blob/$branch/LICENSE")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "git")}.git")
+                    developerConnection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "ssh")}.git")
+                    url.set(repoUrl)
+                }
+            }
             organization {
                 name.set("bakdata.com")
                 url.set("https://github.com/bakdata")
-            }
-            issueManagement {
-                system.set("GitHub")
-                url.set("$repoUrl/issues")
-            }
-            licenses {
-                license {
-                    name.set("MIT License")
-                    url.set("$repoUrl/blob/master/LICENSE")
-                }
-            }
-            scm {
-                connection.set("scm:git:${repoUrl!!.replace("^https?".toRegex(), "git")}.git")
-                developerConnection.set("scm:git:${repoUrl.replace("^https?".toRegex(), "ssh")}.git")
-                url.set(repoUrl)
             }
             developers(developers)
         }
