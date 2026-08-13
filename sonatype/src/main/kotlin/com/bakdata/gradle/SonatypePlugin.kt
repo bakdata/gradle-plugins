@@ -248,6 +248,7 @@ class SonatypePlugin : Plugin<Project> {
                 }
 
                 project.tasks.matching { it.name == "dokkaGenerateJavadoc" }.all {
+                    log.info("Configuring dokkaGenerateJavadoc task")
                     val javadocTask: Task = this
                     tasks.named<Jar>("javadocJar") {
                         from(javadocTask)
