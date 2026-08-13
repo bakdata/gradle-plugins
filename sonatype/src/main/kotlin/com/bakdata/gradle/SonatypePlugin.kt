@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2025 bakdata GmbH
+ * Copyright (c) 2026 bakdata GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,16 @@ import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.extra
+import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import java.net.URI
@@ -231,7 +240,8 @@ class SonatypePlugin : Plugin<Project> {
                     withJavadocJar()
                 }
 
-                project.tasks.matching { it.name == "dokkaJavadoc" }.all {
+                // Dokka v1 uses dokkaJavadoc, Dokka v2 uses dokkaGeneratePublicationJavadoc
+                project.tasks.matching { it.name == "dokkaJavadoc" || it.name == "dokkaGeneratePublicationJavadoc" }.all {
                     val javadocTask: Task = this
                     tasks.named<Jar>("javadocJar") {
                         from(javadocTask)
