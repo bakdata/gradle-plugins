@@ -240,6 +240,7 @@ class SonatypePlugin : Plugin<Project> {
                     withJavadocJar()
                 }
 
+                // Dokka v1
                 project.tasks.matching { it.name == "dokkaJavadoc" }.all {
                     val javadocTask: Task = this
                     tasks.named<Jar>("javadocJar") {
@@ -247,6 +248,7 @@ class SonatypePlugin : Plugin<Project> {
                     }
                 }
 
+                // Dokka v2
                 project.tasks.matching { it.name == "dokkaGeneratePublicationJavadoc" }.all {
                     val javadocTask: Task = this
                     tasks.named<Jar>("javadocJar") {
