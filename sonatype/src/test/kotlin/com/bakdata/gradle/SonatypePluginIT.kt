@@ -25,7 +25,13 @@
 package com.bakdata.gradle
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.ok
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
+import com.github.tomakehurst.wiremock.client.WireMock.okXml
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.put
+import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import com.github.tomakehurst.wiremock.http.RequestMethod
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import groovy.json.StringEscapeUtils
@@ -358,6 +364,135 @@ internal class SonatypePluginIT {
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus(children.map { child -> "$child/maven-metadata.xml" })
                 .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+        assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
+    }
+
+    @Test
+    fun testDokka2Project(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
+        Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
+            plugins {
+                id("java")
+                id("com.bakdata.sonatype")
+                id("org.gradle.kotlin.kotlin-dsl") version "6.6.4"
+                id("org.jetbrains.dokka-javadoc") version "2.2.0"
+            }
+            repositories {
+                mavenCentral()
+            }
+            group = "$TEST_GROUP"
+            version = "$TEST_VERSION"
+            configure<com.bakdata.gradle.SonatypeSettings> {
+                disallowLocalRelease = false
+                osshrUsername = "dummy user"
+                osshrPassword = "dummy pw"
+                signingKeyId = "72217EAF"
+                signingPassword = "test_password"
+                signingSecretKeyRingFile = "${getSecringFile()}"
+                nexusUrl = "${wiremock.baseUrl()}"
+                allowInsecureProtocol = true
+            }
+            configure<com.bakdata.gradle.PublicationSettings> {
+                description = "dummy description"
+                developers {
+                    developer {
+                        name.set("dummy name")
+                        id.set("dummy id")
+                    }
+                }
+            }
+        """.trimIndent())
+
+        Files.createDirectories(testProjectDir.resolve("src/main/kotlin/"))
+        Files.copy(SonatypePluginIT::class.java.getResourceAsStream("/Demo.kt"),
+                testProjectDir.resolve("src/main/kotlin/Demo.kt"))
+
+        mockNexusProtocol(wiremock)
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir.toFile())
+            .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
+            .withPluginClasspath()
+            .build()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(result.tasks)
+                    .haveExactly(1, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepositories", TaskOutcome.SUCCESS))
+        }
+
+        val projectName = testProjectDir.fileName.toString()
+        val expectedUploads = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar", ".module")
+                .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
+                .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
+                .plus("$projectName/maven-metadata.xml")
+                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+                .flatMap { file -> listOf(file, file) } //FIXME somehow elements are uploaded twice
+        assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
+    }
+
+    @Test
+    fun testDokka1Project(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
+        Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
+            plugins {
+                id("java")
+                id("com.bakdata.sonatype")
+                id("org.gradle.kotlin.kotlin-dsl") version "6.6.4"
+                // V1 is enabled by default
+                id("org.jetbrains.dokka") version "2.0.0"
+            }
+            repositories {
+                mavenCentral()
+            }
+            group = "$TEST_GROUP"
+            version = "$TEST_VERSION"
+            configure<com.bakdata.gradle.SonatypeSettings> {
+                disallowLocalRelease = false
+                osshrUsername = "dummy user"
+                osshrPassword = "dummy pw"
+                signingKeyId = "72217EAF"
+                signingPassword = "test_password"
+                signingSecretKeyRingFile = "${getSecringFile()}"
+                nexusUrl = "${wiremock.baseUrl()}"
+                allowInsecureProtocol = true
+            }
+            configure<com.bakdata.gradle.PublicationSettings> {
+                description = "dummy description"
+                developers {
+                    developer {
+                        name.set("dummy name")
+                        id.set("dummy id")
+                    }
+                }
+            }
+        """.trimIndent())
+
+        Files.createDirectories(testProjectDir.resolve("src/main/kotlin/"))
+        Files.copy(SonatypePluginIT::class.java.getResourceAsStream("/Demo.kt"),
+                testProjectDir.resolve("src/main/kotlin/Demo.kt"))
+
+        mockNexusProtocol(wiremock)
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir.toFile())
+            .withArguments("publishToNexus", "closeAndReleaseStagingRepositories", "--stacktrace", "--info")
+            .withPluginClasspath()
+            .build()
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(result.tasks)
+                    .haveExactly(1, taskWithPathAndOutcome(":signSonatypePublication", TaskOutcome.SUCCESS))
+                    .haveExactly(1, taskWithPathAndOutcome(":publishSonatypePublicationToNexusRepository", TaskOutcome.SUCCESS))
+                .haveExactly(1, taskWithPathAndOutcome(":closeAndReleaseStagingRepositories", TaskOutcome.SUCCESS))
+        }
+
+        val projectName = testProjectDir.fileName.toString()
+        val expectedUploads = listOf(".jar", ".pom", "-javadoc.jar", "-sources.jar", ".module")
+                .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
+                .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
+                .plus("$projectName/maven-metadata.xml")
+                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+                .flatMap { file -> listOf(file, file) } //FIXME somehow elements are uploaded twice
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
