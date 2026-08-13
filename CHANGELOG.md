@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.1](https://github.com/bakdata/gradle-plugins/tree/2.2.1) - 2026-08-13
+### What's changed
+
+* Setup multi-ecosystem Dependabot group by @philipp94831 in [#102](https://github.com/bakdata/gradle-plugins/pull/102)
+
+* Bump com.gradle.plugin-publish from 2.0.0 to 2.1.1 by @dependabot[bot] in [#98](https://github.com/bakdata/gradle-plugins/pull/98)
+
+* Bump org.sonarsource.scanner.gradle:sonarqube-gradle-plugin from 7.2.2.6593 to 7.2.3.7755 by @dependabot[bot] in [#104](https://github.com/bakdata/gradle-plugins/pull/104)
+
+* Upgrade to Gradle 9.4 by @philipp94831 in [#103](https://github.com/bakdata/gradle-plugins/pull/103)
+
+* Bump the "build" group with 1 update across multiple ecosystems by @dependabot[bot] in [#105](https://github.com/bakdata/gradle-plugins/pull/105)
+
+* Bump the "build" group with 1 update across multiple ecosystems by @dependabot[bot] in [#107](https://github.com/bakdata/gradle-plugins/pull/107)
+
+* Bump org.sonarsource.scanner.gradle:sonarqube-gradle-plugin from 7.2.3.7755 to 7.3.0.8198 by @dependabot[bot] in [#110](https://github.com/bakdata/gradle-plugins/pull/110)
+
+* Bump org.junit.jupiter:junit-jupiter from 6.0.3 to 6.1.0 in the test-dependencies group by @dependabot[bot] in [#108](https://github.com/bakdata/gradle-plugins/pull/108)
+
+* Bump the "build" group with 1 update across multiple ecosystems by @dependabot[bot] in [#111](https://github.com/bakdata/gradle-plugins/pull/111)
+
+* Bump org.sonarsource.scanner.gradle:sonarqube-gradle-plugin from 7.3.0.8198 to 7.3.1.8318 by @dependabot[bot] in [#113](https://github.com/bakdata/gradle-plugins/pull/113)
+
+* Bump the "build" group with 2 updates across multiple ecosystems by @dependabot[bot] in [#114](https://github.com/bakdata/gradle-plugins/pull/114)
+
+* Bump com.google.cloud.tools.jib:com.google.cloud.tools.jib.gradle.plugin from 3.5.3 to 3.5.4 by @dependabot[bot] in [#117](https://github.com/bakdata/gradle-plugins/pull/117)
+
+* Bump org.junit.jupiter:junit-jupiter from 6.1.0 to 6.1.2 in the test-dependencies group by @dependabot[bot] in [#115](https://github.com/bakdata/gradle-plugins/pull/115)
+
+* Bump the "build" group with 1 update across multiple ecosystems by @dependabot[bot] in [#118](https://github.com/bakdata/gradle-plugins/pull/118)
+
+* Support Dokka v2 by @philipp94831 in [#75](https://github.com/bakdata/gradle-plugins/pull/75)
+
+
+**Full Changelog**: https://github.com/bakdata/gradle-plugins/compare/2.2.0...2.2.1
+
 ## [2.2.0](https://github.com/bakdata/gradle-plugins/tree/2.2.0) - 2026-03-05
 ### What's changed
 
