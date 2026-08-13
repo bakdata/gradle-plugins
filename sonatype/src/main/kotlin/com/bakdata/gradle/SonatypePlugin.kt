@@ -47,13 +47,6 @@ import java.time.Duration
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 
-/**
- * A group of *members*.
- *
- * This class has no useful logic; it's just a documentation example.
- *
- * @constructor Creates an empty group.
- */
 class SonatypePlugin : Plugin<Project> {
     private val log = Logging.getLogger(SonatypePlugin::class.java)
 
