@@ -243,7 +243,7 @@ class SonatypePlugin : Plugin<Project> {
                 createPublication("java")
             }
 
-            project.plugins.matching { it.javaClass.name.equals("org.jetbrains.dokka.gradle.DokkaPlugin") }.all {
+            project.plugins.matching { it.javaClass.name == "org.jetbrains.dokka.gradle.DokkaPlugin" }.all {
                 project.tasks.matching { it.name == "dokkaJavadoc" }.all {
                     val javadocTask: Task = this
                     tasks.named<Jar>("javadocJar") {
@@ -252,7 +252,7 @@ class SonatypePlugin : Plugin<Project> {
                 }
             }
 
-            project.plugins.matching { it.javaClass.name.equals("org.jetbrains.dokka.gradle.formats.DokkaJavadocPlugin") }.all {
+            project.plugins.matching { it.javaClass.name == "org.jetbrains.dokka.gradle.formats.DokkaJavadocPlugin" }.all {
                 project.tasks.matching { it.name == "dokkaGenerateJavadoc" }.all {
                     val javadocTask: Task = this
                     tasks.named<Jar>("javadocJar") {
