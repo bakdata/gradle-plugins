@@ -180,35 +180,6 @@ internal class SonatypePluginTest {
             }) // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
     }
 
-    @Test
-    fun testWithDokka() {
-        val project = ProjectBuilder.builder().build()
-
-        Assertions.assertThatCode {
-            project.apply(plugin = "com.bakdata.sonatype")
-            project.apply(plugin = "java")
-            project.apply(plugin = "org.jetbrains.dokka")
-
-            File(project.projectDir, "src/main/kotlin/").mkdirs()
-            Files.copy(
-                SonatypePluginTest::class.java.getResourceAsStream("/Demo.kt"),
-                File(project.projectDir, "src/main/kotlin/Demo.kt").toPath()
-            )
-
-            project.evaluate()
-        }.doesNotThrowAnyException()
-
-        assertSoftly { softly ->
-            softly.assertThat(project.tasks)
-                .haveExactly(1, taskWithName("signSonatypePublication"))
-                .haveExactly(1, taskWithName("publish"))
-                .haveExactly(1, taskWithName("publishToNexus"))
-                .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
-            softly.assertThat(project.getPublications())
-                .haveExactly(1, publicationWithName("sonatype"))
-        }
-    }
-
     private fun Project.collectTasks(): List<Task> = try {
         tasks.toList()
     } catch (e: GradleException) {

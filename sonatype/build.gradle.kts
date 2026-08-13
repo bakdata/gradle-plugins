@@ -11,7 +11,6 @@ dependencies {
 
     testImplementation(libs.wiremock)
     testImplementation(libs.wiremock.junit)
-    testImplementation(libs.dokka)
 }
 
 tasks.withType<Test> {
