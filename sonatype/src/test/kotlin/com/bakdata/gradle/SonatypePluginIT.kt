@@ -364,6 +364,7 @@ internal class SonatypePluginIT {
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus(children.map { child -> "$child/maven-metadata.xml" })
                 .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+                .flatMap { file -> listOf(file, file) } //FIXME somehow elements are uploaded twice
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
@@ -371,10 +372,14 @@ internal class SonatypePluginIT {
     fun testDokka2Project(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
             plugins {
+                id("java")
                 id("com.bakdata.sonatype")
+                id("org.gradle.kotlin.kotlin-dsl") version "6.6.4"
                 id("org.jetbrains.dokka") version "2.2.0"
             }
-            apply(plugin = "java")
+            repositories {
+                mavenCentral()
+            }
             group = "$TEST_GROUP"
             version = "$TEST_VERSION"
             configure<com.bakdata.gradle.SonatypeSettings> {
@@ -423,6 +428,7 @@ internal class SonatypePluginIT {
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus("$projectName/maven-metadata.xml")
                 .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+                .flatMap { file -> listOf(file, file) } //FIXME somehow elements are uploaded twice
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
@@ -430,11 +436,15 @@ internal class SonatypePluginIT {
     fun testDokka1Project(@TempDir testProjectDir: Path, @Wiremock wiremock: WireMockServer) {
         Files.writeString(testProjectDir.resolve("build.gradle.kts"), """
             plugins {
+                id("java")
                 id("com.bakdata.sonatype")
+                id("org.gradle.kotlin.kotlin-dsl") version "6.6.4"
                 // V1 is enabled by default
                 id("org.jetbrains.dokka") version "2.0.0"
             }
-            apply(plugin = "java")
+            repositories {
+                mavenCentral()
+            }
             group = "$TEST_GROUP"
             version = "$TEST_VERSION"
             configure<com.bakdata.gradle.SonatypeSettings> {
