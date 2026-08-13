@@ -33,9 +33,7 @@ import org.gradle.api.Task
 import org.gradle.api.internal.project.DefaultProject
 import org.gradle.api.publish.Publication
 import org.gradle.api.publish.PublishingExtension
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.*
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -178,6 +176,35 @@ internal class SonatypePluginTest {
             .satisfies(Consumer {
                 Assertions.assertThat(it.cause).hasMessageContaining("top-level project")
             }) // TODO remove explicit Consumer once https://github.com/assertj/assertj/issues/2357 is resolved
+    }
+
+    @Test
+    fun testWithDokka() {
+        val project = ProjectBuilder.builder().build()
+
+        Assertions.assertThatCode {
+            project.apply(plugin = "com.bakdata.sonatype")
+            project.apply(plugin = "java")
+            project.apply(plugin = "org.jetbrains.dokka")
+
+            File(project.projectDir, "src/main/kotlin/").mkdirs()
+            Files.copy(
+                SonatypePluginTest::class.java.getResourceAsStream("/Demo.kt"),
+                File(project.projectDir, "src/main/kotlin/Demo.kt").toPath()
+            )
+
+            project.evaluate()
+        }.doesNotThrowAnyException()
+
+        assertSoftly { softly ->
+            softly.assertThat(project.tasks)
+                .haveExactly(1, taskWithName("signSonatypePublication"))
+                .haveExactly(1, taskWithName("publish"))
+                .haveExactly(1, taskWithName("publishToNexus"))
+                .haveExactly(1, taskWithName("closeAndReleaseStagingRepositories"))
+            softly.assertThat(project.getPublications())
+                .haveExactly(1, publicationWithName("sonatype"))
+        }
     }
 
     private fun Project.collectTasks(): List<Task> = try {
