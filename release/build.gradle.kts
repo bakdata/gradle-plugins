@@ -1,8 +1,7 @@
 plugins {
-    kotlin("jvm")
+    `kotlin-dsl`
     alias(libs.plugins.dokka)
 }
-apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
 description = "Configures Gradle Release plugin for usage in CI"
 
