@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.release)
     alias(libs.plugins.sonar)
     alias(libs.plugins.sonatype)
-    alias(libs.plugins.kotlin) apply false
     alias(libs.plugins.plugin.publish) apply false
 }
 
