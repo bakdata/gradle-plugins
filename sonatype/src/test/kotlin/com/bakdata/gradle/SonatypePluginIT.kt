@@ -112,7 +112,7 @@ internal class SonatypePluginIT {
                 .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus("$projectName/maven-metadata.xml")
-                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+                .flatMap(::checksumFiles)
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
@@ -177,7 +177,7 @@ internal class SonatypePluginIT {
             .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
             .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
             .plus("$projectName/maven-metadata.xml")
-            .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+            .flatMap(::checksumFiles)
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
@@ -254,7 +254,7 @@ internal class SonatypePluginIT {
             .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
             .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
             .plus("$projectName/maven-metadata.xml")
-            .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+            .flatMap(::checksumFiles)
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
@@ -264,6 +264,11 @@ internal class SonatypePluginIT {
                 .filter { it.request.method == RequestMethod.PUT && it.request.url.startsWith("/staging/deploy") }
                 .map { it.request.url.substringAfter(baseUrl) }
     }
+
+    // Gradle no longer publishes checksums for signature files: https://github.com/gradle/gradle/issues/20232
+    private fun checksumFiles(file: String): List<String> =
+        if (file.endsWith(".asc")) listOf(file)
+        else listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512")
 
     private fun mockNexusProtocol(wiremock: WireMockServer) {
         wiremock.addMockServiceRequestListener { request, response ->
@@ -363,7 +368,7 @@ internal class SonatypePluginIT {
                 .flatMap { classifier -> children.map { child -> "$child/$TEST_VERSION/$child-$TEST_VERSION$classifier" } }
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus(children.map { child -> "$child/maven-metadata.xml" })
-                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+                .flatMap(::checksumFiles)
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
 
@@ -426,7 +431,7 @@ internal class SonatypePluginIT {
                 .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus("$projectName/maven-metadata.xml")
-                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+                .flatMap(::checksumFiles)
                 .flatMap { file -> listOf(file, file) } //FIXME somehow elements are uploaded twice
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
@@ -491,7 +496,7 @@ internal class SonatypePluginIT {
                 .map { classifier -> "$projectName/$TEST_VERSION/$projectName-$TEST_VERSION$classifier" }
                 .flatMap { baseFile -> listOf(baseFile, "$baseFile.asc") }
                 .plus("$projectName/maven-metadata.xml")
-                .flatMap { file -> listOf(file, "$file.md5", "$file.sha1", "$file.sha256", "$file.sha512") }
+                .flatMap(::checksumFiles)
                 .flatMap { file -> listOf(file, file) } //FIXME somehow elements are uploaded twice
         assertThat(getUploadedFilesInGroup(wiremock)).containsExactlyInAnyOrderElementsOf(expectedUploads)
     }
